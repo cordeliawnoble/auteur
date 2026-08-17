@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://VOTRE-DOMAINE.fr/sitemap.xml
+
+# Note technique : ce site est une SPA en routage #hash (ex. /#admin, /#story/xxx).
+# Les fragments (#...) ne sont jamais envoyés au serveur, donc robots.txt ne peut
+# techniquement pas cibler /#admin avec une règle Disallow — ce n'est pas une
+# limite de ce fichier, c'est une limite du protocole robots.txt lui-même.
+# La protection réelle de l'espace admin repose sur : (1) aucun lien public
+# n'y mène, (2) un mot de passe, (3) une balise <meta name="robots" content="noindex">
+# injectée dynamiquement quand la route #admin est affichée (voir index.html).
