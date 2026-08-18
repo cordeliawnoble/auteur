@@ -339,7 +339,7 @@ main{max-width:1180px;margin:0 auto;padding:0 24px 100px;}
 
 /* ---------- page "Les univers" : lignes de saga ---------- */
 .saga-subtitle{font-family:'Lora',serif;font-style:italic;color:var(--muted);margin-bottom:14px;font-size:1rem;}
-.saga-desc{color:#3B4A63;line-height:1.8;max-width:52ch;margin-bottom:20px;}
+.saga-desc{color:#3B4A63;line-height:1.8;max-width:52ch;margin-bottom:20px;text-align:justify;text-justify:inter-word;}
 .saga-themes-note{
   display:inline-block;background:#FBF7EC;border:1px solid rgba(36,51,82,.08);border-radius:2px;
   padding:14px 18px;transform:rotate(-1.2deg);box-shadow:0 8px 18px -10px rgba(36,51,82,.25);margin-bottom:22px;
@@ -575,7 +575,7 @@ main{max-width:1180px;margin:0 auto;padding:0 24px 100px;}
 .work-card:hover .cover-hover-layer,.indep-card:hover .cover-hover-layer{opacity:1;}
 
 /* ---------- vignettes « Dernières mises à jour » ---------- */
-.updates-row{display:flex;gap:20px;overflow-x:auto;padding:4px 4px 14px;scroll-behavior:smooth;scrollbar-width:none;}
+.updates-row{display:flex;gap:20px;overflow-x:auto;padding:4px 4px 14px;scroll-behavior:smooth;scrollbar-width:none;-ms-overflow-style:none;}
 .updates-row::-webkit-scrollbar{display:none;}
 .updates-carousel{position:relative;display:flex;align-items:center;gap:10px;}
 .updates-carousel .updates-row{flex:1;min-width:0;}
@@ -1050,7 +1050,8 @@ body.dark .reader-warning{background:#2B2418;color:#E0B98A;}
 .char-hover-overlay{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .35s ease;pointer-events:none;}
 .char-photo-wrap:hover .char-hover-overlay{opacity:1;}
 @media(max-width:640px){.char-photo-wrap{width:118px;height:118px;}}
-.char-gallery-row{display:flex;gap:20px;overflow-x:auto;padding:4px 4px 14px;scroll-snap-type:x proximity;}
+.char-gallery-row{display:flex;gap:20px;overflow-x:auto;padding:4px 4px 14px;scroll-snap-type:x proximity;scrollbar-width:none;-ms-overflow-style:none;}
+.char-gallery-row::-webkit-scrollbar{display:none;}
 .char-gallery-card{flex:0 0 140px;text-align:center;scroll-snap-align:start;}
 .char-gallery-photo{
   width:140px;height:140px;border-radius:10px;object-fit:cover;display:block;margin:0 auto 12px;
@@ -1069,7 +1070,7 @@ body.dark .reader-warning{background:#2B2418;color:#E0B98A;}
 .character-card{background:var(--bg-card);border:1px solid var(--line);padding:16px 18px;}
 .character-photo{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:4px;margin-bottom:12px;}
 .character-card .name{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--gold);margin-bottom:6px;}
-.character-card .desc{color:var(--muted);font-size:.85rem;line-height:1.55;}
+.character-card .desc{color:var(--muted);font-size:.85rem;line-height:1.55;text-align:justify;text-justify:inter-word;}
 
 /* ---------- sommaire : tableau des chapitres ---------- */
 .chapters-table{width:100%;border-collapse:collapse;margin-top:6px;}
@@ -1102,7 +1103,7 @@ body.dark .reader-warning{background:#2B2418;color:#E0B98A;}
 .reader-head{text-align:center;padding:40px 0 10px;}
 .reader-head .eyebrow{margin-bottom:6px;}
 .reader-head h1{font-size:2rem;margin:0;}
-.chapter-text{line-height:var(--reader-line-height, 1.95);color:var(--ink);margin-top:30px;font-family:var(--reader-font-family, 'Lora', serif);}
+.chapter-text{line-height:var(--reader-line-height, 1.95);color:var(--ink);margin-top:30px;font-family:var(--reader-font-family, 'Lora', serif);text-align:justify;text-justify:inter-word;}
 
 /* ---------- panneau latéral de lecture ---------- */
 .reader-panel{position:fixed;top:50%;right:0;transform:translateY(-50%);z-index:400;}
@@ -1247,7 +1248,8 @@ body.dark .reader-warning{background:#2B2418;color:#E0B98A;}
   display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.2rem;color:var(--wine);transition:.2s;
 }
 .postit-arrow:hover{border-color:var(--gold);color:var(--gold);}
-.comment-list{display:flex;gap:22px;overflow-x:auto;scroll-behavior:smooth;padding:10px 4px 16px;flex:1;}
+.comment-list{display:flex;gap:22px;overflow-x:auto;scroll-behavior:smooth;padding:10px 4px 16px;flex:1;scrollbar-width:none;-ms-overflow-style:none;}
+.comment-list::-webkit-scrollbar{display:none;}
 .postit-card{
   flex:0 0 260px;background:var(--bg-alt);border:1px solid var(--line);border-radius:4px;padding:20px 20px 16px;
   transform:rotate(var(--rot, -1deg));box-shadow:0 12px 24px -16px rgba(36,51,82,.3);position:relative;
@@ -1605,7 +1607,7 @@ footer{border-top:1px solid var(--line);padding:34px 24px;text-align:center;font
 .editor-modal-wordcount{font-family:'Jost',sans-serif;font-size:.72rem;color:var(--muted);border:none;width:auto;cursor:default;white-space:nowrap;}
 .editor-modal-body{
   flex:1;min-height:280px;max-height:none;margin:20px 24px;font-size:1rem;line-height:1.8;border-radius:6px;
-  overflow-wrap:break-word;word-break:break-word;box-sizing:border-box;
+  overflow-wrap:break-word;word-break:break-word;box-sizing:border-box;overflow-y:auto;
 }
 .editor-modal-footer{
   display:flex;justify-content:flex-end;gap:12px;padding:16px 24px;border-top:1px solid var(--line);
@@ -4760,7 +4762,7 @@ function renderStory(workId){
         ${(w.coverDetail || w.cover)
           ? `<img src="${escapeHtml(w.coverDetail || w.cover)}" alt="${escapeHtml(w.title)}">`
           : `<div class="story-hero-cover-fallback" style="background:${w.coverGradient};"></div>`}
-        <div class="cover-status-badge">${renderStatusBadge(w.status, true)}</div>
+        <div class="cover-status-badge">${renderStatusBadge(w.status)}</div>
         ${(w.tropes&&w.tropes.length) ? `<div class="trope-pills-row" style="justify-content:center;">${w.tropes.map(t=>renderTropeBadge(t)).join('')}</div>` : ''}
       </div>
       <div class="story-hero-text">
