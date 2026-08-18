@@ -1589,24 +1589,25 @@ footer{border-top:1px solid var(--line);padding:34px 24px;text-align:center;font
 }
 .editor-modal-overlay.open{display:flex;}
 .editor-modal{
-  background:var(--bg-card);border-radius:10px;width:100%;max-width:760px;max-height:88vh;
+  background:var(--bg-card);border-radius:10px;width:100%;max-width:920px;max-height:92vh;
   display:flex;flex-direction:column;box-shadow:0 40px 80px -30px rgba(19,33,58,.6);overflow:hidden;
   box-sizing:border-box;min-width:0;
 }
 .editor-modal-header{
-  display:flex;align-items:center;justify-content:space-between;gap:10px;padding:18px 24px;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 24px;
   border-bottom:1px solid var(--line);font-family:'Playfair Display',serif;font-size:1.15rem;color:var(--ink);
 }
 .editor-modal-close{cursor:pointer;color:var(--muted);font-size:1.1rem;width:30px;height:30px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:.2s;}
 .editor-modal-close:hover{background:var(--bg);color:var(--wine);}
-.fmt-toolbar-modal{padding:12px 24px;margin:0;border-bottom:1px solid var(--line);flex-wrap:wrap;row-gap:8px;}
+.fmt-toolbar-modal{padding:10px 24px;margin:0;border-bottom:1px solid var(--line);flex-direction:column;align-items:stretch;gap:6px;}
+.fmt-toolbar-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .fmt-toolbar-modal span{width:32px;height:32px;font-size:.95rem;}
-.fmt-toolbar-modal .fmt-hint{flex-basis:100%;order:5;}
-.editor-modal-fontsize{display:flex;align-items:center;gap:4px;margin-left:auto;}
-.editor-modal-fontsize span{width:26px !important;height:26px !important;font-size:.8rem !important;}
-.editor-modal-wordcount{font-family:'Jost',sans-serif;font-size:.72rem;color:var(--muted);border:none;width:auto;cursor:default;white-space:nowrap;}
+.fmt-toolbar-modal .fmt-hint{width:100%;}
+.fmt-sep{width:1px !important;height:22px !important;background:var(--line);margin:0 4px;}
+.fmt-toolbar-row span[title="Réduire la taille du texte"],.fmt-toolbar-row span[title="Agrandir la taille du texte"]{width:26px !important;height:26px !important;font-size:.8rem !important;}
+.editor-modal-wordcount{margin-left:auto;font-family:'Jost',sans-serif;font-size:.72rem;color:var(--muted);border:none;width:auto !important;height:auto !important;cursor:default;white-space:nowrap;}
 .editor-modal-body{
-  flex:1;min-height:280px;max-height:none;margin:20px 24px;font-size:1rem;line-height:1.8;border-radius:6px;
+  flex:1;min-height:420px;max-height:none;margin:18px 24px;font-size:1.05rem;line-height:1.85;border-radius:6px;
   overflow-wrap:break-word;word-break:break-word;box-sizing:border-box;overflow-y:auto;
 }
 .editor-modal-footer{
@@ -1617,8 +1618,7 @@ footer{border-top:1px solid var(--line);padding:34px 24px;text-align:center;font
 }
 @media(max-width:640px){
   .editor-modal{max-height:94vh;}
-  .editor-modal-body{margin:14px;}
-  .editor-modal-fontsize{margin-left:0;}
+  .editor-modal-body{margin:14px;min-height:300px;}
 }
 .admin-form .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .admin-form .hint{font-size:.72rem;color:var(--muted);font-family:'Jost',sans-serif;}
@@ -1746,16 +1746,17 @@ footer{border-top:1px solid var(--line);padding:34px 24px;text-align:center;font
       <span class="editor-modal-close" onclick="closeEditorModal(false)">✕</span>
     </div>
     <div class="fmt-toolbar fmt-toolbar-modal">
-      <span onmousedown="event.preventDefault()" onclick="applyModalFormat('bold')" title="Gras"><b>G</b></span>
-      <span onmousedown="event.preventDefault()" onclick="applyModalFormat('italic')" title="Italique" style="font-style:italic;">I</span>
-      <span onmousedown="event.preventDefault()" onclick="applyModalFormat('underline')" title="Souligné" style="text-decoration:underline;">S</span>
-      <span onmousedown="event.preventDefault()" onclick="applyModalFormat('strike')" title="Barré" style="text-decoration:line-through;">B</span>
-      <span class="fmt-hint">Sélectionnez du texte puis cliquez sur un bouton · Maj+Entrée pour un simple retour à la ligne (dialogues), Entrée pour un nouveau paragraphe</span>
-      <div class="editor-modal-fontsize">
+      <div class="fmt-toolbar-row">
+        <span onmousedown="event.preventDefault()" onclick="applyModalFormat('bold')" title="Gras"><b>G</b></span>
+        <span onmousedown="event.preventDefault()" onclick="applyModalFormat('italic')" title="Italique" style="font-style:italic;">I</span>
+        <span onmousedown="event.preventDefault()" onclick="applyModalFormat('underline')" title="Souligné" style="text-decoration:underline;">S</span>
+        <span onmousedown="event.preventDefault()" onclick="applyModalFormat('strike')" title="Barré" style="text-decoration:line-through;">B</span>
+        <span class="fmt-sep"></span>
         <span onmousedown="event.preventDefault()" onclick="changeModalFontSize(-1)" title="Réduire la taille du texte">A−</span>
         <span onmousedown="event.preventDefault()" onclick="changeModalFontSize(1)" title="Agrandir la taille du texte">A+</span>
+        <span class="editor-modal-wordcount" id="editorModalWordCount">0 mot</span>
       </div>
-      <span class="editor-modal-wordcount" id="editorModalWordCount">0 mot</span>
+      <div class="fmt-hint">Sélectionnez du texte puis cliquez sur un bouton · Maj+Entrée pour un simple retour à la ligne (dialogues), Entrée pour un nouveau paragraphe</div>
     </div>
     <div class="rich-editor editor-modal-body" id="editorModalBody" contenteditable="true"></div>
     <div class="editor-modal-footer">
