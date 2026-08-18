@@ -1,7 +1,7 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://VOTRE-DOMAINE.fr/sitemap.xml
+Sitemap: https://cordeliawnoble.fr/sitemap.xml
 
 # Note technique : ce site est une SPA en routage #hash (ex. /#admin, /#story/xxx).
 # Les fragments (#...) ne sont jamais envoyés au serveur, donc robots.txt ne peut
