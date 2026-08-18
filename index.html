@@ -701,6 +701,8 @@ img.story-banner{
 .story-hero-cols{display:grid;grid-template-columns:280px 1fr;gap:44px;align-items:start;margin:0;}
 .story-hero-cols.ratio-saga{grid-template-columns:55fr 45fr;}
 .story-hero-cols.ratio-saga .story-hero-cover img{box-shadow:none;border-radius:0;}
+.story-hero-cover{position:relative;}
+.cover-status-badge{position:absolute;top:12px;left:12px;z-index:2;}
 .story-hero-cover img{width:100%;height:auto;border-radius:8px;box-shadow:0 26px 50px -24px rgba(36,51,82,.4);display:block;}
 .story-hero-cover-fallback{width:100%;aspect-ratio:2/3;border-radius:8px;box-shadow:0 26px 50px -24px rgba(36,51,82,.4);}
 .story-hero-text{display:flex;flex-direction:column;}
@@ -946,17 +948,8 @@ img.story-banner{
 .reading-progress{position:fixed;top:0;left:0;right:0;height:3px;z-index:60;pointer-events:none;background:transparent;}
 .reading-progress .rp-fill{height:100%;width:0%;background:var(--wine);transition:width .1s linear;}
 
-/* ---------- réglage de la taille du texte ---------- */
-.font-size-controls{display:flex;gap:8px;justify-content:center;align-items:center;margin-top:16px;}
-.fsc-btn{
-  width:32px;height:32px;border:1px solid var(--line);border-radius:50%;display:flex;align-items:center;
-  justify-content:center;cursor:pointer;font-family:'Jost',sans-serif;color:var(--muted);transition:.2s;
-}
-.fsc-btn[data-size="sm"]{font-size:.72rem;}
-.fsc-btn[data-size="md"]{font-size:.88rem;}
-.fsc-btn[data-size="lg"]{font-size:1.05rem;}
-.fsc-btn.active{border-color:var(--wine);color:var(--wine);background:var(--gold-soft);}
-.chapter-text{font-size:var(--reader-font-size, 1.14rem);}
+/* ---------- taille du texte (pilotée par le panneau de lecture) ---------- */
+.chapter-text{font-size:var(--reader-font-size, 18px);}
 
 /* ---------- avertissements de contenu ---------- */
 .warning-box{
@@ -1099,7 +1092,7 @@ body.dark .reader-warning{background:#2B2418;color:#E0B98A;}
 @media(max-width:640px){.chapters-table .date{display:none;}}
 
 /* ---------- reading view ---------- */
-.reader{max-width:680px;margin:0 auto;position:relative;}
+.reader{max-width:var(--reader-width, 680px);margin:0 auto;position:relative;}
 .reader::before{
   content:"";position:absolute;top:0;left:0;right:0;bottom:0;
   background-image:var(--watermark-url);background-repeat:repeat;
@@ -1109,7 +1102,66 @@ body.dark .reader-warning{background:#2B2418;color:#E0B98A;}
 .reader-head{text-align:center;padding:40px 0 10px;}
 .reader-head .eyebrow{margin-bottom:6px;}
 .reader-head h1{font-size:2rem;margin:0;}
-.chapter-text{line-height:1.95;color:var(--ink);margin-top:30px;}
+.chapter-text{line-height:var(--reader-line-height, 1.95);color:var(--ink);margin-top:30px;font-family:var(--reader-font-family, 'Lora', serif);}
+
+/* ---------- panneau latéral de lecture ---------- */
+.reader-panel{position:fixed;top:50%;right:0;transform:translateY(-50%);z-index:400;}
+.rp-toggle{
+  position:absolute;top:50%;right:0;transform:translateY(-50%);
+  width:38px;height:54px;background:var(--bg-card);border:1px solid var(--line);border-right:none;
+  border-radius:10px 0 0 10px;display:flex;align-items:center;justify-content:center;cursor:pointer;
+  color:var(--wine);box-shadow:-8px 0 20px -12px rgba(19,33,58,.3);
+}
+.reader-panel.open .rp-toggle{display:none;}
+.rp-body{display:none;width:280px;max-height:82vh;overflow-y:auto;background:var(--bg-card);border:1px solid var(--line);
+  border-radius:12px 0 0 12px;box-shadow:-16px 0 40px -20px rgba(19,33,58,.4);padding:18px 20px 24px;}
+.reader-panel.open .rp-body{display:block;}
+.rp-tabs{display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:16px;}
+.rp-tab{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--muted);cursor:pointer;flex-shrink:0;}
+.rp-tab:hover{background:var(--bg-alt);}
+.rp-tab.active{background:var(--wine);color:#fff;}
+.rp-close{margin-left:auto;cursor:pointer;color:var(--muted);font-size:.85rem;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:50%;flex-shrink:0;}
+.rp-close:hover{background:var(--bg-alt);color:var(--wine);}
+.rp-label{font-family:'Jost',sans-serif;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.rp-size-row{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.rp-size-btn{width:34px;height:34px;border-radius:8px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.1rem;color:var(--ink);flex-shrink:0;}
+.rp-size-btn:hover{border-color:var(--wine);color:var(--wine);}
+.rp-size-value{font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--ink);}
+.rp-size-unit{font-family:'Jost',sans-serif;font-size:.7rem;color:var(--muted);margin-left:2px;}
+.rp-size-presets{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap;}
+.rp-preset{flex:1;text-align:center;padding:7px 0;border:1px solid var(--line);border-radius:8px;font-family:'Jost',sans-serif;font-size:.78rem;color:var(--muted);cursor:pointer;min-width:38px;}
+.rp-preset:hover{border-color:var(--wine);}
+.rp-preset.active{background:var(--wine);border-color:var(--wine);color:#fff;}
+.rp-font-list{display:flex;flex-direction:column;gap:8px;}
+.rp-font-opt{border:1px solid var(--line);border-radius:8px;padding:10px 14px;font-size:1rem;color:var(--ink);cursor:pointer;}
+.rp-font-opt:hover{border-color:var(--wine);}
+.rp-font-opt.active{border-color:var(--wine);color:var(--wine);background:var(--gold-soft);}
+.rp-panel-content input[type="range"]{width:100%;margin-top:6px;accent-color:var(--wine);}
+.rp-theme-btn{cursor:pointer;font-family:'Jost',sans-serif;font-size:.85rem;padding:10px;}
+.rp-ring-wrap{position:relative;width:110px;height:110px;margin:6px auto 20px;}
+.rp-ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.rp-ring-center span{font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--ink);}
+.rp-ring-label{font-family:'Jost',sans-serif;font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+.rp-stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.rp-stat-card{background:var(--bg-alt);border-radius:8px;padding:12px 10px;text-align:center;}
+.rp-stat-num{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--ink);}
+.rp-stat-lbl{font-family:'Jost',sans-serif;font-size:.6rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-top:2px;}
+.rp-progress-row{display:flex;justify-content:space-between;font-family:'Jost',sans-serif;font-size:.78rem;color:var(--muted);margin-bottom:6px;}
+.rp-progress-bar{height:6px;background:var(--bg-alt);border-radius:4px;overflow:hidden;}
+.rp-progress-fill{height:100%;background:var(--wine);}
+@media(max-width:760px){
+  .rp-body{width:calc(100vw - 40px);max-width:300px;}
+}
+
+/* ---------- réactions de chapitre ---------- */
+.reaction-bar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:44px 0 20px;padding:18px;background:var(--bg-card);border:1px solid var(--line);border-radius:14px;}
+.reaction-btn{
+  display:flex;align-items:center;gap:5px;padding:7px 12px;border-radius:20px;border:1px solid var(--line);
+  background:var(--bg-alt);cursor:pointer;font-size:1.05rem;transition:.15s;
+}
+.reaction-btn:hover{border-color:var(--wine);transform:translateY(-2px);}
+.reaction-btn.active{border-color:var(--wine);background:var(--gold-soft);}
+.reaction-count{font-family:'Jost',sans-serif;font-size:.75rem;color:var(--muted);}
 .chapter-illustration{width:100%;border-radius:6px;margin-top:34px;display:block;box-shadow:0 20px 40px -24px rgba(36,51,82,.4);}
 .chapter-text p{margin:0 0 1.4em;}
 .chapter-nav{display:flex;justify-content:space-between;margin:50px 0 10px;font-family:'Jost',sans-serif;font-size:.85rem;}
@@ -2861,7 +2913,7 @@ function applyTheme(){
 function toggleChapterDarkMode(){
   DARK_MODE = !DARK_MODE;
   applyTheme();
-  const btn = document.getElementById('chapterThemeToggle');
+  const btn = document.getElementById('rpThemeBtn');
   if(btn) btn.textContent = DARK_MODE ? '☀️ Mode clair' : '🌙 Mode sombre';
 }
 function toggleAdminDarkMode(){
@@ -2971,6 +3023,7 @@ function render(){
   else if(parts[0] === 'poesie'){ setActiveNav('works'); renderWorks(); }
   else if(parts[0] === 'about'){ setActiveNav('contact'); renderContactPage(); }
   else if(parts[0] === 'contact'){ setActiveNav('contact'); renderContactPage(); }
+  else if(parts[0].split('?')[0] === 'desinscription'){ setActiveNav(''); renderUnsubscribePage(); }
   else if(parts[0] === 'bibliotheque'){ setActiveNav('bibliotheque'); renderBibliotheque(); }
   else if(parts[0] === 'calendrier'){ setActiveNav('calendrier'); renderCalendrier(); }
   else if(parts[0] === 'mentions-legales'){ setActiveNav(''); renderMentionsLegales(); }
@@ -3278,14 +3331,22 @@ const TROPE_CATEGORIES_KEY = 'site:tropeCategories';
 async function loadTropeCategories(){
   try{
     const res = await window.storage.get(TROPE_CATEGORIES_KEY, true);
-    if(res && res.value){ TROPE_CATEGORIES = JSON.parse(res.value); return; }
+    if(res && res.value){ TROPE_CATEGORIES = JSON.parse(res.value); }
   }catch(e){}
+  if(!TROPE_CATEGORIES.includes('Disponibilité')){
+    TROPE_CATEGORIES.push('Disponibilité');
+    await saveTropeCategories();
+  }
 }
 async function saveTropeCategories(){
   try{ await window.storage.set(TROPE_CATEGORIES_KEY, JSON.stringify(TROPE_CATEGORIES), true); }catch(e){}
 }
 const TROPES_LIST_KEY = 'site:tropesList';
 let TROPES_LIST = [];
+function tropesByCategory(tropeNames, categoryName){
+  const set = new Set(tropeNames||[]);
+  return TROPES_LIST.filter(t => t.category === categoryName && set.has(t.name));
+}
 function migrateTropeEntry(t){
   if(typeof t === 'string') return { name: t, category: TROPE_CATEGORIES[0] || 'Trope', icon: '' };
   if(!t.category || !TROPE_CATEGORIES.includes(t.category)) t.category = TROPE_CATEGORIES[0] || 'Trope';
@@ -3387,13 +3448,6 @@ function renderUniversDetail(param){
       <h1>${escapeHtml(u)} <span style="color:${a.title};font-size:1.5rem;">♡</span></h1>
       ${m.subtitle ? `<div class="saga-subtitle">${escapeHtml(m.subtitle)}</div>` : ''}
       <p class="saga-desc" style="margin-top:12px;">${formatRichText(universeDesc(u))}</p>
-    </div>
-
-    <div class="quick-facts">
-      <div class="qf-item"><div class="qf-label">Type</div><div class="qf-value">${escapeHtml(m.subtitle || '—')}</div></div>
-      <div class="qf-item"><div class="qf-label">Ton</div><div class="qf-value">${escapeHtml(m.tone || '—')}</div></div>
-      <div class="qf-item"><div class="qf-label">Liens</div><div class="qf-value">${escapeHtml(m.links || '—')}</div></div>
-      <div class="qf-item"><div class="qf-label">Lecture</div><div class="qf-value">${escapeHtml(m.readOrder || '—')}</div></div>
     </div>
 
     ${m.hasSagas !== false ? `
@@ -4521,6 +4575,13 @@ function renderSalePage(w){
           <input type="email" id="fdEmail-${w.id}" placeholder="Ton adresse mail">
           <button type="button" onclick="unlockFreeDownload('${w.id}')">Débloquer ♡</button>
         </div>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-family:'Jost',sans-serif;font-size:.72rem;color:var(--muted);margin-top:8px;">
+          <input type="checkbox" id="fdConsent-${w.id}" style="width:auto;">
+          J'accepte de recevoir la newsletter générale (actualités, coulisses...)
+        </label>
+        <div style="font-family:'Jost',sans-serif;font-size:.65rem;color:var(--muted);opacity:.85;line-height:1.5;margin-top:6px;">
+          Vos données sont uniquement utilisées pour l'envoi de la newsletter et ne seront jamais revendues. Vous pouvez vous désinscrire à tout moment via le lien présent dans les e-mails.
+        </div>
         <div class="fd-msg" id="fdMsg-${w.id}"></div>
       </div>
       ` : `
@@ -4660,6 +4721,13 @@ function renderStory(workId){
   const publishedChapters = w.chapters.filter(c => !c.date || c.date <= todayISO());
   const a = w.universe ? accentFor(w.universe) : {title: 'var(--wine)'};
 
+  const totalWords = w.chapters.reduce((sum,c)=> sum + (c.text||'').trim().split(/\s+/).filter(Boolean).length, 0);
+  const totalReadingMinutes = Math.round(totalWords / 200);
+  const trHours = Math.floor(totalReadingMinutes / 60);
+  const trMins = totalReadingMinutes % 60;
+  const totalReadingLabel = trHours > 0 ? `${trHours} h${trMins>0?' '+trMins+' min':''}` : `${trMins} min`;
+  const availabilityTropes = tropesByCategory(w.tropes, 'Disponibilité');
+
   // navigation entre tomes, si cette histoire appartient à une saga
   let sagaNavHTML = '';
   if(w.saga && w.saga.trim()){
@@ -4692,6 +4760,7 @@ function renderStory(workId){
         ${(w.coverDetail || w.cover)
           ? `<img src="${escapeHtml(w.coverDetail || w.cover)}" alt="${escapeHtml(w.title)}">`
           : `<div class="story-hero-cover-fallback" style="background:${w.coverGradient};"></div>`}
+        <div class="cover-status-badge">${renderStatusBadge(w.status, true)}</div>
         ${(w.tropes&&w.tropes.length) ? `<div class="trope-pills-row" style="justify-content:center;">${w.tropes.map(t=>renderTropeBadge(t)).join('')}</div>` : ''}
       </div>
       <div class="story-hero-text">
@@ -4725,10 +4794,12 @@ function renderStory(workId){
     </div>
 
     <div class="quick-facts">
-      <div class="qf-item"><div class="qf-label">📗 Statut</div><div class="qf-value">${renderStatusBadge(w.status)} · ${w.chapters.length} chapitre${w.chapters.length>1?'s':''}</div></div>
-      <div class="qf-item"><div class="qf-label">📅 Mise à jour</div><div class="qf-value">${escapeHtml(w.updateSchedule || 'Non précisé')}</div></div>
-      <div class="qf-item"><div class="qf-label">🖋 Genre</div><div class="qf-value">${escapeHtml(w.genre)}</div></div>
-      <div class="qf-item"><div class="qf-label">♡ Public</div><div class="qf-value">${escapeHtml(w.ageRating || 'Tout public')}</div></div>
+      <div class="qf-item"><div class="qf-label">📖 Chapitres</div><div class="qf-value">${w.chapters.length}</div></div>
+      <div class="qf-item"><div class="qf-label">📝 Mots</div><div class="qf-value">${totalWords.toLocaleString('fr-FR')}</div></div>
+      <div class="qf-item"><div class="qf-label">⏱ Temps de lecture</div><div class="qf-value">${totalReadingLabel}</div></div>
+      <div class="qf-item"><div class="qf-label">🔑 Disponibilité</div><div class="qf-value">${
+        availabilityTropes.length ? availabilityTropes.map(t=>renderTropeBadge(t.name)).join(' ') : '<span style="color:var(--muted);font-style:italic;">Non précisée</span>'
+      }</div></div>
     </div>
 
     ${hasCharacters ? `
@@ -4847,14 +4918,18 @@ async function unlockFreeDownload(workId){
   if(!w) return;
   const emailEl = document.getElementById('fdEmail-'+workId);
   const msgEl = document.getElementById('fdMsg-'+workId);
+  const consentEl = document.getElementById('fdConsent-'+workId);
   const email = emailEl.value.trim();
   if(!email){ msgEl.textContent = "Merci d'indiquer une adresse mail."; return; }
   try{
-    const key = 'newsletter:' + Date.now() + '-' + Math.random().toString(36).slice(2,7);
-    const payload = { email, subscribedAt: new Date().toISOString(), general: true, workUpdates: [w.id] };
-    await window.storage.set(key, JSON.stringify(payload), true);
+    // le téléchargement se débloque toujours ; l'ajout à la newsletter est distinct et optionnel
+    if(consentEl && consentEl.checked){
+      const key = 'newsletter:' + Date.now() + '-' + Math.random().toString(36).slice(2,7);
+      const payload = { email, subscribedAt: new Date().toISOString(), general: true, workUpdates: [w.id], sagaUpdates: [], sousSagaUpdates: [] };
+      await window.storage.set(key, JSON.stringify(payload), true);
+    }
     document.getElementById('fdArea-'+workId).innerHTML = `<a class="fd-btn" href="${escapeHtml(w.freeDownloadUrl)}" target="_blank" rel="noopener" download>⬇ Télécharger maintenant</a>`;
-    toast("Inscription enregistrée, bon téléchargement !");
+    toast(consentEl && consentEl.checked ? "Inscription enregistrée, bon téléchargement !" : "Bon téléchargement !");
   }catch(err){
     msgEl.textContent = "Erreur : " + (err && err.message ? err.message : err);
   }
@@ -4869,10 +4944,12 @@ function bindNewsletterForm(work, followCtx){
     const workUpdatesEl = document.getElementById('nlWorkUpdates');
     const followUpdatesEl = document.getElementById('nlFollowUpdates');
     const generalEl = document.getElementById('nlGeneral');
+    const anyChecked = (workUpdatesEl && workUpdatesEl.checked) || (followUpdatesEl && followUpdatesEl.checked) || (generalEl && generalEl.checked);
+    if(!anyChecked){ toast("Merci de cocher au moins une case pour indiquer ce que vous souhaitez recevoir."); return; }
     const payload = {
       email,
       subscribedAt: new Date().toISOString(),
-      general: generalEl ? generalEl.checked : true,
+      general: generalEl ? generalEl.checked : false,
       workUpdates: (work && workUpdatesEl && workUpdatesEl.checked) ? [work.id] : [],
       sagaUpdates: (followCtx && followCtx.type==='saga' && followUpdatesEl && followUpdatesEl.checked) ? [followCtx.name] : [],
       sousSagaUpdates: (followCtx && followCtx.type==='sousSaga' && followUpdatesEl && followUpdatesEl.checked) ? [followCtx.name] : []
@@ -4905,22 +4982,209 @@ function renderNewsletterBanner(work, followCtx){
       <div class="nb-checks" style="width:100%;display:flex;flex-direction:column;gap:6px;margin-top:10px;font-family:'Jost',sans-serif;font-size:.78rem;color:var(--muted);">
         ${showWorkCheck ? `
         <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
-          <input type="checkbox" id="nlWorkUpdates" checked style="width:auto;">
-          Me prévenir des nouveaux chapitres de « ${escapeHtml(work.title)} »
+          <input type="checkbox" id="nlWorkUpdates" style="width:auto;">
+          J'accepte d'être prévenue des nouveaux chapitres de « ${escapeHtml(work.title)} »
         </label>` : ''}
         ${showFollowCheck ? `
         <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
-          <input type="checkbox" id="nlFollowUpdates" checked style="width:auto;">
-          Me prévenir des nouveaux chapitres de tous les tomes de ${followCtx.type==='saga'?'la saga':'la sous-saga'} « ${escapeHtml(followCtx.name)} »
+          <input type="checkbox" id="nlFollowUpdates" style="width:auto;">
+          J'accepte d'être prévenue des nouveaux chapitres de tous les tomes de ${followCtx.type==='saga'?'la saga':'la sous-saga'} « ${escapeHtml(followCtx.name)} »
         </label>` : ''}
         <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
-          <input type="checkbox" id="nlGeneral" ${(work||followCtx)?'':'checked'} style="width:auto;">
-          Recevoir aussi la newsletter générale (actualités, coulisses...)
+          <input type="checkbox" id="nlGeneral" style="width:auto;">
+          J'accepte de recevoir la newsletter générale (actualités, coulisses...)
         </label>
+      </div>
+      <div class="nb-legal" style="width:100%;font-family:'Jost',sans-serif;font-size:.68rem;color:var(--muted);opacity:.85;line-height:1.5;margin-top:10px;">
+        Vos données sont uniquement utilisées pour l'envoi de la newsletter et ne seront jamais revendues. Vous pouvez vous désinscrire à tout moment via le lien présent dans les e-mails.
       </div>
       <div class="nb-msg" id="nlMsg"></div>
     </div>
   `;
+}
+
+/* =========================================================
+   PANNEAU LATÉRAL DE LECTURE
+   ========================================================= */
+const READER_FONTS = {
+  georgia: "Georgia, 'Times New Roman', serif",
+  palatino: "'Palatino Linotype', Palatino, serif",
+  merriweather: "'Merriweather', Georgia, serif",
+  inter: "'Jost', 'Inter', sans-serif",
+  lora: "'Lora', serif"
+};
+let readerPrefs = { fontSize: 18, font: 'lora', lineHeight: 1.9, width: 680 };
+let readerElRef = null;
+
+function toggleReaderPanel(force){
+  const panel = document.getElementById('readerPanel');
+  if(!panel) return;
+  const willOpen = typeof force === 'boolean' ? force : !panel.classList.contains('open');
+  panel.classList.toggle('open', willOpen);
+}
+function switchReaderTab(tab){
+  document.querySelectorAll('.rp-tab').forEach(t=>t.classList.toggle('active', t.dataset.rptab===tab));
+  document.querySelectorAll('.rp-panel-content').forEach(c=>{ c.style.display = c.dataset.rpcontent===tab ? '' : 'none'; });
+  if(tab === 'stats') updateStatsRing();
+}
+
+function applyReaderPrefs(){
+  if(!readerElRef) return;
+  readerElRef.style.setProperty('--reader-font-size', readerPrefs.fontSize + 'px');
+  readerElRef.style.setProperty('--reader-line-height', readerPrefs.lineHeight);
+  readerElRef.style.setProperty('--reader-width', readerPrefs.width + 'px');
+  readerElRef.style.setProperty('--reader-font-family', READER_FONTS[readerPrefs.font] || READER_FONTS.lora);
+  const sizeEl = document.getElementById('rpSizeValue');
+  if(sizeEl) sizeEl.textContent = readerPrefs.fontSize;
+  document.querySelectorAll('#rpSizePresets .rp-preset').forEach(p=>p.classList.toggle('active', +p.dataset.size===readerPrefs.fontSize));
+  document.querySelectorAll('#rpFontList .rp-font-opt').forEach(f=>f.classList.toggle('active', f.dataset.font===readerPrefs.font));
+  const lhEl = document.getElementById('rpLineHeightValue');
+  if(lhEl) lhEl.textContent = readerPrefs.lineHeight;
+  const lhInput = document.getElementById('rpLineHeight');
+  if(lhInput) lhInput.value = readerPrefs.lineHeight;
+  const wEl = document.getElementById('rpWidthValue');
+  if(wEl) wEl.textContent = readerPrefs.width + 'px';
+  const wInput = document.getElementById('rpWidth');
+  if(wInput) wInput.value = readerPrefs.width;
+}
+async function saveReaderPrefs(){
+  try{ await window.storage.set('pref:reader', JSON.stringify(readerPrefs), false); }catch(e){}
+}
+function changeReaderFontSize(dir){
+  readerPrefs.fontSize = Math.max(12, Math.min(28, readerPrefs.fontSize + dir));
+  applyReaderPrefs();
+  saveReaderPrefs();
+}
+function setReaderFontSize(px){
+  readerPrefs.fontSize = px;
+  applyReaderPrefs();
+  saveReaderPrefs();
+}
+function setReaderFont(id){
+  readerPrefs.font = id;
+  applyReaderPrefs();
+  saveReaderPrefs();
+}
+function setReaderLineHeight(val){
+  readerPrefs.lineHeight = parseFloat(val);
+  applyReaderPrefs();
+  saveReaderPrefs();
+}
+function setReaderWidth(val){
+  readerPrefs.width = parseInt(val,10);
+  applyReaderPrefs();
+  saveReaderPrefs();
+}
+async function initReaderPanel(readerEl){
+  readerElRef = readerEl;
+  try{
+    const res = await window.storage.get('pref:reader', false);
+    if(res && res.value){ readerPrefs = Object.assign({}, readerPrefs, JSON.parse(res.value)); }
+  }catch(e){}
+  applyReaderPrefs();
+}
+
+/* ---------- statistiques de lecture ---------- */
+function updateStatsRing(){
+  const ring = document.getElementById('rpRingFill');
+  const pctEl = document.getElementById('rpRingPct');
+  if(!ring || !pctEl) return;
+  const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+  const pct = scrollable > 0 ? Math.min(100, Math.max(0, Math.round((window.scrollY / scrollable) * 100))) : 0;
+  const circumference = 264; // 2 * π * 42, arrondi
+  ring.style.strokeDashoffset = circumference - (circumference * pct / 100);
+  pctEl.textContent = pct + '%';
+}
+async function markChapterRead(workId, chapterId){
+  try{
+    const key = 'readChapters:' + workId;
+    const res = await window.storage.get(key, false);
+    let list = [];
+    try{ list = res && res.value ? JSON.parse(res.value) : []; }catch(e){ list = []; }
+    if(!list.includes(chapterId)){
+      list.push(chapterId);
+      await window.storage.set(key, JSON.stringify(list), false);
+    }
+  }catch(e){}
+}
+async function updateChaptersReadCount(workId){
+  const el = document.getElementById('rpChaptersRead');
+  if(!el) return;
+  try{
+    const res = await window.storage.get('readChapters:' + workId, false);
+    const list = res && res.value ? JSON.parse(res.value) : [];
+    el.textContent = list.length;
+  }catch(e){ el.textContent = '0'; }
+}
+
+/* ---------- réactions de chapitre ---------- */
+const REACTION_EMOJIS = [
+  {emo:'❤️', label:"J'adore"},
+  {emo:'😂', label:'Ça me fait rire'},
+  {emo:'😮', label:'Surprenant'},
+  {emo:'😢', label:'Ça m\u2019émeut'},
+  {emo:'🔥', label:'Brûlant'},
+  {emo:'👏', label:'Bravo'},
+  {emo:'✨', label:'Magique'},
+  {emo:'💔', label:'Déchirant'},
+  {emo:'🤩', label:'Incroyable'},
+  {emo:'🥰', label:'Adorable'},
+  {emo:'😱', label:'Choquant'},
+  {emo:'💀', label:'Je suis morte'},
+  {emo:'😎', label:'Stylé'},
+  {emo:'😭', label:'Je pleure'},
+  {emo:'⚡', label:'Intense'},
+  {emo:'🥀', label:'Tragique'}
+];
+async function initReactionBar(workId, chapterId){
+  const el = document.getElementById('reactionBar');
+  if(!el) return;
+  const key = 'reactions:' + workId + ':' + chapterId;
+  let counts = {};
+  try{
+    const res = await window.storage.get(key, true);
+    if(res && res.value) counts = JSON.parse(res.value);
+  }catch(e){}
+  let myReaction = null;
+  try{
+    const mine = await window.storage.get('myReaction:' + workId + ':' + chapterId, false);
+    if(mine && mine.value) myReaction = mine.value;
+  }catch(e){}
+
+  function draw(){
+    el.innerHTML = REACTION_EMOJIS.map(item=>{
+      const n = counts[item.emo] || 0;
+      const active = myReaction === item.emo;
+      return `<span class="reaction-btn${active?' active':''}" title="${escapeHtml(item.label)}" onclick="handleReactionClick('${workId}','${chapterId}','${item.emo}')">${item.emo}${n>0?`<span class="reaction-count">${n}</span>`:''}</span>`;
+    }).join('');
+  }
+  draw();
+
+  window._reactionState = window._reactionState || {};
+  window._reactionState[workId+':'+chapterId] = { counts, myReaction, draw };
+}
+async function handleReactionClick(workId, chapterId, emoji){
+  const stateKey = workId+':'+chapterId;
+  const state = window._reactionState && window._reactionState[stateKey];
+  if(!state) return;
+  const key = 'reactions:' + workId + ':' + chapterId;
+  const mineKey = 'myReaction:' + workId + ':' + chapterId;
+
+  if(state.myReaction === emoji){
+    // on retire sa réaction
+    state.counts[emoji] = Math.max(0, (state.counts[emoji]||1) - 1);
+    state.myReaction = null;
+    try{ await window.storage.delete(mineKey, false); }catch(e){}
+  }else{
+    if(state.myReaction){
+      state.counts[state.myReaction] = Math.max(0, (state.counts[state.myReaction]||1) - 1);
+    }
+    state.counts[emoji] = (state.counts[emoji]||0) + 1;
+    state.myReaction = emoji;
+    try{ await window.storage.set(mineKey, emoji, false); }catch(e){}
+  }
+  try{ await window.storage.set(key, JSON.stringify(state.counts), true); }catch(e){}
+  state.draw();
 }
 
 function updateReadingProgress(){
@@ -4988,21 +5252,88 @@ function renderChapter(workId, chapterId){
     <div class="reading-progress"><div class="rp-fill" id="rpFill"></div></div>
     <a class="back-link" onclick="navigate('story/${w.id}')">← ${escapeHtml(w.title)}</a>
     <div class="reader">
+      <div class="reader-panel" id="readerPanel">
+        <div class="rp-toggle" id="rpToggle" onclick="toggleReaderPanel()">
+          <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="3" y1="6" x2="17" y2="6"/><circle cx="8" cy="6" r="2" fill="currentColor" stroke="none"/><line x1="3" y1="14" x2="17" y2="14"/><circle cx="13" cy="14" r="2" fill="currentColor" stroke="none"/></svg>
+        </div>
+        <div class="rp-body" id="rpBody">
+          <div class="rp-tabs">
+            <span class="rp-tab active" data-rptab="lecture" onclick="switchReaderTab('lecture')" title="Réglages de lecture">
+              <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="3" y1="6" x2="17" y2="6"/><circle cx="8" cy="6" r="2" fill="currentColor" stroke="none"/><line x1="3" y1="14" x2="17" y2="14"/><circle cx="13" cy="14" r="2" fill="currentColor" stroke="none"/></svg>
+            </span>
+            <span class="rp-tab" data-rptab="stats" onclick="switchReaderTab('stats')" title="Statistiques de lecture">
+              <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="4" y1="16" x2="4" y2="10"/><line x1="10" y1="16" x2="10" y2="5"/><line x1="16" y1="16" x2="16" y2="12"/></svg>
+            </span>
+            <span class="rp-close" onclick="toggleReaderPanel(false)">✕</span>
+          </div>
+
+          <div class="rp-panel-content" data-rpcontent="lecture">
+            <div class="rp-label">Taille du texte</div>
+            <div class="rp-size-row">
+              <span class="rp-size-btn" onclick="changeReaderFontSize(-1)">−</span>
+              <span class="rp-size-value"><span id="rpSizeValue">18</span><span class="rp-size-unit">px</span></span>
+              <span class="rp-size-btn" onclick="changeReaderFontSize(1)">+</span>
+            </div>
+            <div class="rp-size-presets" id="rpSizePresets">
+              ${[14,16,18,20,24].map(s=>`<span class="rp-preset" data-size="${s}" onclick="setReaderFontSize(${s})">${s}</span>`).join('')}
+            </div>
+
+            <div class="rp-label" style="margin-top:22px;">Police</div>
+            <div class="rp-font-list" id="rpFontList">
+              ${[
+                {id:'georgia', label:'Georgia', family:"Georgia, 'Times New Roman', serif"},
+                {id:'palatino', label:'Palatino', family:"'Palatino Linotype', Palatino, serif"},
+                {id:'merriweather', label:'Merriweather', family:"'Merriweather', Georgia, serif"},
+                {id:'inter', label:'Inter', family:"'Jost', 'Inter', sans-serif"},
+                {id:'lora', label:'Lora (par défaut)', family:"'Lora', serif"}
+              ].map(f=>`<div class="rp-font-opt" data-font="${f.id}" data-family="${f.family.replace(/"/g,'&quot;')}" style="font-family:${f.family};" onclick="setReaderFont('${f.id}')">${f.label}</div>`).join('')}
+            </div>
+
+            <div class="rp-label" style="margin-top:22px;display:flex;justify-content:space-between;">Interligne <span id="rpLineHeightValue">1.9</span></div>
+            <input type="range" id="rpLineHeight" min="1.3" max="2.4" step="0.1" value="1.9" oninput="setReaderLineHeight(this.value)">
+
+            <div class="rp-label" style="margin-top:18px;display:flex;justify-content:space-between;">Largeur <span id="rpWidthValue">680px</span></div>
+            <input type="range" id="rpWidth" min="480" max="900" step="20" value="680" oninput="setReaderWidth(this.value)">
+
+            <div class="rp-label" style="margin-top:22px;">Thème</div>
+            <div class="rp-preset rp-theme-btn" style="width:100%;text-align:center;" onclick="toggleChapterDarkMode()" id="rpThemeBtn">${DARK_MODE ? '☀️ Mode clair' : '🌙 Mode sombre'}</div>
+          </div>
+
+          <div class="rp-panel-content" data-rpcontent="stats" style="display:none;">
+            <div class="rp-label">Session de lecture</div>
+            <div class="rp-ring-wrap">
+              <svg viewBox="0 0 100 100" width="110" height="110">
+                <circle cx="50" cy="50" r="42" fill="none" stroke="var(--line)" stroke-width="8"/>
+                <circle id="rpRingFill" cx="50" cy="50" r="42" fill="none" stroke="var(--wine)" stroke-width="8" stroke-linecap="round" transform="rotate(-90 50 50)" stroke-dasharray="264" stroke-dashoffset="264"/>
+              </svg>
+              <div class="rp-ring-center"><span id="rpRingPct">0%</span><div class="rp-ring-label">lu</div></div>
+            </div>
+            <div class="rp-stat-grid">
+              <div class="rp-stat-card"><div class="rp-stat-num">${wordCount}</div><div class="rp-stat-lbl">mots</div></div>
+              <div class="rp-stat-card"><div class="rp-stat-num">~${readingMinutes} min</div><div class="rp-stat-lbl">lecture</div></div>
+              <div class="rp-stat-card"><div class="rp-stat-num" id="rpChaptersRead">0</div><div class="rp-stat-lbl">chapitres lus</div></div>
+              <div class="rp-stat-card"><div class="rp-stat-num">${w.chapters.length}</div><div class="rp-stat-lbl">total chap.</div></div>
+            </div>
+            <div class="rp-label" style="margin-top:18px;">Progression</div>
+            <div class="rp-progress-row">
+              <span>Chapitre ${idx+1} / ${w.chapters.length}</span>
+              <span id="rpProgressPct">${Math.round(((idx+1)/w.chapters.length)*100)}%</span>
+            </div>
+            <div class="rp-progress-bar"><div class="rp-progress-fill" style="width:${Math.round(((idx+1)/w.chapters.length)*100)}%;"></div></div>
+          </div>
+        </div>
+      </div>
       <div class="reader-head">
         <div class="eyebrow">${escapeHtml(w.title)}</div>
         <h1>${escapeHtml(c.title)}</h1>
         ${c.date ? `<div style="font-family:'Jost',sans-serif;font-size:.78rem;color:var(--muted);margin-top:8px;">Publié le ${formatDate(c.date)}</div>` : ''}
         <div class="reading-time">⏱ ${readingMinutes} min de lecture</div>
         ${(w.contentWarnings&&w.contentWarnings.length) ? `<div class="reader-warning">⚠ Contient : ${w.contentWarnings.map(escapeHtml).join(', ')}</div>` : ''}
-        <div class="font-size-controls" id="fontSizeControls">
-          <div class="fsc-btn" data-size="sm" title="Petit texte">A</div>
-          <div class="fsc-btn" data-size="md" title="Texte normal">A</div>
-          <div class="fsc-btn" data-size="lg" title="Grand texte">A</div>
-          <div class="fsc-btn" id="chapterThemeToggle" onclick="toggleChapterDarkMode()" style="width:auto;padding:0 12px;font-family:'Jost',sans-serif;font-size:.75rem;">${DARK_MODE ? '☀️ Mode clair' : '🌙 Mode sombre'}</div>
-        </div>
       </div>
       ${c.image ? `<img src="${escapeHtml(c.image)}" alt="${escapeHtml(c.title)}" class="chapter-illustration">` : ''}
       <div class="chapter-text" oncopy="return false" oncontextmenu="return false" ondragstart="return false">${paragraphs}</div>
+
+      <div class="reaction-bar" id="reactionBar"></div>
 
       <div class="chapter-nav">
         <a class="${prevId?'':'disabled'}" onclick="${prevId?`navigate('story/${w.id}/${prevId}')`:''}">← Chapitre précédent</a>
@@ -5081,31 +5412,14 @@ function renderChapter(workId, chapterId){
   const readerEl = document.querySelector('.reader');
   if(readerEl) readerEl.style.setProperty('--watermark-url', watermarkDataUri(SETTINGS.name));
 
-  // barre de progression de lecture
-  window.onscroll = updateReadingProgress;
+  // barre de progression de lecture + anneau de stats
+  window.onscroll = ()=>{ updateReadingProgress(); updateStatsRing(); };
   updateReadingProgress();
 
-  // réglage de la taille du texte
-  (async ()=>{
-    const sizeMap = {sm:'1rem', md:'1.14rem', lg:'1.32rem'};
-    let fontPref = 'md';
-    try{
-      const res = await window.storage.get('pref:fontSize', false);
-      if(res && res.value && sizeMap[res.value]) fontPref = res.value;
-    }catch(e){}
-    function applyFontSize(size){
-      document.querySelectorAll('#fontSizeControls .fsc-btn').forEach(b=>b.classList.toggle('active', b.dataset.size===size));
-      if(readerEl) readerEl.style.setProperty('--reader-font-size', sizeMap[size] || sizeMap.md);
-    }
-    applyFontSize(fontPref);
-    document.querySelectorAll('#fontSizeControls .fsc-btn').forEach(b=>{
-      b.addEventListener('click', async ()=>{
-        fontPref = b.dataset.size;
-        applyFontSize(fontPref);
-        try{ await window.storage.set('pref:fontSize', fontPref, false); }catch(e){}
-      });
-    });
-  })();
+  initReaderPanel(readerEl);
+  markChapterRead(w.id, c.id);
+  updateChaptersReadCount(w.id);
+  initReactionBar(w.id, c.id);
 
   // partage rapide
   const shareBtn = document.getElementById('shareBtn');
@@ -5466,6 +5780,7 @@ function renderAdmin(){
             <div class="admin-tab admin-nav-link" data-tab="messages">Messages</div>
             <div class="admin-tab admin-nav-link" data-tab="commentaires">Commentaires <span id="pendingCommentsBadge"></span></div>
             <div class="admin-tab admin-nav-link" data-tab="abonnees">Abonnés</div>
+            <div class="admin-tab admin-nav-link" data-tab="newsletter">Newsletter</div>
           </div>
           <div class="admin-sidebar-group">
             <div class="admin-sidebar-group-title">Site</div>
@@ -6514,6 +6829,63 @@ function renderAdmin(){
         <div class="admin-list" id="subscribersList"></div>
       </div>
 
+      <div class="admin-section" data-section="newsletter">
+        <div class="admin-form" style="margin-bottom:22px;">
+          <h3>Envoyer une newsletter</h3>
+          <p class="hint" style="margin:0 0 10px;line-height:1.7;">
+            Rédigez votre message, choisissez à qui l'envoyer, et cliquez sur « Envoyer ». L'envoi passe par un petit
+            relais sécurisé (Edge Function Supabase) qui garde votre clé Brevo cachée — à configurer une seule fois.
+          </p>
+          <span class="toggle-btn" onclick="toggleCreateForm('newsletterConfigForm')">⚙ Configuration de l'envoi</span>
+        </div>
+
+        <div class="admin-form" id="newsletterConfigForm" style="display:none;">
+          <h3>Configuration (une seule fois)</h3>
+          <div>
+            <label>URL de l'Edge Function Supabase</label>
+            <input type="text" id="nlConfigUrl" placeholder="https://xxxx.supabase.co/functions/v1/send-newsletter" value="${escapeHtml(SETTINGS.newsletterFunctionUrl||'')}">
+          </div>
+          <div class="row2">
+            <div>
+              <label>Nom de l'expéditrice</label>
+              <input type="text" id="nlConfigFromName" placeholder="Cordélia" value="${escapeHtml(SETTINGS.newsletterFromName||'')}">
+            </div>
+            <div>
+              <label>Email d'expédition (validé sur Brevo)</label>
+              <input type="email" id="nlConfigFromEmail" placeholder="contact@votredomaine.fr" value="${escapeHtml(SETTINGS.newsletterFromEmail||'')}">
+            </div>
+          </div>
+          <button type="button" class="submit-btn" onclick="saveNewsletterConfig()">Enregistrer la configuration</button>
+          <div class="admin-msg" id="nlConfigMsg"></div>
+        </div>
+
+        <div class="admin-form">
+          <h3>Nouveau message</h3>
+          <div>
+            <label>Objet de l'email</label>
+            <input type="text" id="nlCampSubject" placeholder="Un nouveau chapitre vous attend ♡">
+          </div>
+          <div>
+            <label>Message</label>
+            ${formattingToolbar('nlCampBody', '', 'Corps de la newsletter')}
+            <textarea id="nlCampBody" style="min-height:200px;"></textarea>
+          </div>
+          <div>
+            <label>Destinataires</label>
+            <select id="nlCampSegmentType" onchange="updateNewsletterSegmentOptions()">
+              <option value="all">Toutes les abonnées à la newsletter générale</option>
+              <option value="work">Abonnées d'un roman précis</option>
+              <option value="saga">Abonnées d'une saga précise</option>
+              <option value="sousSaga">Abonnées d'une sous-saga précise</option>
+            </select>
+          </div>
+          <div id="nlCampSegmentDetail"></div>
+          <div class="admin-msg" id="nlCampRecipientCount">Calcul du nombre de destinataires…</div>
+          <button type="button" class="submit-btn" onclick="sendNewsletterCampaign()">✉ Envoyer la newsletter</button>
+          <div class="admin-msg" id="nlCampMsg"></div>
+        </div>
+      </div>
+
       <div class="admin-section" data-section="stats">
         <div class="admin-msg" style="margin-bottom:14px;">Nombre de vues et de ♥ par chapitre, toutes histoires confondues.</div>
         <div class="admin-list" id="statsList"></div>
@@ -7065,6 +7437,7 @@ function renderAdmin(){
   });
   renderSubscribers();
   bindSubscribersActions();
+  initNewsletterComposer();
   renderStats();
   updateStorageModeBadge();
   setTimeout(updateStorageModeBadge, 1200);
@@ -7233,6 +7606,114 @@ async function loadSubscribers(){
   }catch(e){ return []; }
 }
 
+async function saveNewsletterConfig(){
+  SETTINGS.newsletterFunctionUrl = document.getElementById('nlConfigUrl').value.trim();
+  SETTINGS.newsletterFromName = document.getElementById('nlConfigFromName').value.trim();
+  SETTINGS.newsletterFromEmail = document.getElementById('nlConfigFromEmail').value.trim();
+  await saveSettings();
+  document.getElementById('nlConfigMsg').textContent = 'Configuration enregistrée ✓';
+  toast('Configuration newsletter enregistrée.');
+}
+
+function updateNewsletterSegmentOptions(){
+  const type = document.getElementById('nlCampSegmentType').value;
+  const detailEl = document.getElementById('nlCampSegmentDetail');
+  if(type === 'work'){
+    detailEl.innerHTML = `
+      <select id="nlCampSegmentValue" onchange="updateNewsletterRecipientCount()">
+        ${WORKS.filter(w=>!w.archived).map(w=>`<option value="${w.id}">${escapeHtml(w.title)}</option>`).join('')}
+      </select>`;
+  }else if(type === 'saga'){
+    detailEl.innerHTML = `
+      <select id="nlCampSegmentValue" onchange="updateNewsletterRecipientCount()">
+        ${getSagaGroups(WORKS).map(s=>`<option value="${escapeHtml(s.name)}">${escapeHtml(s.name)}</option>`).join('')}
+      </select>`;
+  }else if(type === 'sousSaga'){
+    detailEl.innerHTML = `
+      <select id="nlCampSegmentValue" onchange="updateNewsletterRecipientCount()">
+        ${getSousSagaGroups(WORKS).map(g=>`<option value="${escapeHtml(g.name)}">${escapeHtml(g.name)}</option>`).join('')}
+      </select>`;
+  }else{
+    detailEl.innerHTML = '';
+  }
+  updateNewsletterRecipientCount();
+}
+
+async function getNewsletterRecipients(){
+  const subs = await loadSubscribers();
+  const type = document.getElementById('nlCampSegmentType').value;
+  if(type === 'all') return subs.filter(s=>s.general);
+  const valueEl = document.getElementById('nlCampSegmentValue');
+  const value = valueEl ? valueEl.value : '';
+  if(!value) return [];
+  if(type === 'work') return subs.filter(s=>(s.workUpdates||[]).includes(value));
+  if(type === 'saga') return subs.filter(s=>(s.sagaUpdates||[]).includes(value));
+  if(type === 'sousSaga') return subs.filter(s=>(s.sousSagaUpdates||[]).includes(value));
+  return [];
+}
+
+async function updateNewsletterRecipientCount(){
+  const el = document.getElementById('nlCampRecipientCount');
+  if(!el) return;
+  el.textContent = 'Calcul du nombre de destinataires…';
+  const recipients = await getNewsletterRecipients();
+  el.textContent = recipients.length + ' destinataire' + (recipients.length>1?'s':'') + (recipients.length ? '.' : ' — personne ne recevra ce message avec ce réglage.');
+}
+
+async function sendNewsletterCampaign(){
+  const msgEl = document.getElementById('nlCampMsg');
+  const functionUrl = SETTINGS.newsletterFunctionUrl;
+  if(!functionUrl){ msgEl.textContent = "Configurez d'abord l'URL de l'Edge Function (⚙ Configuration de l'envoi)."; return; }
+  const subject = document.getElementById('nlCampSubject').value.trim();
+  const bodyEditor = document.getElementById('rich-nlCampBody');
+  const bodyHtml = bodyEditor ? bodyEditor.innerHTML : '';
+  if(!subject || !bodyHtml.trim()){ msgEl.textContent = "Merci de renseigner un objet et un message."; return; }
+
+  const recipients = await getNewsletterRecipients();
+  if(!recipients.length){ msgEl.textContent = "Aucune destinataire pour ce réglage — rien n'a été envoyé."; return; }
+
+  if(!confirm(`Envoyer cette newsletter à ${recipients.length} destinataire(s) ? C'est irréversible.`)) return;
+
+  const siteUrl = location.origin + location.pathname;
+  const footer = `
+    <hr style="margin:32px 0 16px;border:none;border-top:1px solid #ddd;">
+    <p style="font-family:Arial,sans-serif;font-size:12px;color:#888;line-height:1.6;">
+      Vous recevez cet email car vous êtes inscrite sur ${escapeHtml(SETTINGS.name || 'mon site')}.<br>
+      Vos données sont uniquement utilisées pour l'envoi de la newsletter et ne seront jamais revendues.<br>
+      <a href="${siteUrl}#desinscription" style="color:#888;">Se désinscrire</a>
+    </p>`;
+  const fullHtml = bodyHtml + footer;
+
+  msgEl.textContent = 'Envoi en cours…';
+  try{
+    const res = await fetch(functionUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        subject,
+        htmlContent: fullHtml,
+        fromName: SETTINGS.newsletterFromName || SETTINGS.name || 'Autrice',
+        fromEmail: SETTINGS.newsletterFromEmail || '',
+        recipients: recipients.map(r=>r.email)
+      })
+    });
+    if(!res.ok){
+      const errText = await res.text();
+      throw new Error('Réponse ' + res.status + ' : ' + errText);
+    }
+    msgEl.textContent = `Newsletter envoyée à ${recipients.length} destinataire(s) ✓`;
+    toast('Newsletter envoyée.');
+  }catch(err){
+    msgEl.textContent = "Erreur d'envoi : " + (err && err.message ? err.message : err) + ' — vérifiez la configuration et le déploiement de votre Edge Function.';
+  }
+}
+
+function initNewsletterComposer(){
+  const typeEl = document.getElementById('nlCampSegmentType');
+  if(!typeEl) return;
+  updateNewsletterSegmentOptions();
+}
+
 async function renderSubscribers(){
   const listEl = document.getElementById('subscribersList');
   const countEl = document.getElementById('subscribersCount');
@@ -7265,6 +7746,47 @@ async function deleteSubscriber(key){
   try{ await window.storage.delete(key, true); }catch(e){}
   renderSubscribers();
   toast("Adresse supprimée.");
+}
+
+/* ---------- désinscription en libre-service (lien présent dans les emails) ---------- */
+function renderUnsubscribePage(){
+  const params = new URLSearchParams((location.hash.split('?')[1] || ''));
+  const prefill = params.get('email') || '';
+  app.innerHTML = `
+    <div class="section-title" style="margin-top:80px;"><h2>Se désinscrire</h2><div class="rule"></div></div>
+    <p class="univers-intro">Indiquez votre adresse mail pour ne plus recevoir aucun email de ma part (newsletter générale et alertes de chapitres).</p>
+    <div class="admin-form" style="max-width:420px;margin:30px auto 0;">
+      <div>
+        <label>Votre adresse mail</label>
+        <input type="email" id="unsubEmail" value="${escapeHtml(prefill)}" placeholder="vous@exemple.com">
+      </div>
+      <button type="button" class="submit-btn" onclick="handleUnsubscribe()">Me désinscrire</button>
+      <div class="admin-msg" id="unsubMsg"></div>
+    </div>
+  `;
+}
+
+async function handleUnsubscribe(){
+  const emailEl = document.getElementById('unsubEmail');
+  const msgEl = document.getElementById('unsubMsg');
+  const email = (emailEl.value||'').trim().toLowerCase();
+  if(!email){ msgEl.textContent = "Merci d'indiquer une adresse mail."; return; }
+  msgEl.textContent = 'Recherche en cours…';
+  try{
+    const subs = await loadSubscribers();
+    const matches = subs.filter(s => (s.email||'').toLowerCase() === email);
+    if(!matches.length){
+      msgEl.textContent = "Cette adresse n'est inscrite à rien pour le moment.";
+      return;
+    }
+    for(const m of matches){
+      await window.storage.delete(m.key, true);
+    }
+    msgEl.textContent = 'Vous êtes bien désinscrite. Vous ne recevrez plus aucun email de ma part ♡';
+    toast('Désinscription effectuée.');
+  }catch(err){
+    msgEl.textContent = "Erreur : " + (err && err.message ? err.message : err);
+  }
 }
 
 function bindSubscribersActions(){
