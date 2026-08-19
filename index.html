@@ -956,7 +956,7 @@ img.story-banner{
 
 /* ---------- barre de progression de lecture ---------- */
 .reading-time{font-family:'Jost',sans-serif;font-size:.78rem;color:var(--muted);margin-top:8px;}
-.reading-progress{position:fixed;top:0;left:0;right:0;height:3px;z-index:60;pointer-events:none;background:transparent;}
+.reading-progress{position:fixed;top:0;left:0;right:0;height:3px;z-index:700;pointer-events:none;background:transparent;}
 .reading-progress .rp-fill{height:100%;width:0%;background:var(--wine);transition:width .1s linear;}
 
 /* ---------- taille du texte (pilotée par le panneau de lecture) ---------- */
@@ -1149,6 +1149,13 @@ body.dark .reader-warning{background:#2B2418;color:#E0B98A;}
 .rp-font-opt.active{border-color:var(--wine);color:var(--wine);background:var(--gold-soft);}
 .rp-panel-content input[type="range"]{width:100%;margin-top:6px;accent-color:var(--wine);}
 .rp-theme-btn{cursor:pointer;font-family:'Jost',sans-serif;font-size:.85rem;padding:10px;}
+.rp-toc-list{display:flex;flex-direction:column;gap:4px;max-height:60vh;overflow-y:auto;}
+.rp-toc-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer;transition:.15s;}
+.rp-toc-item:hover{background:var(--bg-alt);}
+.rp-toc-item.active{background:var(--gold-soft);}
+.rp-toc-num{font-family:'Jost',sans-serif;font-size:.7rem;color:var(--muted);width:22px;flex-shrink:0;text-align:right;}
+.rp-toc-title{font-family:'Lora',serif;font-size:.85rem;color:var(--ink);}
+.rp-toc-item.active .rp-toc-title{color:var(--wine);font-weight:600;}
 .rp-ring-wrap{position:relative;width:110px;height:110px;margin:6px auto 20px;}
 .rp-ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
 .rp-ring-center span{font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--ink);}
@@ -1163,6 +1170,52 @@ body.dark .reader-warning{background:#2B2418;color:#E0B98A;}
 @media(max-width:760px){
   .rp-body{width:calc(100vw - 40px);max-width:300px;}
 }
+
+/* ---------- page actualités ---------- */
+.actu-accordion{display:flex;flex-direction:column;gap:12px;}
+.actu-cat{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--bg-card);}
+.actu-cat-header{
+  display:flex;align-items:center;gap:12px;padding:16px 20px;cursor:pointer;
+  font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--ink);
+}
+.actu-cat-header:hover{background:var(--bg-alt);}
+.actu-cat-count{font-family:'Jost',sans-serif;font-size:.72rem;color:var(--muted);margin-left:auto;}
+.actu-cat-chevron{color:var(--wine);flex-shrink:0;}
+.actu-cat-body{border-top:1px solid var(--line);display:grid;grid-template-columns:260px 1fr;}
+.actu-post-list{border-right:1px solid var(--line);max-height:520px;overflow-y:auto;}
+.actu-post-item{padding:14px 18px;border-bottom:1px solid var(--line);cursor:pointer;transition:.15s;}
+.actu-post-item:last-child{border-bottom:none;}
+.actu-post-item:hover{background:var(--bg-alt);}
+.actu-post-item.active{background:var(--gold-soft);border-left:3px solid var(--wine);}
+.actu-post-title{font-family:'Lora',serif;font-size:.92rem;color:var(--ink);}
+.actu-post-date{font-family:'Jost',sans-serif;font-size:.68rem;color:var(--muted);margin-top:3px;}
+.actu-post-detail{padding:26px 28px;}
+.actu-detail-title{font-family:'Playfair Display',serif;font-size:1.35rem;color:var(--ink);margin:0 0 4px;}
+.actu-detail-date{font-family:'Jost',sans-serif;font-size:.75rem;color:var(--muted);margin-bottom:18px;}
+.actu-detail-body{color:var(--ink);line-height:1.85;text-align:justify;text-justify:inter-word;}
+.actu-detail-body p{margin:0 0 1em;}
+.actu-carousel{position:relative;margin-bottom:20px;border-radius:10px;overflow:hidden;background:var(--bg-alt);}
+.actu-carousel-img{width:100%;max-height:420px;object-fit:cover;display:block;}
+.actu-carousel-arrow{
+  position:absolute;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:50%;
+  background:rgba(19,33,58,.55);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;
+}
+.actu-carousel-arrow.left{left:10px;}
+.actu-carousel-arrow.right{right:10px;}
+.actu-carousel-dots{position:absolute;bottom:10px;left:0;right:0;display:flex;justify-content:center;gap:6px;}
+.actu-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.5);}
+.actu-dot.active{background:#fff;}
+@media(max-width:860px){
+  .actu-cat-body{grid-template-columns:1fr;}
+  .actu-post-list{border-right:none;border-bottom:1px solid var(--line);max-height:260px;}
+  .actu-post-detail{padding:22px 18px;}
+}
+.linked-posts-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;}
+.linked-post-card{background:var(--bg-card);border:1px solid var(--line);border-radius:10px;overflow:hidden;cursor:pointer;transition:.2s;}
+.linked-post-card:hover{transform:translateY(-3px);box-shadow:0 14px 26px -16px rgba(36,51,82,.3);}
+.lpc-img{width:100%;height:120px;object-fit:cover;display:block;}
+.lpc-date{font-family:'Jost',sans-serif;font-size:.66rem;color:var(--muted);padding:12px 14px 0;}
+.lpc-title{font-family:'Lora',serif;font-size:.9rem;color:var(--ink);padding:4px 14px 14px;}
 
 /* ---------- réactions de chapitre ---------- */
 .reaction-bar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:44px 0 20px;padding:18px;background:var(--bg-card);border:1px solid var(--line);border-radius:14px;}
@@ -1681,6 +1734,7 @@ footer{border-top:1px solid var(--line);padding:34px 24px;text-align:center;font
         <a onclick="navigate('sagas')" data-nav="sagas">Mes univers</a>
         <a onclick="navigate('works')" data-nav="works">Mes œuvres</a>
         <a onclick="navigate('favoris')" data-nav="favoris">Vos favoris</a>
+        <a onclick="navigate('actualites')" data-nav="actualites">Mes actualités</a>
         <a onclick="navigate('calendrier')" data-nav="calendrier">Mon calendrier</a>
       </nav>
       <div class="nav-right">
@@ -1720,6 +1774,7 @@ footer{border-top:1px solid var(--line);padding:34px 24px;text-align:center;font
       <a onclick="navigate('sagas')">Mes univers</a>
       <a onclick="navigate('works')">Mes œuvres</a>
       <a onclick="navigate('favoris')">Vos favoris</a>
+      <a onclick="navigate('actualites')">Mes actualités</a>
       <a onclick="navigate('calendrier')">Mon calendrier</a>
       <a onclick="navigate('contact')">Contact</a>
       <a onclick="navigate('presse')">Kit presse</a>
@@ -2363,6 +2418,24 @@ async function saveWorks(){
   try{ await window.storage.set(WORKS_KEY, JSON.stringify(WORKS), true); }catch(e){}
 }
 
+/* ---------- articles d'actualités ---------- */
+const POSTS_KEY = 'site:posts';
+let POSTS = [];
+async function loadPosts(){
+  try{
+    const res = await window.storage.get(POSTS_KEY, true);
+    if(res && res.value){ POSTS = JSON.parse(res.value); return; }
+  }catch(e){}
+  POSTS = [];
+}
+async function savePosts(){
+  try{ await window.storage.set(POSTS_KEY, JSON.stringify(POSTS), true); }catch(e){}
+}
+function postCategories(){
+  return [...new Set(POSTS.map(p=>p.category).filter(Boolean))];
+}
+function findPost(id){ return POSTS.find(p=>p.id===id); }
+
 const UNIVERSE_META_KEY = 'site:universeMeta';
 let UNIVERSE_META = {};
 
@@ -2922,7 +2995,7 @@ new MutationObserver(()=>{
 window.addEventListener('DOMContentLoaded', async ()=>{
   app.innerHTML = '<p style="padding:80px 0;text-align:center;color:var(--muted);font-family:\'Jost\',sans-serif;">Chargement…</p>';
   await loadTropeCategories();
-  await Promise.all([loadWorks(), loadUniverseMeta(), loadSagaMeta(), loadSousSagaMeta(), loadTropesList(), loadSettings()]);
+  await Promise.all([loadWorks(), loadUniverseMeta(), loadSagaMeta(), loadSousSagaMeta(), loadTropesList(), loadSettings(), loadPosts()]);
   applySettingsToChrome();
   render();
   refreshReadingWidget();
@@ -3047,6 +3120,7 @@ function render(){
   else if(parts[0] === 'about'){ setActiveNav('contact'); renderContactPage(); }
   else if(parts[0] === 'contact'){ setActiveNav('contact'); renderContactPage(); }
   else if(parts[0] === 'presse'){ setActiveNav(''); renderPressKitPage(); }
+  else if(parts[0] === 'actualites'){ setActiveNav('actualites'); renderActualitesPage(parts[1]); }
   else if(parts[0] === 'desinscription'){ setActiveNav(''); renderUnsubscribePage(); }
   else if(parts[0] === 'bibliotheque'){ setActiveNav('bibliotheque'); renderBibliotheque(); }
   else if(parts[0] === 'calendrier'){ setActiveNav('calendrier'); renderCalendrier(); }
@@ -3978,6 +4052,126 @@ function renderIndependentCards(container, works){
   `}).join('');
 }
 
+let actuOpenCategory = null;
+let actuSelectedPost = {};
+let actuImageIndex = {};
+
+function renderActualitesPage(directPostId){
+  const categories = postCategories();
+  if(directPostId){
+    const post = findPost(directPostId);
+    if(post){
+      actuOpenCategory = post.category;
+      actuSelectedPost[post.category] = post.id;
+    }
+  }
+  app.innerHTML = `
+    <div class="section-title" style="margin-top:56px;justify-content:center;text-align:center;"><h2 style="width:100%;">Mes actualités</h2><div class="rule"></div></div>
+    <p class="univers-intro">Coulisses, annonces et petits mots au fil de l'écriture.</p>
+    <div class="actu-accordion" id="actuAccordion" style="margin-top:30px;"></div>
+  `;
+  drawActuAccordion(categories);
+  if(directPostId){
+    setTimeout(()=>{
+      const el = document.getElementById('actuAccordion');
+      if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+    }, 80);
+  }
+}
+
+function drawActuAccordion(categories){
+  const el = document.getElementById('actuAccordion');
+  if(!el) return;
+  if(!categories.length){
+    el.innerHTML = `<p style="text-align:center;color:var(--muted);font-style:italic;">Aucun article publié pour le moment.</p>`;
+    return;
+  }
+  el.innerHTML = categories.map(cat=>{
+    const isOpen = actuOpenCategory === cat;
+    const postsInCat = POSTS.filter(p=>p.category===cat).sort((a,b)=> (b.date||'').localeCompare(a.date||''));
+    return `
+      <div class="actu-cat${isOpen?' open':''}">
+        <div class="actu-cat-header" onclick="toggleActuCategory('${cat.replace(/'/g,"\\'")}')">
+          <span>${escapeHtml(cat)}</span>
+          <span class="actu-cat-count">${postsInCat.length} article${postsInCat.length>1?'s':''}</span>
+          <span class="actu-cat-chevron">${isOpen?'▾':'▸'}</span>
+        </div>
+        ${isOpen ? `
+        <div class="actu-cat-body">
+          <div class="actu-post-list">
+            ${postsInCat.map(p=>`
+              <div class="actu-post-item${actuSelectedPost[cat]===p.id?' active':''}" onclick="selectActuPost('${cat.replace(/'/g,"\\'")}','${p.id}')">
+                <div class="actu-post-title">${escapeHtml(p.title)}</div>
+                <div class="actu-post-date">${p.date ? formatDate(p.date) : ''}</div>
+              </div>
+            `).join('')}
+          </div>
+          <div class="actu-post-detail" id="actuDetail-${slugify(cat)}">
+            ${renderActuPostDetail(postsInCat, cat)}
+          </div>
+        </div>` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+function toggleActuCategory(cat){
+  actuOpenCategory = (actuOpenCategory === cat) ? null : cat;
+  if(actuOpenCategory && !actuSelectedPost[actuOpenCategory]){
+    const postsInCat = POSTS.filter(p=>p.category===actuOpenCategory).sort((a,b)=> (b.date||'').localeCompare(a.date||''));
+    if(postsInCat.length) actuSelectedPost[actuOpenCategory] = postsInCat[0].id;
+  }
+  drawActuAccordion(postCategories());
+}
+
+function selectActuPost(cat, postId){
+  actuSelectedPost[cat] = postId;
+  actuImageIndex[postId] = 0;
+  const postsInCat = POSTS.filter(p=>p.category===cat).sort((a,b)=> (b.date||'').localeCompare(a.date||''));
+  document.querySelectorAll(`#actuAccordion .actu-cat.open .actu-post-item`).forEach(elx=>elx.classList.remove('active'));
+  const detailEl = document.getElementById('actuDetail-'+slugify(cat));
+  if(detailEl) detailEl.innerHTML = renderActuPostDetail(postsInCat, cat);
+  drawActuAccordion(postCategories());
+  setTimeout(()=>{
+    const detail = document.getElementById('actuDetail-'+slugify(cat));
+    if(detail && window.innerWidth < 860) detail.scrollIntoView({behavior:'smooth', block:'start'});
+  }, 60);
+}
+
+function renderActuPostDetail(postsInCat, cat){
+  const postId = actuSelectedPost[cat];
+  const post = postsInCat.find(p=>p.id===postId) || postsInCat[0];
+  if(!post) return `<p style="color:var(--muted);font-style:italic;">Sélectionnez un article dans la liste.</p>`;
+  const images = post.images || [];
+  const idx = actuImageIndex[post.id] || 0;
+  return `
+    <h3 class="actu-detail-title">${escapeHtml(post.title)}</h3>
+    <div class="actu-detail-date">${post.date ? formatDate(post.date) : ''}</div>
+    ${images.length ? `
+      <div class="actu-carousel">
+        <img src="${escapeHtml(images[idx])}" alt="${escapeHtml(post.title)}" class="actu-carousel-img">
+        ${images.length>1 ? `
+          <span class="actu-carousel-arrow left" onclick="shiftActuImage('${post.id}',${images.length},-1)">←</span>
+          <span class="actu-carousel-arrow right" onclick="shiftActuImage('${post.id}',${images.length},1)">→</span>
+          <div class="actu-carousel-dots">${images.map((_,i)=>`<span class="actu-dot${i===idx?' active':''}"></span>`).join('')}</div>
+        ` : ''}
+      </div>
+    ` : ''}
+    <div class="actu-detail-body">${richParagraphs(post.body)}</div>
+  `;
+}
+
+function shiftActuImage(postId, count, dir){
+  const cur = actuImageIndex[postId] || 0;
+  actuImageIndex[postId] = (cur + dir + count) % count;
+  const post = findPost(postId);
+  const cat = post ? post.category : null;
+  if(!cat) return;
+  const postsInCat = POSTS.filter(p=>p.category===cat).sort((a,b)=> (b.date||'').localeCompare(a.date||''));
+  const detailEl = document.getElementById('actuDetail-'+slugify(cat));
+  if(detailEl) detailEl.innerHTML = renderActuPostDetail(postsInCat, cat);
+}
+
 function renderPressKitPage(){
   const hasContent = SETTINGS.pressKitBio || SETTINGS.pressKitPhotoHD || SETTINGS.pressKitDownloadUrl;
   app.innerHTML = `
@@ -4770,6 +4964,8 @@ function renderStory(workId){
   const trMins = totalReadingMinutes % 60;
   const totalReadingLabel = trHours > 0 ? `${trHours} h${trMins>0?' '+trMins+' min':''}` : `${trMins} min`;
   const availabilityTropes = tropesByCategory(w.tropes, 'Disponibilité');
+  const linkedPostCat = w.linkedPostCategory || w.title;
+  const linkedPosts = POSTS.filter(p=>p.category===linkedPostCat).sort((a,b)=> (b.date||'').localeCompare(a.date||''));
 
   // navigation entre tomes, si cette histoire appartient à une saga
   let sagaNavHTML = '';
@@ -4892,6 +5088,18 @@ function renderStory(workId){
     </div>
 
     <div id="storySimilarSection"></div>
+
+    ${linkedPosts.length ? `
+    <div class="section-title" style="margin-top:50px;"><h2>Actualités liées à cette histoire</h2><div class="rule"></div></div>
+    <div class="linked-posts-row">
+      ${linkedPosts.map(p=>`
+        <div class="linked-post-card" onclick="navigate('actualites/${p.id}')">
+          ${p.images && p.images.length ? `<img src="${escapeHtml(p.images[0])}" alt="" class="lpc-img">` : ''}
+          <div class="lpc-date">${p.date ? formatDate(p.date) : ''}</div>
+          <div class="lpc-title">${escapeHtml(p.title)}</div>
+        </div>
+      `).join('')}
+    </div>` : ''}
 
     ${commentsBlockHtml('w', "Qu'avez-vous ressenti à propos de cette histoire ?")}
 
@@ -5304,6 +5512,9 @@ function renderChapter(workId, chapterId){
             <span class="rp-tab active" data-rptab="lecture" onclick="switchReaderTab('lecture')" title="Réglages de lecture">
               <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="3" y1="6" x2="17" y2="6"/><circle cx="8" cy="6" r="2" fill="currentColor" stroke="none"/><line x1="3" y1="14" x2="17" y2="14"/><circle cx="13" cy="14" r="2" fill="currentColor" stroke="none"/></svg>
             </span>
+            <span class="rp-tab" data-rptab="sommaire" onclick="switchReaderTab('sommaire')" title="Sommaire des chapitres">
+              <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 5h12M4 10h12M4 15h8"/></svg>
+            </span>
             <span class="rp-tab" data-rptab="stats" onclick="switchReaderTab('stats')" title="Statistiques de lecture">
               <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="4" y1="16" x2="4" y2="10"/><line x1="10" y1="16" x2="10" y2="5"/><line x1="16" y1="16" x2="16" y2="12"/></svg>
             </span>
@@ -5340,6 +5551,18 @@ function renderChapter(workId, chapterId){
 
             <div class="rp-label" style="margin-top:22px;">Thème</div>
             <div class="rp-preset rp-theme-btn" style="width:100%;text-align:center;" onclick="toggleChapterDarkMode()" id="rpThemeBtn">${DARK_MODE ? '☀️ Mode clair' : '🌙 Mode sombre'}</div>
+          </div>
+
+          <div class="rp-panel-content" data-rpcontent="sommaire" style="display:none;">
+            <div class="rp-label">Sommaire — ${escapeHtml(w.title)}</div>
+            <div class="rp-toc-list">
+              ${w.chapters.map((ch,i)=>`
+                <div class="rp-toc-item${ch.id===c.id?' active':''}" onclick="navigate('story/${w.id}/${ch.id}')">
+                  <span class="rp-toc-num">${i+1}</span>
+                  <span class="rp-toc-title">${escapeHtml(ch.title)}</span>
+                </div>
+              `).join('')}
+            </div>
           </div>
 
           <div class="rp-panel-content" data-rpcontent="stats" style="display:none;">
@@ -5822,6 +6045,7 @@ function renderAdmin(){
             <div class="admin-sidebar-group-title">Communauté</div>
             <div class="admin-tab admin-nav-link" data-tab="messages">Messages</div>
             <div class="admin-tab admin-nav-link" data-tab="commentaires">Commentaires <span id="pendingCommentsBadge"></span></div>
+            <div class="admin-tab admin-nav-link" data-tab="actualites">Actualités</div>
             <div class="admin-tab admin-nav-link" data-tab="abonnees">Abonnés</div>
             <div class="admin-tab admin-nav-link" data-tab="newsletter">Newsletter</div>
           </div>
@@ -6876,6 +7100,42 @@ function renderAdmin(){
         <div class="admin-list" id="manageList"></div>
       </div>
 
+      <div class="admin-section" data-section="actualites">
+        <div class="admin-form">
+          <h3>Nouvel article</h3>
+          <div class="row2">
+            <div>
+              <label>Titre</label>
+              <input type="text" id="apTitle" placeholder="Un nouveau chapitre en préparation...">
+            </div>
+            <div>
+              <label>Date</label>
+              <input type="date" id="apDate" value="${todayISO()}">
+            </div>
+          </div>
+          <div>
+            <label>Catégorie (menu dépliant sous lequel il apparaîtra)</label>
+            <input type="text" id="apCategory" list="apCategoryList" placeholder="Ex. Coulisses d'écriture, Spécial St-Valentin...">
+            <datalist id="apCategoryList">${postCategories().map(c=>`<option value="${escapeHtml(c)}">`).join('')}</datalist>
+            <div class="hint" style="margin-top:6px;">Tapez le nom d'une catégorie existante pour ranger l'article dedans, ou un nouveau nom pour en créer une.</div>
+          </div>
+          <div>
+            <label>Texte de l'article</label>
+            ${formattingToolbar('apBody', '', "Texte de l'article")}
+            <textarea id="apBody" style="min-height:160px;"></textarea>
+          </div>
+          <div>
+            <label>Images (carrousel — une URL par ligne, facultatif)</label>
+            <textarea id="apImages" placeholder="https://...&#10;https://..." style="min-height:80px;font-family:'Jost',sans-serif;font-size:.85rem;"></textarea>
+          </div>
+          <div class="admin-msg" id="apMsg"></div>
+          <button type="button" class="submit-btn" onclick="submitNewPost()">Publier l'article</button>
+        </div>
+
+        <div class="section-title" style="margin-top:40px;"><h2>Articles publiés</h2><div class="rule"></div></div>
+        <div class="admin-list" id="postsManageList"></div>
+      </div>
+
       <div class="admin-section" data-section="abonnees">
         <div class="admin-form" style="margin-bottom:22px;">
           <h3>Notifier vos lectrices</h3>
@@ -7508,6 +7768,7 @@ function renderAdmin(){
   });
   renderSubscribers();
   bindSubscribersActions();
+  renderPostsManageList();
   initNewsletterComposer();
   renderStats();
   updateStorageModeBadge();
@@ -7783,6 +8044,110 @@ function initNewsletterComposer(){
   const typeEl = document.getElementById('nlCampSegmentType');
   if(!typeEl) return;
   updateNewsletterSegmentOptions();
+}
+
+/* ---------- gestion admin des articles d'actualités ---------- */
+async function submitNewPost(){
+  const msgEl = document.getElementById('apMsg');
+  const title = document.getElementById('apTitle').value.trim();
+  const date = document.getElementById('apDate').value;
+  const category = document.getElementById('apCategory').value.trim();
+  const bodyTextarea = document.getElementById('apBody');
+  const body = bodyTextarea.value.trim();
+  const images = document.getElementById('apImages').value.split('\n').map(s=>s.trim()).filter(Boolean);
+
+  if(!title || !category || !body){ msgEl.textContent = "Merci de renseigner au moins le titre, la catégorie et le texte."; return; }
+
+  POSTS.push({
+    id: 'post_' + Date.now() + '_' + Math.random().toString(36).slice(2,7),
+    title, date, category, body, images
+  });
+  await savePosts();
+
+  document.getElementById('apTitle').value = '';
+  document.getElementById('apCategory').value = '';
+  document.getElementById('apImages').value = '';
+  bodyTextarea.value = '';
+  const richEl = document.getElementById('rich-apBody');
+  if(richEl) richEl.innerHTML = '';
+  msgEl.textContent = 'Article publié ✓';
+  toast('Article publié.');
+  renderPostsManageList();
+}
+
+function renderPostsManageList(){
+  const el = document.getElementById('postsManageList');
+  if(!el) return;
+  if(!POSTS.length){
+    el.innerHTML = '<p style="color:var(--muted);font-style:italic;">Aucun article pour le moment.</p>';
+    return;
+  }
+  const sorted = POSTS.slice().sort((a,b)=> (b.date||'').localeCompare(a.date||''));
+  el.innerHTML = sorted.map(p=>`
+    <div class="admin-item" style="flex-direction:column;align-items:stretch;">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+        <div class="info">
+          <div class="t">${escapeHtml(p.title)}</div>
+          <div class="s">${escapeHtml(p.category)} · ${p.date ? formatDate(p.date) : 'sans date'}</div>
+        </div>
+        <span style="display:flex;gap:14px;align-items:center;flex-shrink:0;">
+          <span class="toggle-btn" onclick="togglePostEdit('${p.id}')">Modifier</span>
+          <span class="del-btn" onclick="deletePost('${p.id}')">Supprimer</span>
+        </span>
+      </div>
+      <div id="postEditBlock-${p.id}" class="wm-edit" style="display:none;margin-top:14px;">
+        <div class="row2">
+          <div><label>Titre</label><input type="text" id="peTitle-${p.id}" value="${escapeHtml(p.title)}"></div>
+          <div><label>Date</label><input type="date" id="peDate-${p.id}" value="${escapeHtml(p.date||'')}"></div>
+        </div>
+        <div>
+          <label>Catégorie</label>
+          <input type="text" id="peCategory-${p.id}" value="${escapeHtml(p.category)}" list="apCategoryList">
+        </div>
+        <div>
+          <label>Texte</label>
+          ${formattingToolbar('peBody-'+p.id, p.body||'', "Texte de l'article")}
+          <textarea id="peBody-${p.id}" style="min-height:140px;">${escapeHtml(p.body||'')}</textarea>
+        </div>
+        <div>
+          <label>Images (une URL par ligne)</label>
+          <textarea id="peImages-${p.id}" style="min-height:70px;font-family:'Jost',sans-serif;font-size:.85rem;">${escapeHtml((p.images||[]).join('\n'))}</textarea>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div class="submit-btn" style="padding:9px 20px;font-size:.8rem;" onclick="savePostEdit('${p.id}')">Enregistrer</div>
+          <span class="admin-msg" id="peMsg-${p.id}" style="margin:0;"></span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function togglePostEdit(postId){
+  const block = document.getElementById('postEditBlock-'+postId);
+  if(block) block.style.display = block.style.display==='none' ? 'block' : 'none';
+}
+
+async function savePostEdit(postId){
+  const p = findPost(postId);
+  if(!p) return;
+  const bodyTextarea = document.getElementById('peBody-'+postId);
+  p.title = document.getElementById('peTitle-'+postId).value.trim();
+  p.date = document.getElementById('peDate-'+postId).value;
+  p.category = document.getElementById('peCategory-'+postId).value.trim();
+  p.body = bodyTextarea.value.trim();
+  p.images = document.getElementById('peImages-'+postId).value.split('\n').map(s=>s.trim()).filter(Boolean);
+  await savePosts();
+  document.getElementById('peMsg-'+postId).textContent = 'Enregistré ✓';
+  renderPostsManageList();
+  toast('Article mis à jour.');
+}
+
+async function deletePost(postId){
+  if(!confirm('Supprimer cet article ?')) return;
+  POSTS = POSTS.filter(p=>p.id!==postId);
+  await savePosts();
+  renderPostsManageList();
+  toast('Article supprimé.');
 }
 
 async function renderSubscribers(){
@@ -9349,6 +9714,11 @@ function histCardHeaderHtml(w, isDetailPage){
           <label>Description SEO (facultatif — sinon le résumé est utilisé, tronqué)</label>
           <textarea id="wmSeoDescription-${w.id}" style="min-height:80px;">${escapeHtml(w.seoDescription||'')}</textarea>
         </div>
+        <div>
+          <label>Catégorie d'actualités liée (facultatif)</label>
+          <input type="text" id="wmLinkedPostCategory-${w.id}" value="${escapeHtml(w.linkedPostCategory||'')}" placeholder="${escapeHtml(w.title)}" list="apCategoryList">
+          <div class="hint" style="margin-top:6px;">Par défaut, on recherche les articles dont la catégorie porte exactement le titre de cette histoire. Remplissez ce champ seulement si la catégorie utilisée diffère du titre.</div>
+        </div>
         </div>
 
         <div class="wtab-content" data-wtab="publication" style="display:none;">
@@ -9675,6 +10045,7 @@ async function saveWorkMeta(workId){
   setIfExists('wmReaderPromises', 'readerPromises', v => v.split('\n').map(t=>t.trim()).filter(Boolean));
   setIfExists('wmSeoTitle', 'seoTitle');
   setIfExists('wmSeoDescription', 'seoDescription');
+  setIfExists('wmLinkedPostCategory', 'linkedPostCategory');
   setIfExists('wmShelf', 'shelf');
   setIfExists('wmPreviewPdfUrl', 'previewPdfUrl');
   setIfExists('wmFreeDownloadUrl', 'freeDownloadUrl');
