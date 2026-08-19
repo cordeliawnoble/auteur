@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Redirection…</title>
+  <meta name="robots" content="noindex">
+  <script>
+    // Astuce standard pour faire fonctionner de vraies URLs sur GitHub Pages
+    // (qui ne sert que des fichiers, pas de vraies routes de serveur).
+    // Cette page s'affiche brièvement pour toute adresse inconnue de GitHub,
+    // et redirige aussitôt vers index.html en conservant l'adresse demandée,
+    // pour que le site puisse ensuite l'afficher normalement.
+    var pathSegmentsToKeep = 0; // 0 car le site est à la racine du domaine
+    var l = window.location;
+    l.replace(
+      l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+      l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + '/?/' +
+      l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/').replace(/&/g, '~and~') +
+      (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+      l.hash
+    );
+  </script>
+</head>
+<body>
+  Redirection en cours…
+</body>
+</html>
