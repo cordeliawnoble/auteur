@@ -2898,6 +2898,7 @@ function makeClickablesFocusable(){
     el.setAttribute('tabindex', '0');
     if(!el.hasAttribute('role')) el.setAttribute('role', 'button');
     el.addEventListener('keydown', (e)=>{
+      if(e.target !== el) return; // ne jamais intercepter une touche pressée dans un champ/éditeur imbriqué
       if(e.key === 'Enter' || e.key === ' '){
         e.preventDefault();
         el.click();
