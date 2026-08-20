@@ -7114,10 +7114,25 @@ function renderAdmin(){
             </div>
           </div>
           <div>
+            <label>Relier à (facultatif — permet de préremplir la catégorie ci-dessous)</label>
+            <div class="row2">
+              <select id="apLinkCollection" onchange="updateApLinkOptions()">
+                <option value="">— Collection —</option>
+                ${allUniverseNames().map(u=>`<option value="${escapeHtml(u)}">${escapeHtml(u)}</option>`).join('')}
+              </select>
+              <select id="apLinkSaga" onchange="updateApSousSagaOptions()">
+                <option value="">— Saga —</option>
+              </select>
+            </div>
+            <select id="apLinkSousSaga" onchange="updateApCategorySuggestions()" style="margin-top:10px;">
+              <option value="">— Sous-saga —</option>
+            </select>
+          </div>
+          <div>
             <label>Catégorie (menu dépliant sous lequel il apparaîtra)</label>
             <input type="text" id="apCategory" list="apCategoryList" placeholder="Ex. Coulisses d'écriture, Spécial St-Valentin...">
-            <datalist id="apCategoryList">${postCategories().map(c=>`<option value="${escapeHtml(c)}">`).join('')}</datalist>
-            <div class="hint" style="margin-top:6px;">Tapez le nom d'une catégorie existante pour ranger l'article dedans, ou un nouveau nom pour en créer une.</div>
+            <datalist id="apCategoryList"></datalist>
+            <div class="hint" style="margin-top:6px;">Choisissez une collection/saga/sous-saga ci-dessus pour voir apparaître les tomes (parus ou à venir) suggérés — ou tapez librement n'importe quel nom de catégorie.</div>
           </div>
           <div>
             <label>Texte de l'article</label>
@@ -7769,6 +7784,7 @@ function renderAdmin(){
   renderSubscribers();
   bindSubscribersActions();
   renderPostsManageList();
+  updateApCategorySuggestions();
   initNewsletterComposer();
   renderStats();
   updateStorageModeBadge();
@@ -8047,6 +8063,58 @@ function initNewsletterComposer(){
 }
 
 /* ---------- gestion admin des articles d'actualités ---------- */
+/* ---------- liaison collection/saga/sous-saga → suggestions de catégorie ---------- */
+function updateApLinkOptions(){
+  const collection = document.getElementById('apLinkCollection').value;
+  const sagaSelect = document.getElementById('apLinkSaga');
+  const sousSagaSelect = document.getElementById('apLinkSousSaga');
+
+  const allSagas = getSagaGroups(WORKS);
+  const sagasInCollection = collection
+    ? allSagas.filter(s => s.works.some(w => w.universe === collection))
+    : allSagas;
+  sagaSelect.innerHTML = '<option value="">— Saga —</option>' + sagasInCollection.map(s=>`<option value="${escapeHtml(s.name)}">${escapeHtml(s.name)}</option>`).join('');
+  sousSagaSelect.innerHTML = '<option value="">— Sous-saga —</option>';
+
+  updateApCategorySuggestions();
+}
+function updateApSousSagaOptions(){
+  const saga = document.getElementById('apLinkSaga').value;
+  const sousSagaSelect = document.getElementById('apLinkSousSaga');
+  const allSousSagas = getSousSagaGroups(WORKS);
+  const filtered = saga
+    ? allSousSagas.filter(g => sousSagaMeta(g.name).parentSaga === saga)
+    : allSousSagas;
+  sousSagaSelect.innerHTML = '<option value="">— Sous-saga —</option>' + filtered.map(g=>`<option value="${escapeHtml(g.name)}">${escapeHtml(g.name)}</option>`).join('');
+  updateApCategorySuggestions();
+}
+function updateApCategorySuggestions(){
+  const collection = document.getElementById('apLinkCollection').value;
+  const saga = document.getElementById('apLinkSaga').value;
+  const sousSaga = document.getElementById('apLinkSousSaga').value;
+  const listEl = document.getElementById('apCategoryList');
+  if(!listEl) return;
+
+  let suggestions = [];
+  if(sousSaga){
+    const meta = sousSagaMeta(sousSaga);
+    suggestions = (meta.plannedTomes||[]).map(t=>t.name);
+    const group = getSousSagaGroups(WORKS).find(g=>g.name===sousSaga);
+    if(group) suggestions.push(...group.works.map(w=>w.title));
+  }else if(saga){
+    const meta = sagaMeta(saga);
+    suggestions = (meta.plannedTomesList||[]).map(t=>t.name);
+    const group = getSagaGroups(WORKS).find(g=>g.name===saga);
+    if(group) suggestions.push(...group.works.map(w=>w.title));
+  }else if(collection){
+    suggestions = WORKS.filter(w=>w.universe===collection).map(w=>w.title);
+  }else{
+    suggestions = postCategories();
+  }
+  suggestions = [...new Set(suggestions.filter(Boolean))];
+  listEl.innerHTML = suggestions.map(s=>`<option value="${escapeHtml(s)}">`).join('');
+}
+
 async function submitNewPost(){
   const msgEl = document.getElementById('apMsg');
   const title = document.getElementById('apTitle').value.trim();
@@ -8060,13 +8128,20 @@ async function submitNewPost(){
 
   POSTS.push({
     id: 'post_' + Date.now() + '_' + Math.random().toString(36).slice(2,7),
-    title, date, category, body, images
+    title, date, category, body, images,
+    linkedCollection: document.getElementById('apLinkCollection').value,
+    linkedSaga: document.getElementById('apLinkSaga').value,
+    linkedSousSaga: document.getElementById('apLinkSousSaga').value
   });
   await savePosts();
 
   document.getElementById('apTitle').value = '';
   document.getElementById('apCategory').value = '';
   document.getElementById('apImages').value = '';
+  document.getElementById('apLinkCollection').value = '';
+  document.getElementById('apLinkSaga').innerHTML = '<option value="">— Saga —</option>';
+  document.getElementById('apLinkSousSaga').innerHTML = '<option value="">— Sous-saga —</option>';
+  updateApCategorySuggestions();
   bodyTextarea.value = '';
   const richEl = document.getElementById('rich-apBody');
   if(richEl) richEl.innerHTML = '';
