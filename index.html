@@ -1604,6 +1604,11 @@ footer{border-top:1px solid var(--line);padding:34px 24px;text-align:center;font
 .fmt-toolbar span:hover{border-color:var(--gold);color:var(--gold);}
 .fmt-toolbar .fmt-hint{font-family:'Jost',sans-serif;font-size:.68rem;color:var(--muted);border:none;width:auto;padding:0;cursor:default;}
 .fmt-toolbar .fmt-hint:hover{color:var(--muted);}
+.fmt-select{
+  font-family:'Jost',sans-serif;font-size:.72rem;color:var(--ink);width:auto !important;height:26px;padding:0 6px;
+  border:1px solid var(--line);border-radius:3px;background:var(--bg);cursor:pointer;
+}
+.fmt-select:hover{border-color:var(--gold);}
 .fmt-expand{
   margin-left:auto;font-family:'Jost',sans-serif;font-size:.7rem;color:var(--wine);
   border:1px solid var(--line);width:auto !important;padding:0 10px;white-space:nowrap;
@@ -2658,16 +2663,72 @@ function insertFormatting(textareaId, marker){
   el.selectionStart = start + marker.length;
   el.selectionEnd = start + marker.length + selected.length;
 }
+/* ---------- police/taille par champ de texte riche ---------- */
+const RICH_FIELD_FONTS = {
+  'lora': "'Lora', serif",
+  'georgia': "Georgia, 'Times New Roman', serif",
+  'playfair': "'Playfair Display', serif",
+  'jost': "'Jost', sans-serif",
+  'caveat': "'Caveat', cursive"
+};
+function extractFieldStyle(text){
+  const m = /^<!--style:([^>]*)-->/.exec(text||'');
+  if(!m) return { font:'', size:'', body:text||'' };
+  const params = {};
+  m[1].split(';').forEach(p=>{ const [k,v]=p.split('='); if(k) params[k]=v||''; });
+  return { font: params.font||'', size: params.size||'', body: (text||'').slice(m[0].length) };
+}
+function wrapFieldStyle(body, font, size){
+  if(!font && !size) return body;
+  return `<!--style:font=${font||''};size=${size||''}-->` + body;
+}
+function fieldStyleCss(font, size){
+  let css = '';
+  if(font && RICH_FIELD_FONTS[font]) css += `font-family:${RICH_FIELD_FONTS[font]};`;
+  if(size) css += `font-size:${size}px;`;
+  return css;
+}
+function syncFieldToTextarea(textareaId){
+  const editor = document.getElementById('rich-'+textareaId);
+  const textarea = document.getElementById(textareaId);
+  if(!editor || !textarea) return;
+  const fontSel = document.getElementById('fontSel-'+textareaId);
+  const sizeSel = document.getElementById('sizeSel-'+textareaId);
+  const body = richHtmlToMarkdown(editor.innerHTML);
+  textarea.value = wrapFieldStyle(body, fontSel ? fontSel.value : '', sizeSel ? sizeSel.value : '');
+}
+function applyFieldFont(textareaId){
+  const editor = document.getElementById('rich-'+textareaId);
+  const fontSel = document.getElementById('fontSel-'+textareaId);
+  const sizeSel = document.getElementById('sizeSel-'+textareaId);
+  if(editor){
+    editor.style.fontFamily = (fontSel && RICH_FIELD_FONTS[fontSel.value]) ? RICH_FIELD_FONTS[fontSel.value] : '';
+    editor.style.fontSize = (sizeSel && sizeSel.value) ? sizeSel.value+'px' : '';
+  }
+  syncFieldToTextarea(textareaId);
+}
+
 function formattingToolbar(textareaId, value, label){
+  const parsed = extractFieldStyle(value);
+  const fontOptions = [['lora','Lora'],['georgia','Georgia'],['playfair','Playfair Display'],['jost','Jost'],['caveat','Caveat']];
+  const sizeOptions = ['14','16','18','20','24','28'];
   return `<div class="fmt-toolbar">
     <span onmousedown="event.preventDefault()" onclick="applyRichFormat('${textareaId}','bold')" title="Gras"><b>G</b></span>
     <span onmousedown="event.preventDefault()" onclick="applyRichFormat('${textareaId}','italic')" title="Italique" style="font-style:italic;">I</span>
     <span onmousedown="event.preventDefault()" onclick="applyRichFormat('${textareaId}','underline')" title="Souligné" style="text-decoration:underline;">S</span>
     <span onmousedown="event.preventDefault()" onclick="applyRichFormat('${textareaId}','strike')" title="Barré" style="text-decoration:line-through;">B</span>
+    <select class="fmt-select" id="fontSel-${textareaId}" onchange="applyFieldFont('${textareaId}')" title="Police de tout le champ">
+      <option value="">Police...</option>
+      ${fontOptions.map(([v,l])=>`<option value="${v}" ${parsed.font===v?'selected':''}>${l}</option>`).join('')}
+    </select>
+    <select class="fmt-select" id="sizeSel-${textareaId}" onchange="applyFieldFont('${textareaId}')" title="Taille de tout le champ">
+      <option value="">Taille...</option>
+      ${sizeOptions.map(s=>`<option value="${s}" ${parsed.size===s?'selected':''}>${s}px</option>`).join('')}
+    </select>
     <span class="fmt-hint">Sélectionnez du texte puis cliquez sur un bouton · Maj+Entrée pour un simple retour à la ligne (dialogues), Entrée pour un nouveau paragraphe</span>
     <span class="fmt-expand" onclick="openEditorModal('${textareaId}','${(label||'Modifier le texte').replace(/'/g,"\\'")}')" title="Ouvrir en plein écran">⛶ Plein écran</span>
   </div>
-  <div class="rich-editor" id="rich-${textareaId}" contenteditable="true" data-target="${textareaId}">${markdownToRichHtml(value||'')}</div>`;
+  <div class="rich-editor" id="rich-${textareaId}" contenteditable="true" data-target="${textareaId}" style="${fieldStyleCss(parsed.font, parsed.size)}">${markdownToRichHtml(parsed.body)}</div>`;
 }
 function markdownToRichHtml(text){
   if(!text) return '';
@@ -2711,7 +2772,7 @@ function initRichEditors(){
     const minH = textarea.style.minHeight;
     if(minH) editor.style.minHeight = minH;
     // le contenu initial est déjà écrit directement dans le HTML — on se contente ici d'attacher les écouteurs
-    editor.addEventListener('input', ()=>{ textarea.value = richHtmlToMarkdown(editor.innerHTML); });
+    editor.addEventListener('input', ()=>{ syncFieldToTextarea(targetId); });
     editor.addEventListener('paste', (e)=>{
       e.preventDefault();
       const text = (e.clipboardData || window.clipboardData).getData('text/plain');
@@ -2745,7 +2806,7 @@ function applyRichFormat(textareaId, cmd){
   const textarea = document.getElementById(textareaId);
   if(!editor || !textarea) return;
   applyFormatToEditor(editor, cmd);
-  textarea.value = richHtmlToMarkdown(editor.innerHTML);
+  syncFieldToTextarea(textareaId);
 }
 
 /* ---------- pop-up d'édition plein écran ---------- */
@@ -2770,7 +2831,7 @@ function closeEditorModal(save){
     const modalBody = document.getElementById('editorModalBody');
     if(sourceEditor && textarea){
       sourceEditor.innerHTML = modalBody.innerHTML;
-      textarea.value = richHtmlToMarkdown(sourceEditor.innerHTML);
+      syncFieldToTextarea(editorModalTargetId);
     }
   }
   document.getElementById('editorModalOverlay').classList.remove('open');
@@ -4732,7 +4793,10 @@ function buildExcerptHtml(chapter, maxChars){
 }
 
 function richParagraphs(text){
-  return (text||'').split(/\n\s*\n/).map(p=>p.trim()).filter(Boolean).map(p=>`<p>${formatRichText(p).replace(/\n/g,'<br>')}</p>`).join('');
+  const parsed = extractFieldStyle(text);
+  const html = (parsed.body||'').split(/\n\s*\n/).map(p=>p.trim()).filter(Boolean).map(p=>`<p>${formatRichText(p).replace(/\n/g,'<br>')}</p>`).join('');
+  const css = fieldStyleCss(parsed.font, parsed.size);
+  return css ? `<div style="${css}">${html}</div>` : html;
 }
 function renderTropeIcon(t){
   const entry = TROPES_LIST.find(x=>x.name===t);
@@ -8696,7 +8760,7 @@ function sousSagaCardHeaderHtml(name, slug, works, meta){
           <div class="hist-card-stats"><span>${works.length ? `${works.length} tome${works.length>1?'s':''}` : 'Aucun tome associé'}</span></div>
         </div>
         <div class="hist-card-actions">
-          <span class="hist-action-btn" onclick="toggleSousSagaEdit('${slug}')">Modifier</span>
+          <span class="hist-action-btn" onclick="openSousSagaDetail('${slug}')">Gérer le contenu</span>
           <a class="hist-action-btn" href="/sous-saga/${slug}" target="_blank" rel="noopener">Voir sur le site</a>
           <div class="hist-menu-wrap">
             <span class="hist-menu-btn" onclick="event.stopPropagation();toggleHistMenu('ss-${slug}')" aria-label="Plus d'actions pour ${escapeHtml(name)}">⋮</span>
@@ -8708,40 +8772,22 @@ function sousSagaCardHeaderHtml(name, slug, works, meta){
         </div>
       </div>`;
 }
-function toggleSousSagaEdit(slug){
-  const block = document.getElementById('ssBlock-'+slug);
-  if(!block) return;
-  block.style.display = block.style.display !== 'none' ? 'none' : 'block';
+let editingSousSagaSlug = null;
+function openSousSagaDetail(slug){
+  editingSousSagaSlug = slug;
+  renderSousSagasManageList();
 }
-function renderSousSagasManageList(){
-  const el = document.getElementById('sousSagasManageList');
-  if(!el) return;
-  const searchEl = document.getElementById('sousSagaSearch');
-  if(searchEl && !searchEl.dataset.bound){
-    searchEl.dataset.bound = '1';
-    searchEl.addEventListener('input', renderSousSagasManageList);
-  }
-  const q = (searchEl && searchEl.value.trim().toLowerCase()) || '';
-  const groups = getSousSagaGroups(WORKS);
-  let names = allSousSagaNames();
-  if(!names.length){
-    el.innerHTML = '<p style="color:var(--muted);">Aucune sous-saga pour le moment. Créez-en une ci-dessus.</p>';
-    return;
-  }
-  if(q) names = names.filter(n=>n.toLowerCase().includes(q));
-  if(!names.length){
-    el.innerHTML = '<p style="color:var(--muted);">Aucune sous-saga ne correspond à cette recherche.</p>';
-    return;
-  }
-  el.innerHTML = names.map(name=>{
-    const group = groups.find(g=>g.name===name);
-    const works = group ? group.works : [];
-    const meta = sousSagaMeta(name);
-    const slug = sousSagaSlug(name);
-    return `
+function closeSousSagaDetail(){
+  editingSousSagaSlug = null;
+  renderSousSagasManageList();
+}
+
+function renderSousSagaEditFormHtml(name, slug, works){
+  const meta = sousSagaMeta(name);
+  return `
     <div class="hist-card" style="flex-direction:column;align-items:stretch;">
       ${sousSagaCardHeaderHtml(name, slug, works, meta)}
-      <div id="ssBlock-${slug}" class="wm-edit" style="display:none;">
+      <div id="ssBlock-${slug}" class="wm-edit">
         <div class="row2">
           <div>
             <label>Saga parente</label>
@@ -8786,14 +8832,53 @@ function renderSousSagasManageList(){
         </div>
       </div>
     </div>
-  `}).join('');
-  names.forEach(name=>{
+  `;
+}
+
+function renderSousSagasManageList(){
+  const el = document.getElementById('sousSagasManageList');
+  if(!el) return;
+  const toolbarEl = document.getElementById('sousSagaSearch');
+
+  if(editingSousSagaSlug){
+    if(toolbarEl) toolbarEl.style.display = 'none';
+    const name = allSousSagaNames().find(n=>sousSagaSlug(n)===editingSousSagaSlug);
+    if(!name){ editingSousSagaSlug = null; renderSousSagasManageList(); return; }
+    const group = getSousSagaGroups(WORKS).find(g=>g.name===name);
+    const works = group ? group.works : [];
+    el.innerHTML = `<a class="back-link" onclick="closeSousSagaDetail()" style="cursor:pointer;display:inline-block;margin-bottom:18px;">← Retour à la liste des sous-sagas</a>`
+      + renderSousSagaEditFormHtml(name, editingSousSagaSlug, works);
+    attachImageUploader('ssCover-'+editingSousSagaSlug);
+    attachImageUploader('ssCoverHero-'+editingSousSagaSlug);
+    renderLinksFieldGroup('ssPlannedTomes-'+editingSousSagaSlug, (sousSagaMeta(name).plannedTomes||[]).map(p=>({label:p.name, url:p.image||''})));
+    return;
+  }
+  if(toolbarEl) toolbarEl.style.display = '';
+
+  const searchEl = document.getElementById('sousSagaSearch');
+  if(searchEl && !searchEl.dataset.bound){
+    searchEl.dataset.bound = '1';
+    searchEl.addEventListener('input', renderSousSagasManageList);
+  }
+  const q = (searchEl && searchEl.value.trim().toLowerCase()) || '';
+  const groups = getSousSagaGroups(WORKS);
+  let names = allSousSagaNames();
+  if(!names.length){
+    el.innerHTML = '<p style="color:var(--muted);">Aucune sous-saga pour le moment. Créez-en une ci-dessus.</p>';
+    return;
+  }
+  if(q) names = names.filter(n=>n.toLowerCase().includes(q));
+  if(!names.length){
+    el.innerHTML = '<p style="color:var(--muted);">Aucune sous-saga ne correspond à cette recherche.</p>';
+    return;
+  }
+  el.innerHTML = `<div class="hist-cards-grid">` + names.map(name=>{
+    const group = groups.find(g=>g.name===name);
+    const works = group ? group.works : [];
+    const meta = sousSagaMeta(name);
     const slug = sousSagaSlug(name);
-    const m = sousSagaMeta(name);
-    attachImageUploader('ssCover-'+slug);
-    attachImageUploader('ssCoverHero-'+slug);
-    renderLinksFieldGroup('ssPlannedTomes-'+slug, (m.plannedTomes||[]).map(p=>({label:p.name, url:p.image||''})));
-  });
+    return `<div class="hist-card">${sousSagaCardHeaderHtml(name, slug, works, meta)}</div>`;
+  }).join('') + `</div>`;
 }
 
 async function saveSousSagaMetaForm(slug, name){
@@ -9035,7 +9120,7 @@ function sagaCardHeaderHtml(name, slug, works){
           <div class="hist-card-stats"><span>${works.length ? `${works.length} tome${works.length>1?'s':''}` : 'Aucun tome associé'}</span></div>
         </div>
         <div class="hist-card-actions">
-          <span class="hist-action-btn" onclick="toggleSagaEdit('${slug}')">Modifier</span>
+          <span class="hist-action-btn" onclick="openSagaDetail('${slug}')">Gérer le contenu</span>
           <a class="hist-action-btn" href="/saga/${slug}" target="_blank" rel="noopener">Voir sur le site</a>
           <div class="hist-menu-wrap">
             <span class="hist-menu-btn" onclick="event.stopPropagation();toggleHistMenu('saga-${slug}')" aria-label="Plus d'actions pour ${escapeHtml(name)}">⋮</span>
@@ -9047,40 +9132,22 @@ function sagaCardHeaderHtml(name, slug, works){
         </div>
       </div>`;
 }
-function toggleSagaEdit(slug){
-  const block = document.getElementById('sgBlock-'+slug);
-  if(!block) return;
-  block.style.display = block.style.display !== 'none' ? 'none' : 'block';
+let editingSagaSlug = null;
+function openSagaDetail(slug){
+  editingSagaSlug = slug;
+  renderSagasManageList();
 }
-function renderSagasManageList(){
-  const el = document.getElementById('sagasManageList');
-  if(!el) return;
-  const searchEl = document.getElementById('sagaSearch');
-  if(searchEl && !searchEl.dataset.bound){
-    searchEl.dataset.bound = '1';
-    searchEl.addEventListener('input', renderSagasManageList);
-  }
-  const q = (searchEl && searchEl.value.trim().toLowerCase()) || '';
-  const groups = getSagaGroups(WORKS);
-  let names = allSagaNames();
-  if(!names.length){
-    el.innerHTML = '<p style="color:var(--muted);">Aucune saga pour le moment. Créez-en une ci-dessus.</p>';
-    return;
-  }
-  if(q) names = names.filter(n=>n.toLowerCase().includes(q));
-  if(!names.length){
-    el.innerHTML = '<p style="color:var(--muted);">Aucune saga ne correspond à cette recherche.</p>';
-    return;
-  }
-  el.innerHTML = names.map(name=>{
-    const group = groups.find(g=>g.name===name);
-    const works = group ? group.works : [];
-    const meta = sagaMeta(name);
-    const slug = sagaSlug(name);
-    return `
+function closeSagaDetail(){
+  editingSagaSlug = null;
+  renderSagasManageList();
+}
+
+function renderSagaEditFormHtml(name, slug, works){
+  const meta = sagaMeta(name);
+  return `
     <div class="hist-card" style="flex-direction:column;align-items:stretch;">
       ${sagaCardHeaderHtml(name, slug, works)}
-      <div id="sgBlock-${slug}" class="wm-edit" style="display:none;">
+      <div id="sgBlock-${slug}" class="wm-edit">
         <div class="row2">
           <div>
             <label>Sous-titre (facultatif)</label>
@@ -9153,15 +9220,53 @@ function renderSagasManageList(){
         </div>
       </div>
     </div>
-  `}).join('');
-  names.forEach(name=>{
+  `;
+}
+
+function renderSagasManageList(){
+  const el = document.getElementById('sagasManageList');
+  if(!el) return;
+  const toolbarEl = document.getElementById('sagaSearch');
+
+  if(editingSagaSlug){
+    if(toolbarEl) toolbarEl.style.display = 'none';
+    const name = allSagaNames().find(n=>sagaSlug(n)===editingSagaSlug);
+    if(!name){ editingSagaSlug = null; renderSagasManageList(); return; }
+    const group = getSagaGroups(WORKS).find(g=>g.name===name);
+    const works = group ? group.works : [];
+    el.innerHTML = `<a class="back-link" onclick="closeSagaDetail()" style="cursor:pointer;display:inline-block;margin-bottom:18px;">← Retour à la liste des sagas</a>`
+      + renderSagaEditFormHtml(name, editingSagaSlug, works);
+    attachImageUploader('sgCoverVitrail-'+editingSagaSlug);
+    attachImageUploader('sgCoverBanner-'+editingSagaSlug);
+    attachImageUploader('sgCoverHero-'+editingSagaSlug);
+    renderLinksFieldGroup('sgPlannedList-'+editingSagaSlug, (sagaMeta(name).plannedTomesList||[]).map(p=>({label:p.name, url:p.image||''})));
+    return;
+  }
+  if(toolbarEl) toolbarEl.style.display = '';
+
+  const searchEl = document.getElementById('sagaSearch');
+  if(searchEl && !searchEl.dataset.bound){
+    searchEl.dataset.bound = '1';
+    searchEl.addEventListener('input', renderSagasManageList);
+  }
+  const q = (searchEl && searchEl.value.trim().toLowerCase()) || '';
+  const groups = getSagaGroups(WORKS);
+  let names = allSagaNames();
+  if(!names.length){
+    el.innerHTML = '<p style="color:var(--muted);">Aucune saga pour le moment. Créez-en une ci-dessus.</p>';
+    return;
+  }
+  if(q) names = names.filter(n=>n.toLowerCase().includes(q));
+  if(!names.length){
+    el.innerHTML = '<p style="color:var(--muted);">Aucune saga ne correspond à cette recherche.</p>';
+    return;
+  }
+  el.innerHTML = `<div class="hist-cards-grid">` + names.map(name=>{
+    const group = groups.find(g=>g.name===name);
+    const works = group ? group.works : [];
     const slug = sagaSlug(name);
-    const m = sagaMeta(name);
-    attachImageUploader('sgCoverVitrail-'+slug);
-    attachImageUploader('sgCoverBanner-'+slug);
-    attachImageUploader('sgCoverHero-'+slug);
-    renderLinksFieldGroup('sgPlannedList-'+slug, (m.plannedTomesList||[]).map(p=>({label:p.name, url:p.image||''})));
-  });
+    return `<div class="hist-card">${sagaCardHeaderHtml(name, slug, works)}</div>`;
+  }).join('') + `</div>`;
 }
 
 async function saveSagaMetaForm(slug, sagaName){
