@@ -1181,27 +1181,17 @@ body.dark .reader-warning{background:#2B2418;color:#E0B98A;}
                --gold-soft:rgba(232,180,200,.2); --ink:#4A2E3A; --muted:#9C7A8A; --line:rgba(74,46,58,.14); }
    Comme tout le site (citations, cartes, boutons...) est déjà bâti sur ces
    mêmes noms de variables, tout suivrait automatiquement, sans rien recoder. */
+.mab-theme{position:fixed;inset:0;z-index:900;overflow:hidden;}
 .mab-layout{
-  display:grid;
+  display:grid;height:100vh;height:100dvh;
   grid-template-columns: clamp(210px, 19vw, 320px) 1fr clamp(200px, 17vw, 300px);
-  gap:0;align-items:start;min-height:80vh;
+  gap:0;align-items:stretch;
 }
 .mab-sidebar{
-  position:sticky;top:0;align-self:start;height:100vh;overflow-y:auto;padding:36px 26px;box-sizing:border-box;
-  color:#EDEFF7;
-  background:
-    radial-gradient(circle, rgba(233,237,246,.55) 1px, transparent 1.4px) 0 0/26px 26px,
-    radial-gradient(circle, rgba(233,237,246,.35) 1px, transparent 1.4px) 13px 13px/26px 26px,
-    radial-gradient(ellipse 500px 300px at 20% 0%, rgba(94,134,168,.25), transparent 60%),
-    linear-gradient(160deg, #10192E, #1B3A6B 65%, #24447A);
+  height:100%;overflow-y:auto;padding:36px 26px;box-sizing:border-box;
+  color:#EDEFF7;background:none;
 }
-.mab-sidebar-right{
-  background:
-    radial-gradient(circle, rgba(233,237,246,.5) 1px, transparent 1.4px) 6px 4px/26px 26px,
-    radial-gradient(circle, rgba(233,237,246,.3) 1px, transparent 1.4px) 19px 17px/26px 26px,
-    radial-gradient(ellipse 500px 300px at 80% 100%, rgba(94,134,168,.22), transparent 60%),
-    linear-gradient(200deg, #10192E, #1B3A6B 65%, #24447A);
-}
+.mab-sidebar-right{background:none;}
 .mab-sidebar-left{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;}
 .mab-avatar-frame{
   width:110px;height:110px;border-radius:50%;overflow:hidden;border:2px solid #D9B36C;
@@ -1225,6 +1215,7 @@ body.dark .reader-warning{background:#2B2418;color:#E0B98A;}
 
 .mab-main{
   background:#FBF3E4;padding:50px clamp(24px, 4vw, 56px);box-sizing:border-box;min-width:0;
+  height:100%;overflow-y:auto;
 }
 .mab-main-inner{max-width:760px;margin:0 auto;}
 
@@ -1294,16 +1285,17 @@ body.dark .reader-warning{background:#2B2418;color:#E0B98A;}
 
 /* tablette : la navigation de gauche devient compacte, la colonne droite passe sous le contenu */
 @media(max-width:900px){
-  .mab-layout{grid-template-columns:1fr;}
-  .mab-sidebar{position:static;height:auto;overflow:visible;}
+  .mab-theme{position:static;inset:auto;overflow:visible;}
+  .mab-layout{grid-template-columns:1fr;height:auto;}
+  .mab-sidebar{height:auto;overflow:visible;}
   .mab-sidebar-left{flex-direction:row;flex-wrap:wrap;justify-content:center;padding:22px 20px;}
   .mab-avatar-frame{width:64px;height:64px;margin:0 14px 0 0;}
   .mab-nav{flex-direction:row;flex-wrap:wrap;justify-content:center;width:auto;margin-top:14px;gap:6px;}
   .mab-back-link{width:auto;border-top:none;margin-top:14px;padding-top:0;}
-  .mab-main{padding:40px 24px;}
+  .mab-main{padding:40px 24px;height:auto;overflow:visible;}
 }
 
-/* mobile : une seule colonne, ordre précis */
+/* mobile : une seule colonne, ordre précis, défilement de page normal */
 @media(max-width:640px){
   .mab-sidebar-left{order:1;}
   .mab-main{order:2;padding:32px 18px;}
@@ -4432,17 +4424,19 @@ function renderMoreAboutPage(){
         <div class="mab-side-name">${escapeHtml(SETTINGS.name)}</div>
         ${SETTINGS.moreAboutSubtitle ? `<div class="mab-side-subtitle">${escapeHtml(SETTINGS.moreAboutSubtitle)}</div>` : ''}
         <nav class="mab-nav">
-          <a onclick="mabScrollTo('mab-top',this)" class="active">Accueil</a>
-          <a onclick="mabScrollTo('mab-bio',this)">À propos</a>
-          <a onclick="mabScrollTo('mab-journal',this)">Journal</a>
-          <a onclick="mabScrollTo('mab-lectures',this)">Mes lectures</a>
-          <a onclick="mabScrollTo('mab-favoris',this)">Mes favoris</a>
+          <a onclick="mabShowTab('accueil',this)" class="active">Accueil</a>
+          <a onclick="mabShowTab('bio',this)">À propos</a>
+          <a onclick="mabShowTab('journal',this)">Journal</a>
+          <a onclick="mabShowTab('lectures',this)">Mes lectures</a>
+          <a onclick="mabShowTab('favoris',this)">Mes favoris</a>
         </nav>
         <a onclick="navigate('home')" class="mab-back-link">\u21ba Retour au site d'autrice</a>
       </aside>
 
-      <main class="mab-main" id="mab-top">
+      <main class="mab-main">
       <div class="mab-main-inner">
+
+        <div class="mab-tab" data-mabtab="accueil">
         <div class="mab-hero">
           <div class="mab-hero-text">
             <h1>Bonjour,<br>moi c'est ${escapeHtml(SETTINGS.name)}.</h1>
@@ -4487,14 +4481,14 @@ function renderMoreAboutPage(){
             </div>
           </div>` : ''}
         </div>` : ''}
+        </div>
 
-        ${SETTINGS.moreAboutBio ? `
-        <div id="mab-bio" class="mab-section">
+        <div class="mab-tab" data-mabtab="bio" style="display:none;">
           <div class="mab-section-title">Un peu plus sur moi</div>
-          <div class="saga-desc" style="max-width:none;">${richParagraphs(SETTINGS.moreAboutBio)}</div>
-        </div>` : ''}
+          ${SETTINGS.moreAboutBio ? `<div class="saga-desc" style="max-width:none;">${richParagraphs(SETTINGS.moreAboutBio)}</div>` : `<p style="color:#8A7A64;font-style:italic;text-align:center;">Rien à afficher pour le moment.</p>`}
+        </div>
 
-        <div id="mab-journal" class="mab-section">
+        <div class="mab-tab" data-mabtab="journal" style="display:none;">
           ${latestPost ? `
           <div class="mab-now-title">Dernière publication \u2726</div>
           <div class="mab-featured-post" onclick="navigate('actualites/${latestPost.id}')">
@@ -4505,12 +4499,12 @@ function renderMoreAboutPage(){
               <div class="mab-featured-excerpt">${richParagraphs(latestPost.body).replace(/<[^>]+>/g,' ').trim().slice(0,180)}\u2026</div>
               <span class="cta-secondary" style="display:inline-block;margin-top:14px;">Lire la suite</span>
             </div>
-          </div>` : `<p style="color:var(--muted);font-style:italic;text-align:center;">Pas encore de publication dans le journal.</p>`}
+          </div>` : `<p style="color:#8A7A64;font-style:italic;text-align:center;">Pas encore de publication dans le journal.</p>`}
         </div>
 
-        ${books.length ? `
-        <div id="mab-lectures" class="mab-section">
+        <div class="mab-tab" data-mabtab="lectures" style="display:none;">
           <div class="mab-section-title">Mes dernières lectures</div>
+          ${books.length ? `
           <div class="mab-books-carousel">
             <span class="updates-arrow" id="mabBooksPrev" onclick="scrollCharRow('mabBooksRow',-1)">\u2190</span>
             <div class="mab-books-row" id="mabBooksRow">
@@ -4525,9 +4519,10 @@ function renderMoreAboutPage(){
               `).join('')}
             </div>
             <span class="updates-arrow" id="mabBooksNext" onclick="scrollCharRow('mabBooksRow',1)">\u2192</span>
-          </div>
+          </div>` : `<p style="color:#8A7A64;font-style:italic;text-align:center;">Rien à afficher pour le moment.</p>`}
         </div>
-        <div id="mab-favoris" class="mab-section">
+
+        <div class="mab-tab" data-mabtab="favoris" style="display:none;">
           <div class="mab-section-title">Mes favoris</div>
           <div class="mab-books-grid">
             ${books.filter(b=>b.favorite).map(b=>`
@@ -4536,9 +4531,10 @@ function renderMoreAboutPage(){
                 <div class="mab-book-title">${escapeHtml(b.title)}</div>
                 ${b.author ? `<div class="mab-book-author">${escapeHtml(b.author)}</div>` : ''}
               </div>
-            `).join('') || '<p style="color:var(--muted);font-style:italic;">Aucun favori marqué pour le moment.</p>'}
+            `).join('') || '<p style="color:#8A7A64;font-style:italic;">Aucun favori marqué pour le moment.</p>'}
           </div>
-        </div>` : ''}
+        </div>
+
       </div>
       </main>
 
@@ -4575,11 +4571,12 @@ function renderMoreAboutPage(){
 
   if(books.length) setTimeout(()=>refreshCarouselArrows('mabBooksRow','mabBooksPrev','mabBooksNext'), 60);
 }
-function mabScrollTo(id, linkEl){
-  const el = document.getElementById(id);
-  if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+function mabShowTab(tab, linkEl){
+  document.querySelectorAll('.mab-tab').forEach(t=>{ t.style.display = t.dataset.mabtab===tab ? '' : 'none'; });
   document.querySelectorAll('.mab-nav a').forEach(a=>a.classList.remove('active'));
   if(linkEl) linkEl.classList.add('active');
+  const mainEl = document.querySelector('.mab-main');
+  if(mainEl) mainEl.scrollTop = 0;
 }
 
 function renderPressKitPage(){
