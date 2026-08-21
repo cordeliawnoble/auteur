@@ -306,6 +306,8 @@ main{max-width:1180px;margin:0 auto;padding:0 24px 100px;}
 .mini-about-title{font-family:'Caveat',cursive;font-weight:600;font-size:2.1rem;color:var(--wine);}
 .mini-about-bio{font-family:'Lora',serif;color:var(--ink);line-height:1.85;font-size:.98rem;}
 .mini-about-bio p{margin:0 0 1em;}
+.mini-about-more-link{display:inline-block;margin-top:6px;font-family:'Jost',sans-serif;font-size:.82rem;color:var(--wine);border-bottom:1px solid var(--gold);cursor:pointer;transition:.2s;}
+.mini-about-more-link:hover{color:var(--gold);}
 .mini-about-photo{flex:1;flex-shrink:0;max-width:340px;}
 .mini-about-photo img{width:100%;border-radius:10px;display:block;}
 @media(max-width:700px){.mini-about{flex-direction:column-reverse;text-align:center;gap:26px;}.mini-about-photo{max-width:260px;}}
@@ -1170,6 +1172,25 @@ body.dark .reader-warning{background:#2B2418;color:#E0B98A;}
 @media(max-width:760px){
   .rp-body{width:calc(100vw - 40px);max-width:300px;}
 }
+
+/* ---------- page "En savoir plus sur moi" ---------- */
+.mab-pillnav{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:26px 0 46px;}
+.mab-pillnav a{
+  font-family:'Jost',sans-serif;font-size:.8rem;color:var(--wine);border:1px solid var(--line);
+  padding:8px 18px;border-radius:20px;cursor:pointer;transition:.2s;
+}
+.mab-pillnav a:hover{border-color:var(--wine);background:var(--gold-soft);}
+.mab-section{margin-bottom:60px;scroll-margin-top:90px;}
+.mab-section-title{font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--ink);margin-bottom:20px;text-align:center;}
+.mab-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;}
+.mab-gallery-img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:10px;box-shadow:0 14px 26px -16px rgba(36,51,82,.3);}
+.mab-books-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:22px;}
+.mab-book-card{text-align:center;}
+.mab-book-cover{width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:6px;box-shadow:0 14px 26px -16px rgba(36,51,82,.35);}
+.mab-book-cover.placeholder{display:flex;align-items:center;justify-content:center;background:var(--gold-soft);font-size:2rem;}
+.mab-book-title{font-family:'Lora',serif;font-size:.85rem;color:var(--ink);margin-top:10px;line-height:1.4;}
+.mab-book-author{font-family:'Jost',sans-serif;font-size:.72rem;color:var(--muted);margin-top:2px;}
+.mab-spotify-wrap{max-width:560px;margin:0 auto;}
 
 /* ---------- page actualités ---------- */
 .actu-accordion{display:flex;flex-direction:column;gap:12px;}
@@ -2293,6 +2314,11 @@ const SEED_SETTINGS = {
   pressKitPhotoHD: '',
   pressKitEmail: '',
   pressKitDownloadUrl: '',
+  moreAboutBio: '',
+  moreAboutBooks: [],
+  moreAboutSpotify: '',
+  moreAboutReadsCategory: '',
+  moreAboutGalleryImages: [],
   copyrightText: '© 2026 {nom} — tous droits réservés'
 };
 
@@ -3181,6 +3207,7 @@ function render(){
   else if(parts[0] === 'about'){ setActiveNav('contact'); renderContactPage(); }
   else if(parts[0] === 'contact'){ setActiveNav('contact'); renderContactPage(); }
   else if(parts[0] === 'presse'){ setActiveNav(''); renderPressKitPage(); }
+  else if(parts[0] === 'en-savoir-plus'){ setActiveNav(''); renderMoreAboutPage(); }
   else if(parts[0] === 'actualites'){ setActiveNav('actualites'); renderActualitesPage(parts[1]); }
   else if(parts[0] === 'desinscription'){ setActiveNav(''); renderUnsubscribePage(); }
   else if(parts[0] === 'bibliotheque'){ setActiveNav('bibliotheque'); renderBibliotheque(); }
@@ -3225,6 +3252,7 @@ function renderHome(){
         <div class="mini-about-title">L'autrice…</div>
         <div class="hand-swash" style="margin:12px 0 18px;"></div>
         <div class="mini-about-bio">${richParagraphs(SETTINGS.bio)}</div>
+        <a onclick="navigate('en-savoir-plus')" class="mini-about-more-link">En savoir un peu plus sur moi ↝</a>
       </div>
       ${SETTINGS.authorPhoto ? `<div class="mini-about-photo"><img src="${escapeHtml(SETTINGS.authorPhoto)}" alt="${escapeHtml(SETTINGS.name)}"></div>` : ''}
     </section>
@@ -4231,6 +4259,88 @@ function shiftActuImage(postId, count, dir){
   const postsInCat = POSTS.filter(p=>p.category===cat).sort((a,b)=> (b.date||'').localeCompare(a.date||''));
   const detailEl = document.getElementById('actuDetail-'+slugify(cat));
   if(detailEl) detailEl.innerHTML = renderActuPostDetail(postsInCat, cat);
+}
+
+function renderMoreAboutPage(){
+  const books = SETTINGS.moreAboutBooks || [];
+  const readsCategory = SETTINGS.moreAboutReadsCategory || '';
+  const readsPosts = readsCategory ? POSTS.filter(p=>p.category===readsCategory).sort((a,b)=>(b.date||'').localeCompare(a.date||'')) : [];
+  const gallery = SETTINGS.moreAboutGalleryImages || [];
+  const hasContent = SETTINGS.moreAboutBio || books.length || SETTINGS.moreAboutSpotify || readsPosts.length || gallery.length;
+
+  const sections = [];
+  if(SETTINGS.moreAboutBio) sections.push('bio');
+  if(gallery.length) sections.push('galerie');
+  if(books.length) sections.push('livres');
+  if(SETTINGS.moreAboutSpotify) sections.push('playlist');
+  if(readsPosts.length) sections.push('lectures');
+
+  app.innerHTML = `
+    <a onclick="navigate('home')" class="back-link" style="cursor:pointer;display:inline-block;margin-top:20px;">← Retour au site</a>
+
+    <div class="section-title" style="margin-top:20px;justify-content:center;text-align:center;"><h2 style="width:100%;">En savoir un peu plus sur moi</h2><div class="rule"></div></div>
+
+    ${!hasContent ? `
+      <p class="univers-intro">Cette page est en cours de construction — revenez bientôt !</p>
+    ` : `
+      ${sections.length>1 ? `
+      <div class="mab-pillnav">
+        ${sections.map(s=>`<a href="#mab-${s}" onclick="event.preventDefault();document.getElementById('mab-${s}').scrollIntoView({behavior:'smooth',block:'start'});">${
+          ({bio:'Un peu plus sur moi', galerie:'Galerie', livres:'Mes livres favoris', playlist:'Ma playlist', lectures:'Mes dernières lectures'})[s]
+        }</a>`).join('')}
+      </div>` : ''}
+
+      ${SETTINGS.moreAboutBio ? `
+      <div id="mab-bio" class="mab-section">
+        <div class="mab-section-title">Un peu plus sur moi</div>
+        <div class="saga-desc" style="max-width:none;">${richParagraphs(SETTINGS.moreAboutBio)}</div>
+      </div>` : ''}
+
+      ${gallery.length ? `
+      <div id="mab-galerie" class="mab-section">
+        <div class="mab-section-title">Galerie</div>
+        <div class="mab-gallery">
+          ${gallery.map(url=>`<img src="${escapeHtml(url)}" alt="" class="mab-gallery-img">`).join('')}
+        </div>
+      </div>` : ''}
+
+      ${books.length ? `
+      <div id="mab-livres" class="mab-section">
+        <div class="mab-section-title">Mes livres favoris</div>
+        <div class="mab-books-grid">
+          ${books.map(b=>`
+            <div class="mab-book-card">
+              ${b.cover ? `<img src="${escapeHtml(b.cover)}" alt="${escapeHtml(b.title)}" class="mab-book-cover">` : `<div class="mab-book-cover placeholder">📖</div>`}
+              <div class="mab-book-title">${escapeHtml(b.title)}</div>
+              ${b.author ? `<div class="mab-book-author">${escapeHtml(b.author)}</div>` : ''}
+            </div>
+          `).join('')}
+        </div>
+      </div>` : ''}
+
+      ${SETTINGS.moreAboutSpotify ? `
+      <div id="mab-playlist" class="mab-section">
+        <div class="mab-section-title">Ma playlist</div>
+        <div class="mab-spotify-wrap">
+          <iframe src="${escapeHtml(SETTINGS.moreAboutSpotify)}" width="100%" height="352" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" style="border-radius:12px;"></iframe>
+        </div>
+      </div>` : ''}
+
+      ${readsPosts.length ? `
+      <div id="mab-lectures" class="mab-section">
+        <div class="mab-section-title">Mes dernières lectures</div>
+        <div class="linked-posts-row">
+          ${readsPosts.map(p=>`
+            <div class="linked-post-card" onclick="navigate('actualites/${p.id}')">
+              ${p.images && p.images.length ? `<img src="${escapeHtml(p.images[0])}" alt="" class="lpc-img">` : ''}
+              <div class="lpc-date">${p.date ? formatDate(p.date) : ''}</div>
+              <div class="lpc-title">${escapeHtml(p.title)}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>` : ''}
+    `}
+  `;
 }
 
 function renderPressKitPage(){
@@ -6112,6 +6222,7 @@ function renderAdmin(){
             <div class="admin-tab admin-nav-link" data-tab="actualites">Actualités</div>
             <div class="admin-tab admin-nav-link" data-tab="abonnees">Abonnés</div>
             <div class="admin-tab admin-nav-link" data-tab="newsletter">Newsletter</div>
+            <div class="admin-tab admin-nav-link" data-tab="a-propos-plus">À propos +</div>
           </div>
           <div class="admin-sidebar-group">
             <div class="admin-sidebar-group-title">Site</div>
@@ -7292,6 +7403,50 @@ function renderAdmin(){
         </div>
       </div>
 
+      <div class="admin-section" data-section="a-propos-plus">
+        <div class="admin-msg" style="margin-bottom:14px;">
+          Ce contenu alimente une page à part, « En savoir un peu plus sur moi », accessible via un lien discret sous votre bio sur l'accueil — pas dans le menu principal.
+        </div>
+
+        <div class="admin-form">
+          <h3>Un peu plus sur moi</h3>
+          <div>
+            <label>Texte (facultatif — plus développé que votre bio d'accueil)</label>
+            ${formattingToolbar('mabBio', SETTINGS.moreAboutBio||'', 'Un peu plus sur moi')}
+            <textarea id="mabBio" style="min-height:140px;">${escapeHtml(SETTINGS.moreAboutBio||'')}</textarea>
+          </div>
+        </div>
+
+        <div class="admin-form">
+          <h3>Galerie (facultatif)</h3>
+          <label>Images — une URL par ligne</label>
+          <textarea id="mabGallery" style="min-height:80px;font-family:'Jost',sans-serif;font-size:.85rem;">${escapeHtml((SETTINGS.moreAboutGalleryImages||[]).join('\n'))}</textarea>
+        </div>
+
+        <div class="admin-form">
+          <h3>Mes livres favoris (facultatif)</h3>
+          <div id="mabBooksList"></div>
+          <span class="toggle-btn" onclick="addMabBookRow()">+ Ajouter un livre</span>
+        </div>
+
+        <div class="admin-form">
+          <h3>Ma playlist Spotify (facultatif)</h3>
+          <label>Lien d'intégration Spotify</label>
+          <input type="text" id="mabSpotify" value="${escapeHtml(SETTINGS.moreAboutSpotify||'')}" placeholder="https://open.spotify.com/embed/playlist/...">
+          <div class="hint" style="margin-top:6px;">Dans Spotify : ouvrez votre playlist → ⋯ → Partager → Copier le code d'intégration, puis collez le lien "src" trouvé dedans ici.</div>
+        </div>
+
+        <div class="admin-form">
+          <h3>Mes dernières lectures (facultatif)</h3>
+          <label>Catégorie d'actualités à afficher ici</label>
+          <input type="text" id="mabReadsCategory" value="${escapeHtml(SETTINGS.moreAboutReadsCategory||'')}" list="apCategoryList" placeholder="Ex. Mes lectures du moment">
+          <div class="hint" style="margin-top:6px;">Créez des articles dans l'onglet Actualités avec cette catégorie exacte — ils apparaîtront automatiquement ici.</div>
+        </div>
+
+        <button type="button" class="submit-btn" onclick="saveMoreAboutSettings()">Enregistrer</button>
+        <div class="admin-msg" id="mabMsg"></div>
+      </div>
+
       <div class="admin-section" data-section="stats">
         <div class="admin-msg" style="margin-bottom:14px;">Nombre de vues et de ♥ par chapitre, toutes histoires confondues.</div>
         <div class="admin-list" id="statsList"></div>
@@ -7849,6 +8004,7 @@ function renderAdmin(){
   bindSubscribersActions();
   renderPostsManageList();
   updateApCategorySuggestions();
+  renderMabBooksList();
   initNewsletterComposer();
   renderStats();
   updateStorageModeBadge();
@@ -8212,6 +8368,50 @@ async function submitNewPost(){
   msgEl.textContent = 'Article publié ✓';
   toast('Article publié.');
   renderPostsManageList();
+}
+
+/* ---------- gestion admin de la page "En savoir plus" ---------- */
+function mabBookRowHtml(i, book){
+  book = book || {title:'', author:'', cover:''};
+  return `
+    <div class="row2" id="mabBookRow-${i}" style="margin-bottom:10px;align-items:end;">
+      <div><label>Titre</label><input type="text" class="mabBookTitle" value="${escapeHtml(book.title||'')}" placeholder="Titre du livre"></div>
+      <div><label>Auteur·ice (facultatif)</label><input type="text" class="mabBookAuthor" value="${escapeHtml(book.author||'')}"></div>
+      <div style="display:flex;gap:8px;align-items:end;">
+        <div style="flex:1;"><label>Couverture (URL, facultatif)</label><input type="text" id="mabBookCover-${i}" class="mabBookCover" value="${escapeHtml(book.cover||'')}" placeholder="https://..."></div>
+        <span class="del-btn" style="margin-bottom:8px;" onclick="document.getElementById('mabBookRow-${i}').remove()">Retirer</span>
+      </div>
+    </div>
+  `;
+}
+function addMabBookRow(book){
+  const list = document.getElementById('mabBooksList');
+  const i = list.children.length;
+  list.insertAdjacentHTML('beforeend', mabBookRowHtml(i, book));
+  attachImageUploader('mabBookCover-'+i);
+}
+function renderMabBooksList(){
+  const list = document.getElementById('mabBooksList');
+  if(!list) return;
+  list.innerHTML = '';
+  (SETTINGS.moreAboutBooks||[]).forEach(b=>addMabBookRow(b));
+}
+function getMabBooksFromEditor(){
+  return Array.from(document.querySelectorAll('#mabBooksList > div')).map(row=>({
+    title: row.querySelector('.mabBookTitle').value.trim(),
+    author: row.querySelector('.mabBookAuthor').value.trim(),
+    cover: row.querySelector('.mabBookCover').value.trim()
+  })).filter(b=>b.title);
+}
+async function saveMoreAboutSettings(){
+  SETTINGS.moreAboutBio = document.getElementById('mabBio').value.trim();
+  SETTINGS.moreAboutGalleryImages = document.getElementById('mabGallery').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  SETTINGS.moreAboutSpotify = document.getElementById('mabSpotify').value.trim();
+  SETTINGS.moreAboutReadsCategory = document.getElementById('mabReadsCategory').value.trim();
+  SETTINGS.moreAboutBooks = getMabBooksFromEditor();
+  await saveSettings();
+  document.getElementById('mabMsg').textContent = 'Enregistré ✓';
+  toast('Page "En savoir plus" mise à jour.');
 }
 
 function renderPostsManageList(){
