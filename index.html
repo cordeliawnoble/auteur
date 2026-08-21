@@ -1173,24 +1173,143 @@ body.dark .reader-warning{background:#2B2418;color:#E0B98A;}
   .rp-body{width:calc(100vw - 40px);max-width:300px;}
 }
 
-/* ---------- page "En savoir plus sur moi" ---------- */
-.mab-pillnav{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:26px 0 46px;}
-.mab-pillnav a{
-  font-family:'Jost',sans-serif;font-size:.8rem;color:var(--wine);border:1px solid var(--line);
-  padding:8px 18px;border-radius:20px;cursor:pointer;transition:.2s;
+/* ---------- page "En savoir plus sur moi" — identité indépendante du site ---------- */
+/* .mab-theme n'a volontairement AUCUNE couleur définie ici : la page suit donc
+   les couleurs actuelles du site par défaut. Le jour où une ambiance propre à
+   cette page est choisie, il suffira d'ajouter ici, par ex. :
+   .mab-theme{ --bg:#FDF3F7; --bg-card:#fff; --wine:#C97B9A; --gold:#E8B4C8;
+               --gold-soft:rgba(232,180,200,.2); --ink:#4A2E3A; --muted:#9C7A8A; --line:rgba(74,46,58,.14); }
+   Comme tout le site (citations, cartes, boutons...) est déjà bâti sur ces
+   mêmes noms de variables, tout suivrait automatiquement, sans rien recoder. */
+.mab-layout{
+  display:grid;
+  grid-template-columns: clamp(210px, 19vw, 320px) 1fr clamp(200px, 17vw, 300px);
+  gap:0;align-items:start;min-height:80vh;
 }
-.mab-pillnav a:hover{border-color:var(--wine);background:var(--gold-soft);}
-.mab-section{margin-bottom:60px;scroll-margin-top:90px;}
-.mab-section-title{font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--ink);margin-bottom:20px;text-align:center;}
-.mab-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;}
-.mab-gallery-img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:10px;box-shadow:0 14px 26px -16px rgba(36,51,82,.3);}
+.mab-sidebar{
+  position:sticky;top:0;align-self:start;height:100vh;overflow-y:auto;padding:36px 26px;box-sizing:border-box;
+  color:#EDEFF7;
+  background:
+    radial-gradient(circle, rgba(233,237,246,.55) 1px, transparent 1.4px) 0 0/26px 26px,
+    radial-gradient(circle, rgba(233,237,246,.35) 1px, transparent 1.4px) 13px 13px/26px 26px,
+    radial-gradient(ellipse 500px 300px at 20% 0%, rgba(94,134,168,.25), transparent 60%),
+    linear-gradient(160deg, #10192E, #1B3A6B 65%, #24447A);
+}
+.mab-sidebar-right{
+  background:
+    radial-gradient(circle, rgba(233,237,246,.5) 1px, transparent 1.4px) 6px 4px/26px 26px,
+    radial-gradient(circle, rgba(233,237,246,.3) 1px, transparent 1.4px) 19px 17px/26px 26px,
+    radial-gradient(ellipse 500px 300px at 80% 100%, rgba(94,134,168,.22), transparent 60%),
+    linear-gradient(200deg, #10192E, #1B3A6B 65%, #24447A);
+}
+.mab-sidebar-left{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;}
+.mab-avatar-frame{
+  width:110px;height:110px;border-radius:50%;overflow:hidden;border:2px solid #D9B36C;
+  box-shadow:0 0 0 5px rgba(233,237,246,.08);margin-bottom:14px;flex-shrink:0;
+}
+.mab-avatar-frame img{width:100%;height:100%;object-fit:cover;}
+.mab-side-name{font-family:'Playfair Display',serif;font-size:1.3rem;color:#F4EFE1;}
+.mab-side-subtitle{font-family:'Caveat',cursive;font-size:1.1rem;color:#D9B36C;margin-bottom:22px;}
+.mab-nav{display:flex;flex-direction:column;gap:4px;width:100%;margin-top:10px;}
+.mab-nav a{
+  font-family:'Jost',sans-serif;font-size:.85rem;color:rgba(237,239,247,.75);padding:10px 16px;border-radius:8px;
+  cursor:pointer;transition:.2s;border:1px solid transparent;
+}
+.mab-nav a:hover{background:rgba(233,237,246,.08);color:#fff;}
+.mab-nav a.active{background:rgba(217,179,108,.14);color:#F4EFE1;border-color:rgba(217,179,108,.5);}
+.mab-back-link{
+  margin-top:32px;font-family:'Jost',sans-serif;font-size:.75rem;color:rgba(237,239,247,.6);cursor:pointer;
+  border-top:1px solid rgba(237,239,247,.15);padding-top:18px;width:100%;
+}
+.mab-back-link:hover{color:#D9B36C;}
+
+.mab-main{
+  background:#FBF3E4;padding:50px clamp(24px, 4vw, 56px);box-sizing:border-box;min-width:0;
+}
+.mab-main-inner{max-width:760px;margin:0 auto;}
+
+.mab-hero{display:flex;flex-wrap:wrap;gap:30px;align-items:center;margin-bottom:44px;}
+.mab-hero-text{flex:1;min-width:220px;}
+.mab-hero-text h1{font-family:'Playfair Display',serif;font-size:2.1rem;color:#2A2118;line-height:1.25;margin:0 0 12px;}
+.mab-tagline{font-family:'Lora',serif;font-style:italic;color:#7A6A55;line-height:1.7;max-width:42ch;}
+.mab-hero-img{flex:1;min-width:240px;max-width:380px;border-radius:12px;box-shadow:0 26px 50px -24px rgba(36,26,10,.35);}
+
+.mab-now-title{font-family:'Playfair Display',serif;font-size:1.15rem;color:#2A2118;margin:0 0 16px;}
+.mab-now-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:50px;}
+.mab-now-card{background:#fff;border:1px solid rgba(217,179,108,.35);border-radius:12px;padding:18px;box-shadow:0 10px 24px -18px rgba(36,26,10,.25);}
+.mab-now-label{font-family:'Jost',sans-serif;font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:#B8863E;margin-bottom:8px;}
+.mab-now-main{font-family:'Lora',serif;font-size:.92rem;color:#2A2118;}
+.mab-now-sub{font-family:'Jost',sans-serif;font-size:.75rem;color:#8A7A64;margin-top:2px;}
+.mab-now-thumb{width:44px;height:44px;border-radius:8px;object-fit:cover;flex-shrink:0;background:rgba(217,179,108,.18);font-size:1.3rem;}
+.mab-progress-bar{height:5px;background:rgba(217,179,108,.18);border-radius:4px;overflow:hidden;margin-top:12px;}
+.mab-progress-fill{height:100%;background:#B8863E;}
+.mab-progress-pct{font-family:'Jost',sans-serif;font-size:.68rem;color:#8A7A64;margin-top:4px;text-align:right;}
+.mab-stars{color:#B8863E;letter-spacing:1px;font-size:.85rem;margin-top:4px;}
+
+.mab-section{margin-bottom:60px;scroll-margin-top:36px;}
+.mab-section-title{font-family:'Playfair Display',serif;font-size:1.4rem;color:#2A2118;margin-bottom:20px;text-align:center;}
+
+.mab-featured-post{
+  display:flex;flex-wrap:wrap;gap:24px;background:#fff;border:1px solid rgba(217,179,108,.35);
+  border-radius:14px;overflow:hidden;cursor:pointer;transition:.2s;box-shadow:0 10px 24px -18px rgba(36,26,10,.25);
+}
+.mab-featured-post:hover{box-shadow:0 20px 40px -22px rgba(36,26,10,.3);}
+.mab-featured-img{width:100%;max-width:280px;object-fit:cover;flex:1;min-width:220px;}
+.mab-featured-body{flex:2;min-width:220px;padding:22px 22px 22px 0;}
+.mab-featured-date{font-family:'Jost',sans-serif;font-size:.68rem;color:#8A7A64;margin-bottom:6px;}
+.mab-featured-title{font-family:'Playfair Display',serif;font-size:1.15rem;color:#2A2118;line-height:1.35;}
+.mab-featured-excerpt{font-family:'Lora',serif;font-size:.88rem;color:#7A6A55;line-height:1.7;margin-top:10px;}
+
+.mab-books-carousel{position:relative;display:flex;align-items:center;gap:10px;}
+.mab-books-row{display:flex;gap:18px;overflow-x:auto;flex:1;min-width:0;padding:4px 4px 10px;scrollbar-width:none;-ms-overflow-style:none;}
+.mab-books-row::-webkit-scrollbar{display:none;}
+.mab-book-review-card{flex:0 0 170px;background:#fff;border:1px solid rgba(217,179,108,.35);border-radius:10px;padding:14px;box-shadow:0 10px 24px -18px rgba(36,26,10,.2);}
+.mab-book-review{font-family:'Lora',serif;font-style:italic;font-size:.78rem;color:#8A7A64;line-height:1.5;margin-top:8px;}
+
 .mab-books-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:22px;}
 .mab-book-card{text-align:center;}
-.mab-book-cover{width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:6px;box-shadow:0 14px 26px -16px rgba(36,51,82,.35);}
-.mab-book-cover.placeholder{display:flex;align-items:center;justify-content:center;background:var(--gold-soft);font-size:2rem;}
-.mab-book-title{font-family:'Lora',serif;font-size:.85rem;color:var(--ink);margin-top:10px;line-height:1.4;}
-.mab-book-author{font-family:'Jost',sans-serif;font-size:.72rem;color:var(--muted);margin-top:2px;}
-.mab-spotify-wrap{max-width:560px;margin:0 auto;}
+.mab-book-cover{width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:6px;box-shadow:0 14px 26px -16px rgba(36,26,10,.3);}
+.mab-book-cover.placeholder{display:flex;align-items:center;justify-content:center;background:rgba(217,179,108,.15);font-size:2rem;}
+.mab-book-title{font-family:'Lora',serif;font-size:.85rem;color:#2A2118;margin-top:10px;line-height:1.4;}
+.mab-book-author{font-family:'Jost',sans-serif;font-size:.72rem;color:#8A7A64;margin-top:2px;}
+
+.mab-sidebar-right{display:flex;flex-direction:column;gap:28px;}
+.mab-side-block-title{font-family:'Jost',sans-serif;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:#D9B36C;margin-bottom:12px;}
+.mab-side-link{display:block;font-family:'Lora',serif;font-size:.85rem;color:#EDEFF7;margin-bottom:8px;}
+.mab-side-link:hover{text-decoration:underline;}
+.mab-side-item{display:flex;justify-content:space-between;gap:10px;font-family:'Jost',sans-serif;font-size:.78rem;margin-bottom:10px;}
+.mab-side-item span:first-child{color:rgba(237,239,247,.6);}
+.mab-side-item span:last-child{color:#EDEFF7;text-align:right;}
+.mab-friend-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.mab-friend-avatar{width:34px;height:34px;border-radius:50%;object-fit:cover;flex-shrink:0;}
+.mab-friend-avatar.placeholder{display:flex;align-items:center;justify-content:center;background:rgba(217,179,108,.2);color:#D9B36C;font-family:'Playfair Display',serif;font-size:.95rem;}
+.mab-friend-name{font-family:'Lora',serif;font-size:.82rem;color:#EDEFF7;}
+.mab-friend-tag{font-family:'Jost',sans-serif;font-size:.68rem;color:rgba(237,239,247,.55);}
+
+/* écran intermédiaire / petit laptop : les colonnes latérales rétrécissent, le centre reste prioritaire */
+@media(max-width:1180px){
+  .mab-layout{grid-template-columns: clamp(180px, 16vw, 240px) 1fr clamp(170px, 14vw, 220px);}
+  .mab-sidebar{padding:28px 18px;}
+}
+
+/* tablette : la navigation de gauche devient compacte, la colonne droite passe sous le contenu */
+@media(max-width:900px){
+  .mab-layout{grid-template-columns:1fr;}
+  .mab-sidebar{position:static;height:auto;overflow:visible;}
+  .mab-sidebar-left{flex-direction:row;flex-wrap:wrap;justify-content:center;padding:22px 20px;}
+  .mab-avatar-frame{width:64px;height:64px;margin:0 14px 0 0;}
+  .mab-nav{flex-direction:row;flex-wrap:wrap;justify-content:center;width:auto;margin-top:14px;gap:6px;}
+  .mab-back-link{width:auto;border-top:none;margin-top:14px;padding-top:0;}
+  .mab-main{padding:40px 24px;}
+}
+
+/* mobile : une seule colonne, ordre précis */
+@media(max-width:640px){
+  .mab-sidebar-left{order:1;}
+  .mab-main{order:2;padding:32px 18px;}
+  .mab-sidebar-right{order:3;padding:32px 22px;}
+  .mab-hero-text h1{font-size:1.7rem;}
+}
 
 /* ---------- page actualités ---------- */
 .actu-accordion{display:flex;flex-direction:column;gap:12px;}
@@ -2319,6 +2438,18 @@ const SEED_SETTINGS = {
   moreAboutSpotify: '',
   moreAboutReadsCategory: '',
   moreAboutGalleryImages: [],
+  moreAboutColors: {},
+  moreAboutBgImage: '',
+  moreAboutSubtitle: '',
+  moreAboutTagline: '',
+  moreAboutAvatar: '',
+  moreAboutHeroImage: '',
+  moreAboutWriting: {},
+  moreAboutReading: {},
+  moreAboutListening: {},
+  moreAboutMood: '',
+  moreAboutInspiration: '',
+  moreAboutFriends: [],
   copyrightText: '© 2026 {nom} — tous droits réservés'
 };
 
@@ -2619,6 +2750,19 @@ function computeImportDates(startDateStr, count, selectedDays){
 
 const app = document.getElementById('app');
 const likedThisSession = new Set(); // évite le double-like pendant la session
+
+function applyBodyBackground(imageUrl){
+  if(imageUrl){
+    document.body.style.backgroundImage = `url('${imageUrl.replace(/'/g,"\\'")}')`;
+    document.body.style.backgroundSize = 'cover';
+    document.body.style.backgroundPosition = 'center top';
+    document.body.style.backgroundRepeat = 'no-repeat';
+    document.body.style.backgroundAttachment = 'fixed';
+  }else{
+    document.body.style.backgroundImage = '';
+    document.body.style.backgroundAttachment = '';
+  }
+}
 
 function applySettingsToChrome(){
   document.getElementById('siteTitle').textContent = SETTINGS.name;
@@ -3171,6 +3315,7 @@ function render(){
   chapterKeyNavPrev = null; chapterKeyNavNext = null; chapterKeyNavWorkId = null;
   setRobotsMeta('index, follow');
   clearWorkJsonLd();
+  applyBodyBackground(SETTINGS.siteBgImage);
   const navLinksEl = document.getElementById('navLinks');
   if(navLinksEl && navLinksEl.classList.contains('open')) toggleMobileNav();
   if(location.hash.includes('type=recovery') && location.hash.includes('access_token=')){
@@ -3207,7 +3352,7 @@ function render(){
   else if(parts[0] === 'about'){ setActiveNav('contact'); renderContactPage(); }
   else if(parts[0] === 'contact'){ setActiveNav('contact'); renderContactPage(); }
   else if(parts[0] === 'presse'){ setActiveNav(''); renderPressKitPage(); }
-  else if(parts[0] === 'en-savoir-plus'){ setActiveNav(''); renderMoreAboutPage(); }
+  else if(parts[0] === 'en-savoir-plus'){ setActiveNav(''); if(SETTINGS.moreAboutBgImage) applyBodyBackground(SETTINGS.moreAboutBgImage); renderMoreAboutPage(); }
   else if(parts[0] === 'actualites'){ setActiveNav('actualites'); renderActualitesPage(parts[1]); }
   else if(parts[0] === 'desinscription'){ setActiveNav(''); renderUnsubscribePage(); }
   else if(parts[0] === 'bibliotheque'){ setActiveNav('bibliotheque'); renderBibliotheque(); }
@@ -4263,84 +4408,178 @@ function shiftActuImage(postId, count, dir){
 
 function renderMoreAboutPage(){
   const books = SETTINGS.moreAboutBooks || [];
-  const readsCategory = SETTINGS.moreAboutReadsCategory || '';
-  const readsPosts = readsCategory ? POSTS.filter(p=>p.category===readsCategory).sort((a,b)=>(b.date||'').localeCompare(a.date||'')) : [];
-  const gallery = SETTINGS.moreAboutGalleryImages || [];
-  const hasContent = SETTINGS.moreAboutBio || books.length || SETTINGS.moreAboutSpotify || readsPosts.length || gallery.length;
+  const friends = SETTINGS.moreAboutFriends || [];
+  const writing = SETTINGS.moreAboutWriting || {};
+  const reading = SETTINGS.moreAboutReading || {};
+  const listening = SETTINGS.moreAboutListening || {};
+  const socials = (SETTINGS.socials||[]).filter(s=>s.url);
+  const mc = SETTINGS.moreAboutColors || {};
+  const mcVars = mc.enabled ? Object.entries({bg:'--bg', bgCard:'--bg-card', wine:'--wine', gold:'--gold', ink:'--ink'})
+    .filter(([k])=>mc[k]).map(([k,v])=>`${v}:${mc[k]};`).join('') : '';
+  const latestPost = POSTS.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''))[0];
 
-  const sections = [];
-  if(SETTINGS.moreAboutBio) sections.push('bio');
-  if(gallery.length) sections.push('galerie');
-  if(books.length) sections.push('livres');
-  if(SETTINGS.moreAboutSpotify) sections.push('playlist');
-  if(readsPosts.length) sections.push('lectures');
+  function starsHtml(rating){
+    rating = Math.round(rating||0);
+    return '\u2605\u2605\u2605\u2605\u2605\u2606\u2606\u2606\u2606\u2606'.slice(5-rating, 10-rating);
+  }
 
   app.innerHTML = `
-    <a onclick="navigate('home')" class="back-link" style="cursor:pointer;display:inline-block;margin-top:20px;">← Retour au site</a>
+    <div class="mab-theme" style="${mcVars}">
+    <div class="mab-layout">
 
-    <div class="section-title" style="margin-top:20px;justify-content:center;text-align:center;"><h2 style="width:100%;">En savoir un peu plus sur moi</h2><div class="rule"></div></div>
+      <aside class="mab-sidebar mab-sidebar-left">
+        ${SETTINGS.moreAboutAvatar ? `<div class="mab-avatar-frame"><img src="${escapeHtml(SETTINGS.moreAboutAvatar)}" alt=""></div>` : ''}
+        <div class="mab-side-name">${escapeHtml(SETTINGS.name)}</div>
+        ${SETTINGS.moreAboutSubtitle ? `<div class="mab-side-subtitle">${escapeHtml(SETTINGS.moreAboutSubtitle)}</div>` : ''}
+        <nav class="mab-nav">
+          <a onclick="mabScrollTo('mab-top',this)" class="active">Accueil</a>
+          <a onclick="mabScrollTo('mab-bio',this)">À propos</a>
+          <a onclick="mabScrollTo('mab-journal',this)">Journal</a>
+          <a onclick="mabScrollTo('mab-lectures',this)">Mes lectures</a>
+          <a onclick="mabScrollTo('mab-favoris',this)">Mes favoris</a>
+        </nav>
+        <a onclick="navigate('home')" class="mab-back-link">\u21ba Retour au site d'autrice</a>
+      </aside>
 
-    ${!hasContent ? `
-      <p class="univers-intro">Cette page est en cours de construction — revenez bientôt !</p>
-    ` : `
-      ${sections.length>1 ? `
-      <div class="mab-pillnav">
-        ${sections.map(s=>`<a href="#mab-${s}" onclick="event.preventDefault();document.getElementById('mab-${s}').scrollIntoView({behavior:'smooth',block:'start'});">${
-          ({bio:'Un peu plus sur moi', galerie:'Galerie', livres:'Mes livres favoris', playlist:'Ma playlist', lectures:'Mes dernières lectures'})[s]
-        }</a>`).join('')}
-      </div>` : ''}
-
-      ${SETTINGS.moreAboutBio ? `
-      <div id="mab-bio" class="mab-section">
-        <div class="mab-section-title">Un peu plus sur moi</div>
-        <div class="saga-desc" style="max-width:none;">${richParagraphs(SETTINGS.moreAboutBio)}</div>
-      </div>` : ''}
-
-      ${gallery.length ? `
-      <div id="mab-galerie" class="mab-section">
-        <div class="mab-section-title">Galerie</div>
-        <div class="mab-gallery">
-          ${gallery.map(url=>`<img src="${escapeHtml(url)}" alt="" class="mab-gallery-img">`).join('')}
+      <main class="mab-main" id="mab-top">
+      <div class="mab-main-inner">
+        <div class="mab-hero">
+          <div class="mab-hero-text">
+            <h1>Bonjour,<br>moi c'est ${escapeHtml(SETTINGS.name)}.</h1>
+            ${SETTINGS.moreAboutTagline ? `<p class="mab-tagline">${escapeHtml(SETTINGS.moreAboutTagline)}</p>` : ''}
+          </div>
+          ${SETTINGS.moreAboutHeroImage ? `<img src="${escapeHtml(SETTINGS.moreAboutHeroImage)}" alt="" class="mab-hero-img">` : ''}
         </div>
-      </div>` : ''}
 
-      ${books.length ? `
-      <div id="mab-livres" class="mab-section">
-        <div class="mab-section-title">Mes livres favoris</div>
-        <div class="mab-books-grid">
-          ${books.map(b=>`
-            <div class="mab-book-card">
-              ${b.cover ? `<img src="${escapeHtml(b.cover)}" alt="${escapeHtml(b.title)}" class="mab-book-cover">` : `<div class="mab-book-cover placeholder">📖</div>`}
-              <div class="mab-book-title">${escapeHtml(b.title)}</div>
-              ${b.author ? `<div class="mab-book-author">${escapeHtml(b.author)}</div>` : ''}
+        ${(writing.title || reading.title || listening.song) ? `
+        <div class="mab-now-title">En ce moment \u2726</div>
+        <div class="mab-now-row">
+          ${writing.title ? `
+          <div class="mab-now-card">
+            <div class="mab-now-label">J'écris</div>
+            <div class="mab-now-main">${escapeHtml(writing.title)}</div>
+            ${writing.chapterLabel ? `<div class="mab-now-sub">${escapeHtml(writing.chapterLabel)}</div>` : ''}
+            ${writing.progress ? `
+            <div class="mab-progress-bar"><div class="mab-progress-fill" style="width:${writing.progress}%;"></div></div>
+            <div class="mab-progress-pct">${writing.progress}%</div>` : ''}
+          </div>` : ''}
+          ${reading.title ? `
+          <div class="mab-now-card">
+            <div class="mab-now-label">Je lis</div>
+            <div style="display:flex;gap:10px;align-items:center;">
+              ${reading.cover ? `<img src="${escapeHtml(reading.cover)}" class="mab-now-thumb" alt="">` : ''}
+              <div>
+                <div class="mab-now-main">${escapeHtml(reading.title)}</div>
+                ${reading.author ? `<div class="mab-now-sub">${escapeHtml(reading.author)}</div>` : ''}
+                ${reading.rating ? `<div class="mab-stars">${starsHtml(reading.rating)}</div>` : ''}
+              </div>
             </div>
-          `).join('')}
-        </div>
-      </div>` : ''}
-
-      ${SETTINGS.moreAboutSpotify ? `
-      <div id="mab-playlist" class="mab-section">
-        <div class="mab-section-title">Ma playlist</div>
-        <div class="mab-spotify-wrap">
-          <iframe src="${escapeHtml(SETTINGS.moreAboutSpotify)}" width="100%" height="352" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" style="border-radius:12px;"></iframe>
-        </div>
-      </div>` : ''}
-
-      ${readsPosts.length ? `
-      <div id="mab-lectures" class="mab-section">
-        <div class="mab-section-title">Mes dernières lectures</div>
-        <div class="linked-posts-row">
-          ${readsPosts.map(p=>`
-            <div class="linked-post-card" onclick="navigate('actualites/${p.id}')">
-              ${p.images && p.images.length ? `<img src="${escapeHtml(p.images[0])}" alt="" class="lpc-img">` : ''}
-              <div class="lpc-date">${p.date ? formatDate(p.date) : ''}</div>
-              <div class="lpc-title">${escapeHtml(p.title)}</div>
+          </div>` : ''}
+          ${listening.song ? `
+          <div class="mab-now-card">
+            <div class="mab-now-label">J'écoute</div>
+            <div style="display:flex;gap:10px;align-items:center;">
+              ${listening.cover ? `<img src="${escapeHtml(listening.cover)}" class="mab-now-thumb" alt="">` : `<div class="mab-now-thumb" style="display:flex;align-items:center;justify-content:center;">\U0001F3B5</div>`}
+              <div>
+                <div class="mab-now-main">${escapeHtml(listening.song)}</div>
+                ${listening.artist ? `<div class="mab-now-sub">${escapeHtml(listening.artist)}</div>` : ''}
+              </div>
             </div>
-          `).join('')}
+          </div>` : ''}
+        </div>` : ''}
+
+        ${SETTINGS.moreAboutBio ? `
+        <div id="mab-bio" class="mab-section">
+          <div class="mab-section-title">Un peu plus sur moi</div>
+          <div class="saga-desc" style="max-width:none;">${richParagraphs(SETTINGS.moreAboutBio)}</div>
+        </div>` : ''}
+
+        <div id="mab-journal" class="mab-section">
+          ${latestPost ? `
+          <div class="mab-now-title">Dernière publication \u2726</div>
+          <div class="mab-featured-post" onclick="navigate('actualites/${latestPost.id}')">
+            ${latestPost.images && latestPost.images.length ? `<img src="${escapeHtml(latestPost.images[0])}" alt="" class="mab-featured-img">` : ''}
+            <div class="mab-featured-body">
+              <div class="mab-featured-date">${latestPost.date ? formatDate(latestPost.date) : ''}</div>
+              <div class="mab-featured-title">${escapeHtml(latestPost.title)}</div>
+              <div class="mab-featured-excerpt">${richParagraphs(latestPost.body).replace(/<[^>]+>/g,' ').trim().slice(0,180)}\u2026</div>
+              <span class="cta-secondary" style="display:inline-block;margin-top:14px;">Lire la suite</span>
+            </div>
+          </div>` : `<p style="color:var(--muted);font-style:italic;text-align:center;">Pas encore de publication dans le journal.</p>`}
         </div>
-      </div>` : ''}
-    `}
+
+        ${books.length ? `
+        <div id="mab-lectures" class="mab-section">
+          <div class="mab-section-title">Mes dernières lectures</div>
+          <div class="mab-books-carousel">
+            <span class="updates-arrow" id="mabBooksPrev" onclick="scrollCharRow('mabBooksRow',-1)">\u2190</span>
+            <div class="mab-books-row" id="mabBooksRow">
+              ${books.map(b=>`
+                <div class="mab-book-review-card">
+                  ${b.cover ? `<img src="${escapeHtml(b.cover)}" alt="${escapeHtml(b.title)}" class="mab-book-cover">` : `<div class="mab-book-cover placeholder">\U0001F4D6</div>`}
+                  <div class="mab-book-title">${escapeHtml(b.title)}</div>
+                  ${b.author ? `<div class="mab-book-author">${escapeHtml(b.author)}</div>` : ''}
+                  ${b.rating ? `<div class="mab-stars">${starsHtml(b.rating)}</div>` : ''}
+                  ${b.review ? `<div class="mab-book-review">« ${escapeHtml(b.review)} »</div>` : ''}
+                </div>
+              `).join('')}
+            </div>
+            <span class="updates-arrow" id="mabBooksNext" onclick="scrollCharRow('mabBooksRow',1)">\u2192</span>
+          </div>
+        </div>
+        <div id="mab-favoris" class="mab-section">
+          <div class="mab-section-title">Mes favoris</div>
+          <div class="mab-books-grid">
+            ${books.filter(b=>b.favorite).map(b=>`
+              <div class="mab-book-card">
+                ${b.cover ? `<img src="${escapeHtml(b.cover)}" alt="${escapeHtml(b.title)}" class="mab-book-cover">` : `<div class="mab-book-cover placeholder">\U0001F4D6</div>`}
+                <div class="mab-book-title">${escapeHtml(b.title)}</div>
+                ${b.author ? `<div class="mab-book-author">${escapeHtml(b.author)}</div>` : ''}
+              </div>
+            `).join('') || '<p style="color:var(--muted);font-style:italic;">Aucun favori marqué pour le moment.</p>'}
+          </div>
+        </div>` : ''}
+      </div>
+      </main>
+
+      <aside class="mab-sidebar mab-sidebar-right">
+        ${socials.length ? `
+        <div class="mab-side-block">
+          <div class="mab-side-block-title">Retrouvez-moi \u2726</div>
+          ${socials.map(s=>`<a href="${escapeHtml(s.url)}" target="_blank" rel="noopener" class="mab-side-link">${escapeHtml(s.label)}</a>`).join('')}
+        </div>` : ''}
+        ${(SETTINGS.moreAboutMood || SETTINGS.moreAboutInspiration) ? `
+        <div class="mab-side-block">
+          <div class="mab-side-block-title">Actuellement \u2726</div>
+          ${SETTINGS.moreAboutMood ? `<div class="mab-side-item"><span>Humeur</span><span>${escapeHtml(SETTINGS.moreAboutMood)}</span></div>` : ''}
+          ${SETTINGS.moreAboutInspiration ? `<div class="mab-side-item"><span>Inspiration</span><span>${escapeHtml(SETTINGS.moreAboutInspiration)}</span></div>` : ''}
+        </div>` : ''}
+        ${friends.length ? `
+        <div class="mab-side-block">
+          <div class="mab-side-block-title">Mes copines \u2726</div>
+          ${friends.map(f=>`
+            <a href="${escapeHtml(f.url||'#')}" target="_blank" rel="noopener" class="mab-friend-row">
+              ${f.avatar ? `<img src="${escapeHtml(f.avatar)}" class="mab-friend-avatar" alt="">` : `<div class="mab-friend-avatar placeholder">${escapeHtml((f.name||'?').charAt(0))}</div>`}
+              <div>
+                <div class="mab-friend-name">${escapeHtml(f.name)}</div>
+                ${f.tag ? `<div class="mab-friend-tag">${escapeHtml(f.tag)}</div>` : ''}
+              </div>
+            </a>
+          `).join('')}
+        </div>` : ''}
+      </aside>
+
+    </div>
+    </div>
   `;
+
+  if(books.length) setTimeout(()=>refreshCarouselArrows('mabBooksRow','mabBooksPrev','mabBooksNext'), 60);
+}
+function mabScrollTo(id, linkEl){
+  const el = document.getElementById(id);
+  if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+  document.querySelectorAll('.mab-nav a').forEach(a=>a.classList.remove('active'));
+  if(linkEl) linkEl.classList.add('active');
 }
 
 function renderPressKitPage(){
@@ -7409,6 +7648,28 @@ function renderAdmin(){
         </div>
 
         <div class="admin-form">
+          <h3>En-tête de la page</h3>
+          <div>
+            <label>Portrait / avatar (facultatif — photo ronde en haut de la colonne de gauche)</label>
+            <input type="text" id="mabAvatar" value="${escapeHtml(SETTINGS.moreAboutAvatar||'')}" placeholder="https://...">
+          </div>
+          <div class="row2">
+            <div>
+              <label>Sous-titre sous votre nom (facultatif)</label>
+              <input type="text" id="mabSubtitle" value="${escapeHtml(SETTINGS.moreAboutSubtitle||'')}" placeholder="Carnet personnel">
+            </div>
+            <div>
+              <label>Petite phrase sous "Bonjour, moi c'est..." (facultatif)</label>
+              <input type="text" id="mabTagline" value="${escapeHtml(SETTINGS.moreAboutTagline||'')}" placeholder="Autrice, rêveuse, collectionneuse d'histoires...">
+            </div>
+          </div>
+          <div>
+            <label>Grande illustration d'en-tête (facultatif)</label>
+            <input type="text" id="mabHeroImage" value="${escapeHtml(SETTINGS.moreAboutHeroImage||'')}" placeholder="https://...">
+          </div>
+        </div>
+
+        <div class="admin-form">
           <h3>Un peu plus sur moi</h3>
           <div>
             <label>Texte (facultatif — plus développé que votre bio d'accueil)</label>
@@ -7418,34 +7679,81 @@ function renderAdmin(){
         </div>
 
         <div class="admin-form">
-          <h3>Galerie (facultatif)</h3>
-          <label>Images — une URL par ligne</label>
-          <textarea id="mabGallery" style="min-height:80px;font-family:'Jost',sans-serif;font-size:.85rem;">${escapeHtml((SETTINGS.moreAboutGalleryImages||[]).join('\n'))}</textarea>
+          <h3>En ce moment (facultatif — laissez vide les champs que vous ne voulez pas afficher)</h3>
+          <div class="admin-msg" style="margin:4px 0 10px;">✎ J'écris</div>
+          <div class="row2">
+            <div><label>Titre de l'histoire</label><input type="text" id="mabWritingTitle" value="${escapeHtml((SETTINGS.moreAboutWriting||{}).title||'')}"></div>
+            <div><label>Détail (facultatif)</label><input type="text" id="mabWritingChapter" value="${escapeHtml((SETTINGS.moreAboutWriting||{}).chapterLabel||'')}" placeholder="Chapitre en cours : 12"></div>
+          </div>
+          <div><label>Avancement en % (facultatif)</label><input type="number" id="mabWritingProgress" min="0" max="100" value="${(SETTINGS.moreAboutWriting||{}).progress||''}"></div>
+
+          <div class="admin-msg" style="margin:18px 0 10px;">📖 Je lis</div>
+          <div class="row2">
+            <div><label>Titre</label><input type="text" id="mabReadingTitle" value="${escapeHtml((SETTINGS.moreAboutReading||{}).title||'')}"></div>
+            <div><label>Auteur·ice</label><input type="text" id="mabReadingAuthor" value="${escapeHtml((SETTINGS.moreAboutReading||{}).author||'')}"></div>
+          </div>
+          <div class="row2">
+            <div><label>Couverture (URL, facultatif)</label><input type="text" id="mabReadingCover" value="${escapeHtml((SETTINGS.moreAboutReading||{}).cover||'')}"></div>
+            <div><label>Note sur 5 (facultatif)</label><input type="number" id="mabReadingRating" min="0" max="5" value="${(SETTINGS.moreAboutReading||{}).rating||''}"></div>
+          </div>
+
+          <div class="admin-msg" style="margin:18px 0 10px;">🎧 J'écoute</div>
+          <div class="row2">
+            <div><label>Titre du morceau</label><input type="text" id="mabListeningSong" value="${escapeHtml((SETTINGS.moreAboutListening||{}).song||'')}"></div>
+            <div><label>Artiste</label><input type="text" id="mabListeningArtist" value="${escapeHtml((SETTINGS.moreAboutListening||{}).artist||'')}"></div>
+          </div>
+          <div><label>Pochette (URL, facultatif)</label><input type="text" id="mabListeningCover" value="${escapeHtml((SETTINGS.moreAboutListening||{}).cover||'')}"></div>
         </div>
 
         <div class="admin-form">
-          <h3>Mes livres favoris (facultatif)</h3>
+          <h3>Mes lectures (facultatif)</h3>
+          <div class="hint" style="margin-bottom:10px;">Cochez « Favori » pour qu'un livre apparaisse aussi dans la section « Mes favoris ».</div>
           <div id="mabBooksList"></div>
           <span class="toggle-btn" onclick="addMabBookRow()">+ Ajouter un livre</span>
         </div>
 
         <div class="admin-form">
-          <h3>Ma playlist Spotify (facultatif)</h3>
-          <label>Lien d'intégration Spotify</label>
-          <input type="text" id="mabSpotify" value="${escapeHtml(SETTINGS.moreAboutSpotify||'')}" placeholder="https://open.spotify.com/embed/playlist/...">
-          <div class="hint" style="margin-top:6px;">Dans Spotify : ouvrez votre playlist → ⋯ → Partager → Copier le code d'intégration, puis collez le lien "src" trouvé dedans ici.</div>
+          <h3>Colonne de droite (facultatif)</h3>
+          <div class="admin-msg" style="margin:4px 0 10px;">Actuellement</div>
+          <div class="row2">
+            <div><label>Humeur</label><input type="text" id="mabMood" value="${escapeHtml(SETTINGS.moreAboutMood||'')}" placeholder="Écrire sous plaid"></div>
+            <div><label>Inspiration</label><input type="text" id="mabInspiration" value="${escapeHtml(SETTINGS.moreAboutInspiration||'')}" placeholder="Nuits d'hiver, magie et vieux livres"></div>
+          </div>
+          <div class="admin-msg" style="margin:18px 0 10px;">Mes copines</div>
+          <div id="mabFriendsList"></div>
+          <span class="toggle-btn" onclick="addMabFriendRow()">+ Ajouter une copine</span>
+          <div class="hint" style="margin-top:10px;">Vos réseaux sociaux (Instagram, Pinterest...) sont déjà repris automatiquement depuis Apparence → Réseaux sociaux, pas besoin de les redonner ici.</div>
         </div>
 
         <div class="admin-form">
-          <h3>Mes dernières lectures (facultatif)</h3>
-          <label>Catégorie d'actualités à afficher ici</label>
-          <input type="text" id="mabReadsCategory" value="${escapeHtml(SETTINGS.moreAboutReadsCategory||'')}" list="apCategoryList" placeholder="Ex. Mes lectures du moment">
-          <div class="hint" style="margin-top:6px;">Créez des articles dans l'onglet Actualités avec cette catégorie exacte — ils apparaîtront automatiquement ici.</div>
+          <h3>Fond de la page (facultatif)</h3>
+          <label>Image de fond — différente de celle du reste du site</label>
+          <input type="text" id="mabBgImage" value="${escapeHtml(SETTINGS.moreAboutBgImage||'')}" placeholder="https://...">
+          <div class="hint" style="margin-top:6px;">Laissez vide pour garder le fond habituel du site. Une fois renseignée, cette image ne s'affiche que sur cette page-ci, et le site retrouve son propre fond partout ailleurs.</div>
+        </div>
+
+        <div class="admin-form">
+          <h3>Couleurs propres à cette page (facultatif)</h3>
+          <div class="hint" style="margin-bottom:12px;">Non cochée : la page suit vos couleurs habituelles. Cochez le jour où vous voudrez lui donner une identité à part, indépendante du reste du site.</div>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:14px;">
+            <input type="checkbox" id="mabColorsEnabled" ${SETTINGS.moreAboutColors && SETTINGS.moreAboutColors.enabled ? 'checked' : ''} style="width:auto;">
+            Utiliser des couleurs propres à cette page
+          </label>
+          <div class="row2">
+            <div><label>Fond principal</label><input type="color" id="mabColorBg" value="${SETTINGS.moreAboutColors?.bg || '#FAF6EE'}"></div>
+            <div><label>Fond des cartes/blocs</label><input type="color" id="mabColorBgCard" value="${SETTINGS.moreAboutColors?.bgCard || '#FFFFFF'}"></div>
+          </div>
+          <div class="row2">
+            <div><label>Couleur d'accent</label><input type="color" id="mabColorWine" value="${SETTINGS.moreAboutColors?.wine || '#1B3A6B'}"></div>
+            <div><label>Couleur secondaire / dorée</label><input type="color" id="mabColorGold" value="${SETTINGS.moreAboutColors?.gold || '#5E86A8'}"></div>
+          </div>
+          <div><label>Couleur du texte</label><input type="color" id="mabColorInk" value="${SETTINGS.moreAboutColors?.ink || '#243352'}"></div>
         </div>
 
         <button type="button" class="submit-btn" onclick="saveMoreAboutSettings()">Enregistrer</button>
         <div class="admin-msg" id="mabMsg"></div>
       </div>
+
 
       <div class="admin-section" data-section="stats">
         <div class="admin-msg" style="margin-bottom:14px;">Nombre de vues et de ♥ par chapitre, toutes histoires confondues.</div>
@@ -8005,13 +8313,14 @@ function renderAdmin(){
   renderPostsManageList();
   updateApCategorySuggestions();
   renderMabBooksList();
+  renderMabFriendsList();
   initNewsletterComposer();
   renderStats();
   updateStorageModeBadge();
   setTimeout(updateStorageModeBadge, 1200);
 
   // bouton d'envoi d'image sur les champs concernés
-  ['sHeroImage','sAuthorPhoto','sPressKitPhotoHD','hCover','hCoverDetail','hHoverImage','hCharHoverImage','uImageTile','uImageListBanner','uImageBanner','sgNewCoverVitrail','sgNewCoverBanner','sgNewCoverHero','ssCover','ssCoverHero','pImage','chImage','rcCover','sIndepHeroImage','sUniversHeroImage','sCollectionsHeroImage','sSiteBgImage','sQuickFactsBg','sChapterEndImage','ebCover','ebHoverImage','btnImgDefault','btnImgHover','btnImgActive','btnImgDisabled'].forEach(attachImageUploader);
+  ['sHeroImage','sAuthorPhoto','sPressKitPhotoHD','mabBgImage','hCover','hCoverDetail','hHoverImage','hCharHoverImage','uImageTile','uImageListBanner','uImageBanner','sgNewCoverVitrail','sgNewCoverBanner','sgNewCoverHero','ssCover','ssCoverHero','pImage','chImage','rcCover','sIndepHeroImage','sUniversHeroImage','sCollectionsHeroImage','sSiteBgImage','sQuickFactsBg','sChapterEndImage','ebCover','ebHoverImage','btnImgDefault','btnImgHover','btnImgActive','btnImgDisabled'].forEach(attachImageUploader);
   renderLinksFieldGroup('hLinks', []);
   renderLinksFieldGroup('ebLinks', []);
   renderLinksFieldGroup('rcLinks', []);
@@ -8372,14 +8681,23 @@ async function submitNewPost(){
 
 /* ---------- gestion admin de la page "En savoir plus" ---------- */
 function mabBookRowHtml(i, book){
-  book = book || {title:'', author:'', cover:''};
+  book = book || {title:'', author:'', cover:'', rating:'', review:'', favorite:false};
   return `
-    <div class="row2" id="mabBookRow-${i}" style="margin-bottom:10px;align-items:end;">
-      <div><label>Titre</label><input type="text" class="mabBookTitle" value="${escapeHtml(book.title||'')}" placeholder="Titre du livre"></div>
-      <div><label>Auteur·ice (facultatif)</label><input type="text" class="mabBookAuthor" value="${escapeHtml(book.author||'')}"></div>
-      <div style="display:flex;gap:8px;align-items:end;">
-        <div style="flex:1;"><label>Couverture (URL, facultatif)</label><input type="text" id="mabBookCover-${i}" class="mabBookCover" value="${escapeHtml(book.cover||'')}" placeholder="https://..."></div>
-        <span class="del-btn" style="margin-bottom:8px;" onclick="document.getElementById('mabBookRow-${i}').remove()">Retirer</span>
+    <div id="mabBookRow-${i}" style="border:1px solid var(--line);border-radius:8px;padding:14px;margin-bottom:12px;">
+      <div class="row2">
+        <div><label>Titre</label><input type="text" class="mabBookTitle" value="${escapeHtml(book.title||'')}" placeholder="Titre du livre"></div>
+        <div><label>Auteur·ice (facultatif)</label><input type="text" class="mabBookAuthor" value="${escapeHtml(book.author||'')}"></div>
+      </div>
+      <div class="row2" style="margin-top:10px;">
+        <div><label>Couverture (URL, facultatif)</label><input type="text" id="mabBookCover-${i}" class="mabBookCover" value="${escapeHtml(book.cover||'')}" placeholder="https://..."></div>
+        <div><label>Note sur 5 (facultatif)</label><input type="number" class="mabBookRating" min="0" max="5" value="${book.rating||''}"></div>
+      </div>
+      <div style="margin-top:10px;"><label>Votre avis en une phrase (facultatif)</label><input type="text" class="mabBookReview" value="${escapeHtml(book.review||'')}" placeholder="Poétique et déchirant. Un coup de cœur."></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-family:'Jost',sans-serif;font-size:.82rem;">
+          <input type="checkbox" class="mabBookFavorite" ${book.favorite?'checked':''} style="width:auto;"> Favori
+        </label>
+        <span class="del-btn" onclick="document.getElementById('mabBookRow-${i}').remove()">Retirer</span>
       </div>
     </div>
   `;
@@ -8400,15 +8718,88 @@ function getMabBooksFromEditor(){
   return Array.from(document.querySelectorAll('#mabBooksList > div')).map(row=>({
     title: row.querySelector('.mabBookTitle').value.trim(),
     author: row.querySelector('.mabBookAuthor').value.trim(),
-    cover: row.querySelector('.mabBookCover').value.trim()
+    cover: row.querySelector('.mabBookCover').value.trim(),
+    rating: +row.querySelector('.mabBookRating').value || 0,
+    review: row.querySelector('.mabBookReview').value.trim(),
+    favorite: row.querySelector('.mabBookFavorite').checked
   })).filter(b=>b.title);
 }
+
+function mabFriendRowHtml(i, friend){
+  friend = friend || {name:'', tag:'', avatar:'', url:''};
+  return `
+    <div id="mabFriendRow-${i}" style="border:1px solid var(--line);border-radius:8px;padding:14px;margin-bottom:12px;">
+      <div class="row2">
+        <div><label>Pseudo</label><input type="text" class="mabFriendName" value="${escapeHtml(friend.name||'')}" placeholder="@plume_et_sortilèges"></div>
+        <div><label>Tag / genre (facultatif)</label><input type="text" class="mabFriendTag" value="${escapeHtml(friend.tag||'')}" placeholder="Fantasy &amp; tea"></div>
+      </div>
+      <div class="row2" style="margin-top:10px;">
+        <div><label>Avatar (URL, facultatif)</label><input type="text" id="mabFriendAvatar-${i}" class="mabFriendAvatar" value="${escapeHtml(friend.avatar||'')}" placeholder="https://..."></div>
+        <div><label>Lien (Instagram, site...)</label><input type="text" class="mabFriendUrl" value="${escapeHtml(friend.url||'')}" placeholder="https://..."></div>
+      </div>
+      <div style="text-align:right;margin-top:10px;">
+        <span class="del-btn" onclick="document.getElementById('mabFriendRow-${i}').remove()">Retirer</span>
+      </div>
+    </div>
+  `;
+}
+function addMabFriendRow(friend){
+  const list = document.getElementById('mabFriendsList');
+  const i = list.children.length;
+  list.insertAdjacentHTML('beforeend', mabFriendRowHtml(i, friend));
+  attachImageUploader('mabFriendAvatar-'+i);
+}
+function renderMabFriendsList(){
+  const list = document.getElementById('mabFriendsList');
+  if(!list) return;
+  list.innerHTML = '';
+  (SETTINGS.moreAboutFriends||[]).forEach(f=>addMabFriendRow(f));
+}
+function getMabFriendsFromEditor(){
+  return Array.from(document.querySelectorAll('#mabFriendsList > div')).map(row=>({
+    name: row.querySelector('.mabFriendName').value.trim(),
+    tag: row.querySelector('.mabFriendTag').value.trim(),
+    avatar: row.querySelector('.mabFriendAvatar').value.trim(),
+    url: row.querySelector('.mabFriendUrl').value.trim()
+  })).filter(f=>f.name);
+}
+
 async function saveMoreAboutSettings(){
   SETTINGS.moreAboutBio = document.getElementById('mabBio').value.trim();
-  SETTINGS.moreAboutGalleryImages = document.getElementById('mabGallery').value.split('\n').map(s=>s.trim()).filter(Boolean);
-  SETTINGS.moreAboutSpotify = document.getElementById('mabSpotify').value.trim();
-  SETTINGS.moreAboutReadsCategory = document.getElementById('mabReadsCategory').value.trim();
+  SETTINGS.moreAboutAvatar = document.getElementById('mabAvatar').value.trim();
+  SETTINGS.moreAboutSubtitle = document.getElementById('mabSubtitle').value.trim();
+  SETTINGS.moreAboutTagline = document.getElementById('mabTagline').value.trim();
+  SETTINGS.moreAboutHeroImage = document.getElementById('mabHeroImage').value.trim();
+  SETTINGS.moreAboutWriting = {
+    title: document.getElementById('mabWritingTitle').value.trim(),
+    chapterLabel: document.getElementById('mabWritingChapter').value.trim(),
+    progress: +document.getElementById('mabWritingProgress').value || 0
+  };
+  SETTINGS.moreAboutReading = {
+    title: document.getElementById('mabReadingTitle').value.trim(),
+    author: document.getElementById('mabReadingAuthor').value.trim(),
+    cover: document.getElementById('mabReadingCover').value.trim(),
+    rating: +document.getElementById('mabReadingRating').value || 0
+  };
+  SETTINGS.moreAboutListening = {
+    song: document.getElementById('mabListeningSong').value.trim(),
+    artist: document.getElementById('mabListeningArtist').value.trim(),
+    cover: document.getElementById('mabListeningCover').value.trim()
+  };
+  SETTINGS.moreAboutMood = document.getElementById('mabMood').value.trim();
+  SETTINGS.moreAboutInspiration = document.getElementById('mabInspiration').value.trim();
+  SETTINGS.moreAboutFriends = getMabFriendsFromEditor();
   SETTINGS.moreAboutBooks = getMabBooksFromEditor();
+  SETTINGS.moreAboutBgImage = document.getElementById('mabBgImage').value.trim();
+  const colorsEnabled = document.getElementById('mabColorsEnabled').checked;
+  SETTINGS.moreAboutColors = colorsEnabled ? {
+    enabled: true,
+    bg: document.getElementById('mabColorBg').value,
+    bgCard: document.getElementById('mabColorBgCard').value,
+    wine: document.getElementById('mabColorWine').value,
+    gold: document.getElementById('mabColorGold').value,
+    ink: document.getElementById('mabColorInk').value
+  } : {};
   await saveSettings();
   document.getElementById('mabMsg').textContent = 'Enregistré ✓';
   toast('Page "En savoir plus" mise à jour.');
