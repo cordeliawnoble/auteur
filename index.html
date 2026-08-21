@@ -16,7 +16,7 @@
 </script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Nom de plume — Histoires</title>
+<title>Cordélia w Noble</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 28S3 19 3 10.5C3 5.3 7 2 11.5 2c2.6 0 4.9 1.4 4.5 4-.4-2.6 1.9-4 4.5-4C25 2 29 5.3 29 10.5 29 19 16 28 16 28z' fill='%231B3A6B'/%3E%3C/svg%3E">
 
 <meta property="og:type" content="website">
@@ -2452,9 +2452,13 @@ async function loadSettings(){
   try{
     const res = await window.storage.get(SETTINGS_KEY, true);
     if(res && res.value){ SETTINGS = Object.assign({}, SEED_SETTINGS, JSON.parse(res.value)); return; }
-  }catch(e){}
+  }catch(e){
+    console.error('Échec du chargement des réglages, on ne les écrase surtout pas :', e);
+  }
+  // Sécurité : si la récupération échoue (panne réseau, souci de connexion...), on utilise
+  // les réglages d'exemple UNIQUEMENT pour cette visite, en mémoire — on ne les enregistre
+  // JAMAIS automatiquement, pour ne jamais risquer d'écraser vos vraies données.
   SETTINGS = JSON.parse(JSON.stringify(SEED_SETTINGS));
-  await saveSettings();
 }
 async function saveSettings(){
   await window.storage.set(SETTINGS_KEY, JSON.stringify(SETTINGS), true);
@@ -2561,11 +2565,14 @@ async function loadWorks(){
       if(migrated) await saveWorks();
       return;
     }
-  }catch(e){}
-  // Rien en mémoire : on démarre avec les histoires d'exemple ci-dessus
+  }catch(e){
+    console.error('Échec du chargement des œuvres, on ne les écrase surtout pas :', e);
+  }
+  // Sécurité : si la récupération échoue (panne réseau, souci de connexion...), on utilise
+  // les histoires d'exemple UNIQUEMENT pour cette visite, en mémoire — on ne les enregistre
+  // JAMAIS automatiquement, pour ne jamais risquer d'écraser vos vraies données.
   WORKS = JSON.parse(JSON.stringify(SEED_WORKS));
   WORKS.forEach(migrateWorkStatus);
-  await saveWorks();
 }
 
 async function saveWorks(){
@@ -2616,9 +2623,10 @@ async function loadUniverseMeta(){
   try{
     const res = await window.storage.get(UNIVERSE_META_KEY, true);
     if(res && res.value){ UNIVERSE_META = JSON.parse(res.value); return; }
-  }catch(e){}
+  }catch(e){
+    console.error('Échec du chargement des collections, on ne les écrase surtout pas :', e);
+  }
   UNIVERSE_META = JSON.parse(JSON.stringify(SEED_UNIVERSE_META));
-  await saveUniverseMeta();
 }
 async function saveUniverseMeta(){
   try{ await window.storage.set(UNIVERSE_META_KEY, JSON.stringify(UNIVERSE_META), true); }catch(e){}
@@ -3684,9 +3692,10 @@ async function loadTropesList(){
       TROPES_LIST = JSON.parse(res.value).map(migrateTropeEntry);
       return;
     }
-  }catch(e){}
+  }catch(e){
+    console.error('Échec du chargement des mots-clés, on ne les écrase surtout pas :', e);
+  }
   TROPES_LIST = ["Slow burn", "Grumpy x Sunshine", "Ennemis to lovers", "Proximité forcée", "Fake dating", "Friends to lovers", "Seconde chance"].map(migrateTropeEntry);
-  await saveTropesList();
 }
 async function saveTropesList(){
   try{ await window.storage.set(TROPES_LIST_KEY, JSON.stringify(TROPES_LIST), true); }catch(e){}
@@ -6500,8 +6509,11 @@ function renderAdmin(){
         <div class="admin-msg" style="margin:28px 0 14px;">Sauvegarde</div>
         <div class="dash-shortcuts">
           <div class="dash-shortcut" onclick="exportSiteBackup()">⬇ Télécharger une sauvegarde complète</div>
+          <div class="dash-shortcut" onclick="document.getElementById('backupFileInput').click()">⬆ Restaurer une sauvegarde</div>
+          <input type="file" id="backupFileInput" accept="application/json" style="display:none;" onchange="importSiteBackup(event)">
           <div class="dash-shortcut" onclick="exportRSSFeed()">📡 Générer le flux RSS</div>
         </div>
+        <div class="admin-msg" id="backupImportMsg" style="margin-top:10px;"></div>
         <div class="hint" style="margin-top:10px;">Toutes vos histoires, sagas, mots-clés et réglages, dans un seul fichier — à garder de côté par sécurité.</div>
         <div class="hint" style="margin-top:6px;">Le flux RSS n'est <strong>pas mis à jour automatiquement</strong> : ce site n'ayant pas de serveur, il faut régénérer ce fichier et le réenvoyer sur votre hébergement (à côté de votre page d'accueil, sous le nom « rss.xml ») à chaque fois que vous voulez que les lecteurs de flux voient vos nouveautés.</div>
       </div>
@@ -8442,6 +8454,52 @@ function exportSiteBackup(){
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
   toast("Sauvegarde téléchargée !");
+}
+
+function importSiteBackup(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const msgEl = document.getElementById('backupImportMsg');
+  const reader = new FileReader();
+  reader.onload = async (e)=>{
+    let backup;
+    try{
+      backup = JSON.parse(e.target.result);
+    }catch(err){
+      msgEl.textContent = "Ce fichier n'est pas une sauvegarde valide (JSON illisible).";
+      return;
+    }
+    const summary = `${(backup.works||[]).length} histoire(s), ${(backup.works||[]).reduce((n,w)=>n+(w.chapters?.length||0),0)} chapitre(s) au total`;
+    if(!confirm(`Restaurer cette sauvegarde (${summary}) ?\n\nATTENTION : ça va remplacer tout ce qui est actuellement en ligne sur le site (histoires, sagas, réglages, mots-clés). Cette action est irréversible.`)) {
+      event.target.value = '';
+      return;
+    }
+    msgEl.textContent = 'Restauration en cours…';
+    try{
+      if(backup.works) WORKS = backup.works;
+      if(backup.settings) SETTINGS = Object.assign({}, SEED_SETTINGS, backup.settings);
+      if(backup.universeMeta) UNIVERSE_META = backup.universeMeta;
+      if(backup.sagaMeta) SAGA_META = backup.sagaMeta;
+      if(backup.sousSagaMeta) SOUSSAGA_META = backup.sousSagaMeta;
+      if(backup.tropesList) TROPES_LIST = backup.tropesList;
+      if(backup.posts) POSTS = backup.posts;
+
+      await saveWorks();
+      await saveSettings();
+      await saveUniverseMeta();
+      await saveSagaMeta();
+      await saveSousSagaMeta();
+      await saveTropesList();
+      if(backup.posts) await savePosts();
+
+      msgEl.textContent = `Sauvegarde restaurée ✓ (${summary}). Rechargement…`;
+      toast('Sauvegarde restaurée avec succès.');
+      setTimeout(()=>location.reload(), 1200);
+    }catch(err){
+      msgEl.textContent = "Erreur pendant la restauration : " + (err && err.message ? err.message : err);
+    }
+  };
+  reader.readAsText(file);
 }
 
 function renderDashboard(){
