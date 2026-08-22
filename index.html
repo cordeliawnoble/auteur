@@ -16,8 +16,16 @@
 </script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cordélia w Noble</title>
+<title>Nom de plume — Histoires</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 28S3 19 3 10.5C3 5.3 7 2 11.5 2c2.6 0 4.9 1.4 4.5 4-.4-2.6 1.9-4 4.5-4C25 2 29 5.3 29 10.5 29 19 16 28 16 28z' fill='%231B3A6B'/%3E%3C/svg%3E">
+
+<!-- PWA : permet d'ajouter le site à l'écran d'accueil, comme une application -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1B3A6B">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Cordélia">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Cordélia — Romans &amp; sagas">
@@ -1487,6 +1495,9 @@ footer{border-top:1px solid var(--line);padding:34px 24px;text-align:center;font
 }
 
 .hist-collapsible{border-top:1px solid var(--line);margin-top:6px;}
+.media-two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;}
+.media-col .hist-collapsible{border:1px solid var(--line);border-radius:8px;padding:4px 16px 14px;background:var(--bg-card);}
+@media(max-width:760px){.media-two-col{grid-template-columns:1fr;}}
 .create-form-toggle{
   font-family:'Playfair Display',serif;font-size:1.15rem;color:var(--wine);cursor:pointer;
   padding:14px 18px;background:var(--bg-card);border:1px solid var(--line);border-radius:8px;
@@ -3095,6 +3106,9 @@ new MutationObserver(()=>{
   });
 }).observe(document.getElementById('app'), {childList:true, subtree:true});
 window.addEventListener('DOMContentLoaded', async ()=>{
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('sw.js').catch(()=>{}); // installabilité PWA ; échec silencieux si indisponible
+  }
   app.innerHTML = '<p style="padding:80px 0;text-align:center;color:var(--muted);font-family:\'Jost\',sans-serif;">Chargement…</p>';
   await loadTropeCategories();
   await Promise.all([loadWorks(), loadUniverseMeta(), loadSagaMeta(), loadSousSagaMeta(), loadTropesList(), loadSettings(), loadPosts()]);
@@ -6146,7 +6160,6 @@ function renderAdmin(){
             <div class="admin-tab admin-nav-link" data-tab="univers">Collections</div>
             <div class="admin-tab admin-nav-link" data-tab="sagas">Sagas</div>
             <div class="admin-tab admin-nav-link" data-tab="soussagas">Sous-sagas</div>
-            <div class="admin-tab admin-nav-link" data-tab="ebook">Ebooks</div>
             <div class="admin-tab admin-nav-link" data-tab="tropes">Mots-clés</div>
           </div>
           <div class="admin-sidebar-group">
@@ -6190,7 +6203,6 @@ function renderAdmin(){
         <div class="admin-msg" style="margin:28px 0 14px;">Accès rapide</div>
         <div class="dash-shortcuts">
           <div class="dash-shortcut" onclick="adminTab='histoire';applyAdminTab();">✒️ Nouvelle histoire</div>
-          <div class="dash-shortcut" onclick="adminTab='ebook';applyAdminTab();">📖 Nouvel ebook</div>
           <div class="dash-shortcut" onclick="adminTab='gerer';applyAdminTab();">📄 Ajouter un chapitre</div>
           <div class="dash-shortcut" onclick="adminTab='commentaires';applyAdminTab();">💬 Modérer les commentaires</div>
           <div class="dash-shortcut" onclick="adminTab='gerer';applyAdminTab();">📚 Gérer mes histoires</div>
@@ -6891,40 +6903,27 @@ function renderAdmin(){
               <input type="text" id="hGenre" placeholder="Romance slow burn">
             </div>
           </div>
+          <div>
+            <label>Type de publication</label>
+            <select id="hType" onchange="toggleHistoireType()">
+              <option value="histoire">Histoire à lire sur le site</option>
+              <option value="ebook">Ebook en vente (fiche produit)</option>
+            </select>
+          </div>
           <div class="row2">
             <div>
               <label>Statut d'écriture</label>
-              <select id="hStatus">${HISTOIRE_STATUS_LIST.map(s=>`<option>${s}</option>`).join('')}</select>
+              <select id="hStatus" style="display:none;">${HISTOIRE_STATUS_LIST.map(s=>`<option>${s}</option>`).join('')}</select>
+              <select id="hStatusEbook" style="display:none;">${EBOOK_STATUS_LIST.map(s=>`<option>${s}</option>`).join('')}</select>
             </div>
-            <div>
-              <label>Public</label>
-              <select id="hAgeRating">
-                <option value="Tout public">Tout public</option>
-                <option value="16+">16+</option>
-                <option value="18+">18+ (contenu explicite)</option>
-              </select>
-            </div>
-          </div>
-          <div>
-            <label>Rythme de mise à jour (facultatif)</label>
-            <input type="text" id="hUpdateSchedule" placeholder="Un chapitre par semaine, le dimanche">
-          </div>
-          <div class="row2">
             <div>
               <label>Collection</label>
               <select id="hUniverse">
                 ${allUniverseNames().length ? allUniverseNames().map(u=>`<option value="${escapeHtml(u)}">${escapeHtml(u)}</option>`).join('') : '<option value="">Créez d\'abord un univers →</option>'}
               </select>
             </div>
-            <div>
-              <label>Où la trouver</label>
-              <select id="hShelf">
-                <option value="plateforme">Sur les plateformes (lecture ici)</option>
-                <option value="a-venir">À venir</option>
-              </select>
-              <div class="hint" style="margin-top:6px;">Pour un livre en vente, utilisez plutôt l'onglet « Ajouter un ebook ».</div>
-            </div>
           </div>
+          <div id="hSagaFieldsBlock">
           <div>
             <label>Saga (facultatif)</label>
             <select id="hSaga">
@@ -6933,7 +6932,7 @@ function renderAdmin(){
             </select>
             <div class="hint" style="margin-top:6px;">Pas encore de saga ? Créez-la d'abord depuis l'onglet « Sagas ».</div>
           </div>
-          <div>
+          <div id="hSousSagaWrap">
             <label>Sous-saga (facultatif)</label>
             <select id="hSousSaga">
               <option value="">Aucune</option>
@@ -6941,14 +6940,11 @@ function renderAdmin(){
             </select>
             <div class="hint" style="margin-top:6px;">Pensez à choisir aussi la saga parente ci-dessus.</div>
           </div>
+          </div>
           <div>
             <label>Mots-clés / tropes</label>
             <div class="trope-picker" id="hTropesPicker">${renderTropePicker([], 'hTropesPicker')}</div>
             <div class="hint" style="margin-top:6px;">Le mot-clé qu'il vous faut n'existe pas encore ? Ajoutez-le depuis l'onglet « Mots-clés ».</div>
-          </div>
-          <div>
-            <label>Date de parution</label>
-            <input type="date" id="hReleaseDate" value="${todayISO()}">
           </div>
           <div>
             <label>Résumé</label>
@@ -6960,169 +6956,140 @@ function renderAdmin(){
             ${formattingToolbar('hAboutText', ``, 'À propos de l\'histoire')}
             <textarea id="hAboutText" placeholder="Laissez vide pour reprendre le résumé ci-dessus." style="min-height:100px;"></textarea>
           </div>
-          <div>
-            <label>Phrase de présentation courte (facultatif — affichée sur la vignette, et sous le titre sur la fiche ebook)</label>
-            <input type="text" id="hHook" placeholder="Un faux petit ami, un vrai mariage...">
+          <div class="row2">
+            <div id="hCollectionWrap" style="display:none;">
+              <label>Nom affiché sur la fiche (facultatif — ex. nom de série éditoriale)</label>
+              <input type="text" id="hCollection" placeholder="Paradisus Aeternus">
+            </div>
+            <div>
+              <label>Phrase de présentation courte (facultatif — affichée sur la vignette, et sous le titre sur la fiche ebook)</label>
+              <input type="text" id="hHook" placeholder="Un faux petit ami, un vrai mariage...">
+            </div>
           </div>
           <div>
             <label>Avertissements de contenu (facultatif, séparés par des virgules)</label>
             <input type="text" id="hWarnings" placeholder="violence, deuil, contenu explicite...">
           </div>
-          <div>
-            <label>Image de couverture — vignettes (accueil, Mes romans, univers)</label>
-            <input type="text" id="hCover" placeholder="https://...">
-            <div class="hint" style="margin-top:6px;">Facultatif — sinon un dégradé de couleur est utilisé.</div>
-          </div>
-          <div>
-            <label>Image de couverture — fiche de l'histoire (facultatif)</label>
-            <input type="text" id="hCoverDetail" placeholder="https://...">
-            <div class="hint" style="margin-top:6px;">Laissez vide pour réutiliser la même image que les vignettes.</div>
-          </div>
-          <div>
-            <label>Image de survol — remplace la vignette quand on passe la souris dessus (facultatif)</label>
-            <input type="text" id="hHoverImage" placeholder="https://...">
-          </div>
-          <div>
-            <label>Image de survol des personnages — s'affiche par-dessus la photo de chaque personnage de cette histoire au survol (facultatif)</label>
-            <input type="text" id="hCharHoverImage" placeholder="https://...">
-          </div>
-          <div>
-            <label>Boutons de lecture externes</label>
-            ${linksFieldGroupHtml('hLinks')}
-          </div>
-          <div class="admin-msg" id="hMsg"></div>
-          <button type="button" class="submit-btn" id="submitHistoire">Créer l'histoire</button>
-        </div>
-      </div>
 
-      <div class="admin-section" data-section="ebook">
-        <div class="admin-form" id="formEbook">
-          <h3>Nouvel ebook</h3>
-          <div class="admin-msg" style="margin-bottom:4px;">Pour un livre en vente (page dédiée avec fiche produit). Réglé automatiquement sur « Parue ».</div>
+          <div class="section-title" style="margin-top:36px;"><h2>Publication</h2><div class="rule"></div></div>
           <div class="row2">
             <div>
-              <label>Titre</label>
-              <input type="text" id="ebTitle" placeholder="Titre du livre">
-            </div>
-            <div>
-              <label>Genre</label>
-              <input type="text" id="ebGenre" placeholder="Comédie romantique">
-            </div>
-          </div>
-          <div class="row2">
-            <div>
-              <label>Statut d'écriture</label>
-              <select id="ebStatus">${EBOOK_STATUS_LIST.map(s=>`<option>${s}</option>`).join('')}</select>
+              <label>Date de parution</label>
+              <input type="date" id="hReleaseDate" value="${todayISO()}">
             </div>
             <div>
               <label>Public</label>
-              <select id="ebAgeRating">
+              <select id="hAgeRating">
                 <option value="Tout public">Tout public</option>
                 <option value="16+">16+</option>
                 <option value="18+">18+ (contenu explicite)</option>
               </select>
             </div>
           </div>
-          <div class="row2">
-            <div>
-              <label>Collection</label>
-              <select id="ebUniverse">
-                ${allUniverseNames().length ? allUniverseNames().map(u=>`<option value="${escapeHtml(u)}">${escapeHtml(u)}</option>`).join('') : '<option value="">Créez d\'abord un univers →</option>'}
-              </select>
-            </div>
-            <div>
-              <label>Date de publication</label>
-              <input type="date" id="ebReleaseDate" value="${todayISO()}">
-            </div>
-          </div>
           <div>
-            <label>Saga (facultatif)</label>
-            <select id="ebSaga">
-              <option value="">Indépendant (aucune saga)</option>
-              ${allSagaNames().map(n=>`<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('')}
-            </select>
+            <label>Langue (facultatif)</label>
+            <input type="text" id="hLanguage" placeholder="Français">
           </div>
-          <div>
-            <label>Mots-clés / tropes</label>
-            <div class="trope-picker" id="ebTropesPicker">${renderTropePicker([], 'ebTropesPicker')}</div>
-          </div>
-          <div>
-            <label>Résumé (accroche courte)</label>
-            ${formattingToolbar('ebSynopsis', ``, 'Résumé du livre')}
-            <textarea id="ebSynopsis" placeholder="Le résumé de votre livre..." style="min-height:90px;"></textarea>
-          </div>
-          <div>
-            <label>Quatrième de couverture (facultatif — texte affiché sur la fiche produit)</label>
-            ${formattingToolbar('ebAboutText', ``, 'À propos du livre')}
-            <textarea id="ebAboutText" placeholder="Laissez vide pour reprendre le résumé ci-dessus." style="min-height:100px;"></textarea>
-          </div>
-          <div class="row2">
+          <div id="hTypeHistoireBlock">
             <div>
-              <label>Nom affiché sur la fiche (facultatif — ex. nom de série éditoriale)</label>
-              <input type="text" id="ebCollection" placeholder="Paradisus Aeternus">
-            </div>
-            <div>
-              <label>Citation d'accroche (facultatif)</label>
-              <input type="text" id="ebHook" placeholder="Un faux petit ami, un vrai mariage...">
+              <label>Rythme de mise à jour (facultatif)</label>
+              <input type="text" id="hUpdateSchedule" placeholder="Un chapitre par semaine, le dimanche">
             </div>
           </div>
-          <div class="row2">
-            <div>
-              <label>ISBN (facultatif)</label>
-              <input type="text" id="ebIsbn" placeholder="978-2-...">
+          <div id="hTypeEbookBlock" style="display:none;">
+            <div class="row2">
+              <div>
+                <label>ISBN (facultatif)</label>
+                <input type="text" id="hIsbn" placeholder="978-2-...">
+              </div>
+              <div>
+                <label>Format (facultatif)</label>
+                <input type="text" id="hFormat" placeholder="EPUB">
+              </div>
             </div>
-            <div>
-              <label>Format (facultatif)</label>
-              <input type="text" id="ebFormat" placeholder="EPUB">
-            </div>
-          </div>
-          <div class="row2">
             <div>
               <label>Nombre de pages (facultatif)</label>
-              <input type="text" id="ebPageCount" placeholder="412">
+              <input type="text" id="hPageCount" placeholder="412">
             </div>
             <div>
-              <label>Langue (facultatif)</label>
-              <input type="text" id="ebLanguage" placeholder="Français">
+              <label>« Ce livre est fait pour vous si... » (facultatif — une phrase par ligne)</label>
+              ${formattingToolbar('hReaderPromises', ``, 'Promesses au lecteur')}
+              <textarea id="hReaderPromises" style="min-height:90px;" placeholder="vous aimez les romances où les sentiments prennent leur temps"></textarea>
+            </div>
+            <div>
+              <label id="hLinksLabelEbook">Liens d'achat</label>
+              <div id="hLinksSlotEbook"></div>
             </div>
           </div>
-          <div>
-            <label>« Ce livre est fait pour vous si... » (facultatif — une phrase par ligne)</label>
-            ${formattingToolbar('ebReaderPromises', ``, 'Promesses au lecteur')}
-            <textarea id="ebReaderPromises" style="min-height:90px;" placeholder="vous aimez les romances où les sentiments prennent leur temps"></textarea>
+
+          <div class="section-title" style="margin-top:36px;"><h2>Média</h2><div class="rule"></div></div>
+          <div class="media-two-col">
+            <div class="media-col">
+              <div class="hist-collapsible">
+                <div class="hist-collapsible-header" onclick="toggleWorkSubBlock2('hMediaImages')">
+                  🖼 Images <span id="hMediaImagesToggleIcon">▾</span>
+                </div>
+                <div id="hMediaImagesBlock">
+                  <div>
+                    <label>Image de couverture — vignettes (accueil, Mes romans, univers)</label>
+                    <input type="text" id="hCover" placeholder="https://...">
+                    <div class="hint" style="margin-top:6px;">Facultatif — sinon un dégradé de couleur est utilisé.</div>
+                  </div>
+                  <div id="hCoverDetailWrap">
+                    <label>Image de couverture — fiche de l'histoire (facultatif)</label>
+                    <input type="text" id="hCoverDetail" placeholder="https://...">
+                    <div class="hint" style="margin-top:6px;">Laissez vide pour réutiliser la même image que les vignettes.</div>
+                  </div>
+                  <div>
+                    <label>Image de survol — remplace la vignette quand on passe la souris dessus (facultatif)</label>
+                    <input type="text" id="hHoverImage" placeholder="https://...">
+                  </div>
+                  <div id="hCharHoverWrap">
+                    <label>Image de survol des personnages — s'affiche par-dessus la photo de chaque personnage de cette histoire au survol (facultatif)</label>
+                    <input type="text" id="hCharHoverImage" placeholder="https://...">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="media-col">
+              <div class="hist-collapsible">
+                <div class="hist-collapsible-header" onclick="toggleWorkSubBlock2('hMediaAutre')">
+                  📎 Autre média <span id="hMediaAutreToggleIcon">▾</span>
+                </div>
+                <div id="hMediaAutreBlock">
+                  <div id="hShelfWrap">
+                    <label>Où la trouver</label>
+                    <select id="hShelf">
+                      <option value="plateforme">Sur les plateformes (lecture ici)</option>
+                      <option value="a-venir">À venir</option>
+                    </select>
+                  </div>
+                  <div id="hLinksWrapHistoire">
+                    <label id="hLinksLabelHistoire">Boutons de lecture externes</label>
+                    <div id="hLinksSlotHistoire"></div>
+                  </div>
+                  <h3 style="margin-top:22px;font-size:1rem;">Téléchargement gratuit (facultatif)</h3>
+                  <div class="admin-msg" style="margin-bottom:4px;">Pour offrir un bonus (nouvelle, extrait, recueil...) en échange d'une inscription à la newsletter, ou en libre accès.</div>
+                  <div>
+                    <label>Lien vers le fichier (PDF ou ebook, hébergé par vos soins — Google Drive en public, Dropbox...)</label>
+                    <input type="text" id="hFreeDownloadUrl" placeholder="https://...">
+                  </div>
+                  <div>
+                    <label>Titre affiché (facultatif)</label>
+                    <input type="text" id="hFreeDownloadLabel" placeholder="Un cadeau pour vous">
+                  </div>
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <input type="checkbox" id="hFreeDownloadGated" style="width:auto;" checked>
+                    <label style="margin:0;" for="hFreeDownloadGated">Demander l'inscription à la newsletter avant de débloquer le lien</label>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div>
-            <label>Avertissements de contenu (facultatif, séparés par des virgules)</label>
-            <input type="text" id="ebWarnings" placeholder="violence, deuil, contenu explicite...">
-          </div>
-          <div>
-            <label>Image de couverture (vignette + fiche)</label>
-            <input type="text" id="ebCover" placeholder="https://...">
-          </div>
-          <div>
-            <label>Image de survol (facultatif)</label>
-            <input type="text" id="ebHoverImage" placeholder="https://...">
-          </div>
-          <div>
-            <label>Boutons d'achat</label>
-            ${linksFieldGroupHtml('ebLinks')}
-          </div>
-          <h3 style="margin-top:26px;">Téléchargement gratuit (facultatif)</h3>
-          <div class="admin-msg" style="margin-bottom:4px;">Pour offrir un bonus (nouvelle, extrait, recueil...) en échange d'une inscription à la newsletter, ou en libre accès.</div>
-          <div>
-            <label>Lien vers le fichier (PDF ou ebook, hébergé par vos soins — Google Drive en public, Dropbox...)</label>
-            <input type="text" id="ebFreeDownloadUrl" placeholder="https://...">
-          </div>
-          <div>
-            <label>Titre affiché (facultatif)</label>
-            <input type="text" id="ebFreeDownloadLabel" placeholder="Un cadeau pour vous">
-          </div>
-          <div style="display:flex;align-items:center;gap:10px;">
-            <input type="checkbox" id="ebFreeDownloadGated" style="width:auto;" checked>
-            <label style="margin:0;" for="ebFreeDownloadGated">Demander l'inscription à la newsletter avant de débloquer le lien</label>
-          </div>
-          <div class="admin-msg" id="ebMsg"></div>
-          <button type="button" class="submit-btn" id="submitEbook">Créer l'ebook</button>
+          <div id="hLinksHost" style="display:none;">${linksFieldGroupHtml('hLinks')}</div>
+
+          <div class="admin-msg" id="hMsg" style="margin-top:24px;"></div>
+          <button type="button" class="submit-btn" id="submitHistoire">Créer l'histoire</button>
         </div>
       </div>
 
@@ -7808,9 +7775,12 @@ function renderAdmin(){
   });
 
   // formulaire histoire
+  toggleHistoireType(); // place correctement le champ des liens dès l'affichage initial
+
   document.getElementById('submitHistoire').addEventListener('click', async ()=>{
     const title = document.getElementById('hTitle').value.trim();
     if(!title){ document.getElementById('hMsg').textContent = "Merci d'indiquer un titre."; return; }
+    const isEbook = document.getElementById('hType').value === 'ebook';
     const palettes = [
       "linear-gradient(160deg, #5E86A8, #1B3A6B)",
       "linear-gradient(160deg, #7C93C2, #2A3F6B)",
@@ -7818,90 +7788,52 @@ function renderAdmin(){
     ];
     const externalLinks = getLinksFromEditor('hLinks');
     const universeName = document.getElementById('hUniverse').value;
-    WORKS.push({
+    const work = {
       id: makeId(slugify(title)),
       title,
       genre: document.getElementById('hGenre').value.trim(),
-      status: document.getElementById('hStatus').value,
+      status: isEbook ? document.getElementById('hStatusEbook').value : document.getElementById('hStatus').value,
       ageRating: document.getElementById('hAgeRating').value,
-      updateSchedule: document.getElementById('hUpdateSchedule').value.trim(),
+      language: document.getElementById('hLanguage').value.trim(),
+      updateSchedule: isEbook ? '' : document.getElementById('hUpdateSchedule').value.trim(),
       universe: universeName,
-      saga: document.getElementById('hSaga').value.trim(),
-      sousSaga: document.getElementById('hSousSaga').value.trim(),
-      shelf: document.getElementById('hShelf').value,
+      saga: isEbook ? '' : document.getElementById('hSaga').value.trim(),
+      sousSaga: isEbook ? '' : document.getElementById('hSousSaga').value.trim(),
+      shelf: isEbook ? 'parue' : document.getElementById('hShelf').value,
       tropes: getSelectedTropes('hTropesPicker'),
       releaseDate: document.getElementById('hReleaseDate').value || todayISO(),
       coverGradient: palettes[WORKS.length % palettes.length],
       cover: document.getElementById('hCover').value.trim(),
-      coverDetail: document.getElementById('hCoverDetail').value.trim(),
+      coverDetail: isEbook ? document.getElementById('hCover').value.trim() : document.getElementById('hCoverDetail').value.trim(),
       hoverImage: document.getElementById('hHoverImage').value.trim(),
-      charHoverImage: document.getElementById('hCharHoverImage').value.trim(),
+      charHoverImage: isEbook ? '' : document.getElementById('hCharHoverImage').value.trim(),
       synopsis: document.getElementById('hSynopsis').value.trim(),
       aboutText: document.getElementById('hAboutText').value.trim(),
       hook: document.getElementById('hHook').value.trim(),
       contentWarnings: document.getElementById('hWarnings').value.split(',').map(t=>t.trim()).filter(Boolean),
+      freeDownloadUrl: document.getElementById('hFreeDownloadUrl').value.trim(),
+      freeDownloadLabel: document.getElementById('hFreeDownloadLabel').value.trim(),
+      freeDownloadGated: document.getElementById('hFreeDownloadGated').checked,
       recommendedWorkId: '',
       characters: [],
       externalLinks,
       chapters: []
-    });
+    };
+    if(isEbook){
+      Object.assign(work, {
+        collection: document.getElementById('hCollection').value.trim(),
+        isbn: document.getElementById('hIsbn').value.trim(),
+        format: document.getElementById('hFormat').value.trim(),
+        pageCount: document.getElementById('hPageCount').value.trim(),
+        readerPromises: document.getElementById('hReaderPromises').value.split('\n').map(t=>t.trim()).filter(Boolean)
+      });
+    }
+    WORKS.push(work);
     await saveWorks();
-    document.getElementById('hMsg').textContent = "Histoire créée !";
-    toast("Histoire ajoutée au site.");
+    document.getElementById('hMsg').textContent = isEbook ? "Ebook créé !" : "Histoire créée !";
+    toast(isEbook ? "Ebook ajouté au site." : "Histoire ajoutée au site.");
     renderAdmin(); // pour rafraîchir les listes déroulantes des autres formulaires
     adminTab = 'histoire'; applyAdminTab();
-  });
-
-  // formulaire ebook
-  document.getElementById('submitEbook').addEventListener('click', async ()=>{
-    const title = document.getElementById('ebTitle').value.trim();
-    if(!title){ document.getElementById('ebMsg').textContent = "Merci d'indiquer un titre."; return; }
-    const palettes = [
-      "linear-gradient(160deg, #5E86A8, #1B3A6B)",
-      "linear-gradient(160deg, #7C93C2, #2A3F6B)",
-      "linear-gradient(160deg, #8FB1CC, #234876)"
-    ];
-    const externalLinks = getLinksFromEditor('ebLinks');
-    WORKS.push({
-      id: makeId(slugify(title)),
-      title,
-      genre: document.getElementById('ebGenre').value.trim(),
-      status: document.getElementById('ebStatus').value,
-      ageRating: document.getElementById('ebAgeRating').value,
-      updateSchedule: '',
-      universe: document.getElementById('ebUniverse').value,
-      saga: document.getElementById('ebSaga').value.trim(),
-      sousSaga: '',
-      shelf: 'parue',
-      tropes: getSelectedTropes('ebTropesPicker'),
-      releaseDate: document.getElementById('ebReleaseDate').value || todayISO(),
-      coverGradient: palettes[WORKS.length % palettes.length],
-      cover: document.getElementById('ebCover').value.trim(),
-      coverDetail: document.getElementById('ebCover').value.trim(),
-      hoverImage: document.getElementById('ebHoverImage').value.trim(),
-      synopsis: document.getElementById('ebSynopsis').value.trim(),
-      aboutText: document.getElementById('ebAboutText').value.trim(),
-      collection: document.getElementById('ebCollection').value.trim(),
-      hook: document.getElementById('ebHook').value.trim(),
-      isbn: document.getElementById('ebIsbn').value.trim(),
-      format: document.getElementById('ebFormat').value.trim(),
-      pageCount: document.getElementById('ebPageCount').value.trim(),
-      language: document.getElementById('ebLanguage').value.trim(),
-      readerPromises: document.getElementById('ebReaderPromises').value.split('\n').map(t=>t.trim()).filter(Boolean),
-      contentWarnings: document.getElementById('ebWarnings').value.split(',').map(t=>t.trim()).filter(Boolean),
-      freeDownloadUrl: document.getElementById('ebFreeDownloadUrl').value.trim(),
-      freeDownloadLabel: document.getElementById('ebFreeDownloadLabel').value.trim(),
-      freeDownloadGated: document.getElementById('ebFreeDownloadGated').checked,
-      recommendedWorkId: '',
-      characters: [],
-      externalLinks,
-      chapters: []
-    });
-    await saveWorks();
-    document.getElementById('ebMsg').textContent = "Ebook créé !";
-    toast("Ebook ajouté au site.");
-    renderAdmin();
-    adminTab = 'ebook'; applyAdminTab();
   });
 
   // import en masse (fichiers Word)
@@ -8044,14 +7976,13 @@ function updateStorageModeBadge(){
 const ADMIN_TOPBAR_META = {
   dashboard: { title: 'Tableau de bord', desc: "Vue d'ensemble de votre catalogue et accès rapide." },
   gerer: { title: 'Histoires', desc: 'Gérez vos histoires, chapitres et statuts de publication.', primary: {label:'+ Nouvelle histoire', tab:'histoire'}, importBtn: true },
-  histoire: { title: 'Nouvelle histoire', desc: 'Créez une histoire à lire directement sur le site.' },
+  histoire: { title: 'Nouvelle histoire', desc: 'Créez une histoire à lire sur le site, ou un ebook en vente — choisissez le type en haut du formulaire.' },
   import: { title: 'Import en masse', desc: 'Importez plusieurs chapitres depuis des fichiers Word (.docx).' },
   univers: { title: 'Collections', desc: 'Gérez vos genres littéraires et collections éditoriales.', primary: {label:'+ Nouvelle collection', tab:'univers'} },
   sagas: { title: 'Sagas', desc: 'Créez et modifiez vos sagas.' },
   soussagas: { title: 'Sous-sagas', desc: 'Créez et modifiez vos sous-sagas.' },
   chapitre: { title: 'Chapitres', desc: 'Ajoutez un nouveau chapitre à une histoire existante.', importBtn: true },
   personnage: { title: 'Personnages', desc: 'Ajoutez des fiches personnages à vos histoires.' },
-  ebook: { title: 'Ebooks', desc: 'Créez une fiche de vente pour un livre.' },
   tropes: { title: 'Mots-clés', desc: 'Gérez les tropes et mots-clés utilisés sur le site.' },
   messages: { title: 'Messages', desc: 'Messages reçus depuis le formulaire de contact.' },
   commentaires: { title: 'Commentaires', desc: 'Modérez les commentaires déposés par les lectrices et lecteurs.' },
@@ -8594,6 +8525,40 @@ function renderPostsManageList(){
       </div>
     </div>
   `).join('');
+}
+
+function toggleHistoireType(){
+  const isEbook = document.getElementById('hType').value === 'ebook';
+
+  document.getElementById('hStatus').style.display = isEbook ? 'none' : '';
+  document.getElementById('hStatusEbook').style.display = isEbook ? '' : 'none';
+  document.getElementById('hTypeHistoireBlock').style.display = isEbook ? 'none' : '';
+  document.getElementById('hTypeEbookBlock').style.display = isEbook ? '' : 'none';
+  document.getElementById('hSagaFieldsBlock').style.display = isEbook ? 'none' : '';
+  document.getElementById('hCollectionWrap').style.display = isEbook ? '' : 'none';
+  document.getElementById('hCoverDetailWrap').style.display = isEbook ? 'none' : '';
+  document.getElementById('hCharHoverWrap').style.display = isEbook ? 'none' : '';
+  document.getElementById('hShelfWrap').style.display = isEbook ? 'none' : '';
+  document.getElementById('hLinksWrapHistoire').style.display = isEbook ? 'none' : '';
+
+  // le champ des liens (achat/lecture) est déplacé physiquement entre Publication (ebook) et Média (histoire)
+  const linksField = document.getElementById('hLinksHost').firstElementChild;
+  if(linksField){
+    const target = isEbook ? document.getElementById('hLinksSlotEbook') : document.getElementById('hLinksSlotHistoire');
+    target.appendChild(linksField);
+  }
+
+  document.getElementById('formHistoire').querySelector('h3').textContent = isEbook ? 'Nouvel ebook' : 'Nouvelle histoire';
+  document.getElementById('submitHistoire').textContent = isEbook ? "Créer l'ebook" : "Créer l'histoire";
+}
+
+function toggleWorkSubBlock2(blockId){
+  const block = document.getElementById(blockId+'Block');
+  const icon = document.getElementById(blockId+'ToggleIcon');
+  if(!block) return;
+  const isOpen = block.style.display !== 'none';
+  block.style.display = isOpen ? 'none' : '';
+  if(icon) icon.textContent = isOpen ? '▸' : '▾';
 }
 
 function togglePostEdit(postId){
