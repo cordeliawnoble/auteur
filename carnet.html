@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Carnet personnel</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,500;1,400&family=Jost:wght@400;500;600&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;font-family:'Jost',sans-serif;}
+  body{overflow:hidden;background:#10192E;}
+
+  /* ---------- page "carnet personnel" — identité indépendante du site ---------- */
+  .mab-theme{position:fixed;inset:0;overflow:hidden;background:#10192E;}
+  .mab-layout{
+    display:grid;height:100vh;height:100dvh;
+    grid-template-columns: clamp(210px, 19vw, 320px) 1fr clamp(200px, 17vw, 300px);
+    gap:0;align-items:stretch;
+  }
+  .mab-sidebar{
+    height:100%;overflow-y:auto;padding:36px 26px;box-sizing:border-box;
+    color:#EDEFF7;background:none;
+  }
+  .mab-sidebar-right{background:none;}
+  .mab-sidebar-left{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;}
+  .mab-avatar-frame{
+    width:110px;height:110px;border-radius:50%;overflow:hidden;border:2px solid #D9B36C;
+    box-shadow:0 0 0 5px rgba(233,237,246,.08);margin-bottom:14px;flex-shrink:0;
+  }
+  .mab-avatar-frame img{width:100%;height:100%;object-fit:cover;}
+  .mab-side-name{font-family:'Playfair Display',serif;font-size:1.3rem;color:#F4EFE1;}
+  .mab-side-subtitle{font-family:'Caveat',cursive;font-size:1.1rem;color:#D9B36C;margin-bottom:22px;}
+  .mab-nav{display:flex;flex-direction:column;gap:4px;width:100%;margin-top:10px;}
+  .mab-nav a{
+    font-family:'Jost',sans-serif;font-size:.85rem;color:rgba(237,239,247,.75);padding:10px 16px;border-radius:8px;
+    cursor:pointer;transition:.2s;border:1px solid transparent;
+  }
+  .mab-nav a:hover{background:rgba(233,237,246,.08);color:#fff;}
+  .mab-nav a.active{background:rgba(217,179,108,.14);color:#F4EFE1;border-color:rgba(217,179,108,.5);}
+  .mab-back-link{
+    margin-top:32px;font-family:'Jost',sans-serif;font-size:.75rem;color:rgba(237,239,247,.6);cursor:pointer;
+    border-top:1px solid rgba(237,239,247,.15);padding-top:18px;width:100%;text-decoration:none;display:block;
+  }
+  .mab-back-link:hover{color:#D9B36C;}
+
+  .mab-main{
+    background:#FBF3E4;padding:50px clamp(24px, 4vw, 56px);box-sizing:border-box;min-width:0;
+    height:100%;overflow-y:auto;
+  }
+  .mab-main-inner{max-width:760px;margin:0 auto;}
+
+  .mab-hero{display:flex;flex-wrap:wrap;gap:30px;align-items:center;margin-bottom:44px;}
+  .mab-hero-text{flex:1;min-width:220px;}
+  .mab-hero-text h1{font-family:'Playfair Display',serif;font-size:2.1rem;color:#2A2118;line-height:1.25;margin:0 0 12px;}
+  .mab-tagline{font-family:'Lora',serif;font-style:italic;color:#7A6A55;line-height:1.7;max-width:42ch;}
+  .mab-hero-img{flex:1;min-width:240px;max-width:380px;border-radius:12px;box-shadow:0 26px 50px -24px rgba(36,26,10,.35);}
+
+  .mab-now-title{font-family:'Playfair Display',serif;font-size:1.15rem;color:#2A2118;margin:0 0 16px;}
+  .mab-now-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:50px;}
+  .mab-now-card{background:#fff;border:1px solid rgba(217,179,108,.35);border-radius:12px;padding:18px;box-shadow:0 10px 24px -18px rgba(36,26,10,.25);}
+  .mab-now-label{font-family:'Jost',sans-serif;font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:#B8863E;margin-bottom:8px;}
+  .mab-now-main{font-family:'Lora',serif;font-size:.92rem;color:#2A2118;}
+  .mab-now-sub{font-family:'Jost',sans-serif;font-size:.75rem;color:#8A7A64;margin-top:2px;}
+  .mab-now-thumb{width:44px;height:44px;border-radius:8px;object-fit:cover;flex-shrink:0;background:rgba(217,179,108,.18);font-size:1.3rem;}
+  .mab-progress-bar{height:5px;background:rgba(217,179,108,.18);border-radius:4px;overflow:hidden;margin-top:12px;}
+  .mab-progress-fill{height:100%;background:#B8863E;}
+  .mab-progress-pct{font-family:'Jost',sans-serif;font-size:.68rem;color:#8A7A64;margin-top:4px;text-align:right;}
+  .mab-stars{color:#B8863E;letter-spacing:1px;font-size:.85rem;margin-top:4px;}
+
+  .mab-tab{scroll-margin-top:36px;}
+  .mab-section-title{font-family:'Playfair Display',serif;font-size:1.4rem;color:#2A2118;margin-bottom:20px;text-align:center;}
+
+  .mab-featured-post{
+    display:flex;flex-wrap:wrap;gap:24px;background:#fff;border:1px solid rgba(217,179,108,.35);
+    border-radius:14px;overflow:hidden;cursor:pointer;transition:.2s;box-shadow:0 10px 24px -18px rgba(36,26,10,.25);
+  }
+  .mab-featured-post:hover{box-shadow:0 20px 40px -22px rgba(36,26,10,.3);}
+  .mab-featured-img{width:100%;max-width:280px;object-fit:cover;flex:1;min-width:220px;}
+  .mab-featured-body{flex:2;min-width:220px;padding:22px 22px 22px 0;}
+  .mab-featured-date{font-family:'Jost',sans-serif;font-size:.68rem;color:#8A7A64;margin-bottom:6px;}
+  .mab-featured-title{font-family:'Playfair Display',serif;font-size:1.15rem;color:#2A2118;line-height:1.35;}
+  .mab-featured-excerpt{font-family:'Lora',serif;font-size:.88rem;color:#7A6A55;line-height:1.7;margin-top:10px;}
+  .cta-secondary{
+    font-family:'Jost',sans-serif;font-size:.8rem;border:1px solid rgba(217,179,108,.5);color:#B8863E;
+    padding:11px 18px;border-radius:30px;text-align:center;line-height:1.3;cursor:pointer;transition:.2s;
+    background:transparent;display:inline-block;
+  }
+  .cta-secondary:hover{border-color:#B8863E;background:rgba(217,179,108,.12);}
+
+  .mab-books-carousel{position:relative;display:flex;align-items:center;gap:10px;}
+  .mab-books-row{display:flex;gap:18px;overflow-x:auto;flex:1;min-width:0;padding:4px 4px 10px;scrollbar-width:none;-ms-overflow-style:none;}
+  .mab-books-row::-webkit-scrollbar{display:none;}
+  .mab-book-review-card{flex:0 0 170px;background:#fff;border:1px solid rgba(217,179,108,.35);border-radius:10px;padding:14px;box-shadow:0 10px 24px -18px rgba(36,26,10,.2);}
+  .mab-book-review{font-family:'Lora',serif;font-style:italic;font-size:.78rem;color:#8A7A64;line-height:1.5;margin-top:8px;}
+  .updates-arrow{
+    flex-shrink:0;width:38px;height:38px;border-radius:50%;background:#fff;border:1px solid rgba(217,179,108,.4);
+    display:flex;align-items:center;justify-content:center;cursor:pointer;color:#B8863E;font-size:1rem;
+    transition:.2s;box-shadow:0 8px 18px -10px rgba(36,26,10,.3);
+  }
+  .updates-arrow:hover{background:#B8863E;color:#fff;}
+
+  .mab-books-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:22px;}
+  .mab-book-card{text-align:center;}
+  .mab-book-cover{width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:6px;box-shadow:0 14px 26px -16px rgba(36,26,10,.3);}
+  .mab-book-cover.placeholder{display:flex;align-items:center;justify-content:center;background:rgba(217,179,108,.15);font-size:2rem;}
+  .mab-book-title{font-family:'Lora',serif;font-size:.85rem;color:#2A2118;margin-top:10px;line-height:1.4;}
+  .mab-book-author{font-family:'Jost',sans-serif;font-size:.72rem;color:#8A7A64;margin-top:2px;}
+
+  .mab-sidebar-right{display:flex;flex-direction:column;gap:28px;}
+  .mab-side-block-title{font-family:'Jost',sans-serif;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:#D9B36C;margin-bottom:12px;}
+  .mab-side-link{display:block;font-family:'Lora',serif;font-size:.85rem;color:#EDEFF7;margin-bottom:8px;text-decoration:none;}
+  .mab-side-link:hover{text-decoration:underline;}
+  .mab-side-item{display:flex;justify-content:space-between;gap:10px;font-family:'Jost',sans-serif;font-size:.78rem;margin-bottom:10px;}
+  .mab-side-item span:first-child{color:rgba(237,239,247,.6);}
+  .mab-side-item span:last-child{color:#EDEFF7;text-align:right;}
+  .mab-friend-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;text-decoration:none;}
+  .mab-friend-avatar{width:34px;height:34px;border-radius:50%;object-fit:cover;flex-shrink:0;}
+  .mab-friend-avatar.placeholder{display:flex;align-items:center;justify-content:center;background:rgba(217,179,108,.2);color:#D9B36C;font-family:'Playfair Display',serif;font-size:.95rem;}
+  .mab-friend-name{font-family:'Lora',serif;font-size:.82rem;color:#EDEFF7;}
+  .mab-friend-tag{font-family:'Jost',sans-serif;font-size:.68rem;color:rgba(237,239,247,.55);}
+
+  .saga-desc{color:#3B4A63;line-height:1.8;text-align:justify;}
+  .mab-tab .saga-desc{color:#4A3F30;}
+  .mab-tab .saga-desc p{margin:0 0 1em;}
+
+  @media(max-width:1180px){
+    .mab-layout{grid-template-columns: clamp(180px, 16vw, 240px) 1fr clamp(170px, 14vw, 220px);}
+    .mab-sidebar{padding:28px 18px;}
+  }
+  @media(max-width:900px){
+    .mab-theme{position:static;inset:auto;overflow:visible;}
+    .mab-layout{grid-template-columns:1fr;height:auto;}
+    body{overflow:visible;}
+    .mab-sidebar{height:auto;overflow:visible;}
+    .mab-sidebar-left{flex-direction:row;flex-wrap:wrap;justify-content:center;padding:22px 20px;}
+    .mab-avatar-frame{width:64px;height:64px;margin:0 14px 0 0;}
+    .mab-nav{flex-direction:row;flex-wrap:wrap;justify-content:center;width:auto;margin-top:14px;gap:6px;}
+    .mab-back-link{width:auto;border-top:none;margin-top:14px;padding-top:0;}
+    .mab-main{padding:40px 24px;height:auto;overflow:visible;}
+  }
+  @media(max-width:640px){
+    .mab-sidebar-left{order:1;}
+    .mab-main{order:2;padding:32px 18px;}
+    .mab-sidebar-right{order:3;padding:32px 22px;}
+    .mab-hero-text h1{font-size:1.7rem;}
+  }
+
+  .loading-msg{color:#EDEFF7;font-family:'Jost',sans-serif;text-align:center;padding-top:40vh;}
+</style>
+</head>
+<body>
+<div id="app"><p class="loading-msg">Chargement…</p></div>
+
+<script>
+/* ---------- connexion Supabase (identique à celle du site principal) ---------- */
+const SUPABASE_URL = "https://naiiewmyyksoxwvzcwuo.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5haWlld215eWtzb3h3dnpjd3VvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM1ODc2MDcsImV4cCI6MjA5OTE2MzYwN30.uvJ2GXz1L4FCCbLBxy16oq4QbXUYkp-4atTpdKMaUhs";
+function supabaseHeaders(extra){
+  return Object.assign({ apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY }, extra || {});
+}
+async function sbGet(key){
+  const url = SUPABASE_URL + '/rest/v1/kv_store?key=eq.' + encodeURIComponent(key) + '&select=value';
+  const res = await fetch(url, { headers: supabaseHeaders() });
+  if(!res.ok) throw new Error('Supabase get a échoué (' + res.status + ')');
+  const rows = await res.json();
+  return rows.length ? rows[0].value : null;
+}
+
+/* ---------- utilitaires repris du site principal ---------- */
+function escapeHtml(str){
+  return (str||"").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function formatRichText(str){
+  let s = escapeHtml(str||'');
+  s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  s = s.replace(/(^|[^*])\*(?!\*)(.+?)\*(?!\*)/g, '$1<em>$2</em>');
+  s = s.replace(/_(.+?)_/g, '<em>$1</em>');
+  s = s.replace(/\+\+(.+?)\+\+/g, '<u>$1</u>');
+  s = s.replace(/~~(.+?)~~/g, '<s>$1</s>');
+  return s;
+}
+const RICH_FIELD_FONTS = {
+  'lora': "'Lora', serif", 'georgia': "Georgia, 'Times New Roman', serif",
+  'playfair': "'Playfair Display', serif", 'jost': "'Jost', sans-serif", 'caveat': "'Caveat', cursive"
+};
+function extractFieldStyle(text){
+  const m = /^<!--style:([^>]*)-->/.exec(text||'');
+  if(!m) return { font:'', size:'', body:text||'' };
+  const params = {};
+  m[1].split(';').forEach(p=>{ const [k,v]=p.split('='); if(k) params[k]=v||''; });
+  return { font: params.font||'', size: params.size||'', body: (text||'').slice(m[0].length) };
+}
+function fieldStyleCss(font, size){
+  let css = '';
+  if(font && RICH_FIELD_FONTS[font]) css += `font-family:${RICH_FIELD_FONTS[font]};`;
+  if(size) css += `font-size:${size}px;`;
+  return css;
+}
+function richParagraphs(text){
+  const parsed = extractFieldStyle(text);
+  const html = (parsed.body||'').split(/\n\s*\n/).map(p=>p.trim()).filter(Boolean).map(p=>`<p>${formatRichText(p).replace(/\n/g,'<br>')}</p>`).join('');
+  const css = fieldStyleCss(parsed.font, parsed.size);
+  return css ? `<div style="${css}">${html}</div>` : html;
+}
+function formatDate(iso){
+  if(!iso) return '—';
+  const d = new Date(iso + 'T00:00:00');
+  if(isNaN(d)) return escapeHtml(iso);
+  return d.toLocaleDateString('fr-FR', {day:'numeric', month:'short', year:'numeric'});
+}
+function scrollCharRow(rowId, dir){
+  const row = document.getElementById(rowId);
+  if(!row) return;
+  row.scrollBy({ left: dir * 320, behavior: 'smooth' });
+}
+function refreshCarouselArrows(rowId, prevId, nextId){
+  const row = document.getElementById(rowId);
+  const prev = document.getElementById(prevId);
+  const next = document.getElementById(nextId);
+  if(!row || !prev || !next) return;
+  const overflow = row.scrollWidth > row.clientWidth + 4;
+  prev.style.display = overflow ? 'flex' : 'none';
+  next.style.display = overflow ? 'flex' : 'none';
+}
+
+/* ---------- rendu de la page ---------- */
+const app = document.getElementById('app');
+let SETTINGS = {};
+let POSTS = [];
+
+function starsHtml(rating){
+  rating = Math.round(rating||0);
+  return '★★★★★☆☆☆☆☆'.slice(5-rating, 10-rating);
+}
+
+function renderCarnet(){
+  const books = SETTINGS.moreAboutBooks || [];
+  const friends = SETTINGS.moreAboutFriends || [];
+  const writing = SETTINGS.moreAboutWriting || {};
+  const reading = SETTINGS.moreAboutReading || {};
+  const listening = SETTINGS.moreAboutListening || {};
+  const socials = (SETTINGS.socials||[]).filter(s=>s.url);
+  const latestPost = POSTS.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''))[0];
+
+  app.innerHTML = `
+    <div class="mab-theme">
+    <div class="mab-layout">
+
+      <aside class="mab-sidebar mab-sidebar-left">
+        ${SETTINGS.moreAboutAvatar ? `<div class="mab-avatar-frame"><img src="${escapeHtml(SETTINGS.moreAboutAvatar)}" alt=""></div>` : ''}
+        <div class="mab-side-name">${escapeHtml(SETTINGS.name||'')}</div>
+        ${SETTINGS.moreAboutSubtitle ? `<div class="mab-side-subtitle">${escapeHtml(SETTINGS.moreAboutSubtitle)}</div>` : ''}
+        <nav class="mab-nav">
+          <a onclick="mabShowTab('accueil',this)" class="active">Accueil</a>
+          <a onclick="mabShowTab('bio',this)">À propos</a>
+          <a onclick="mabShowTab('journal',this)">Journal</a>
+          <a onclick="mabShowTab('lectures',this)">Mes lectures</a>
+          <a onclick="mabShowTab('favoris',this)">Mes favoris</a>
+        </nav>
+        <a href="index.html" class="mab-back-link">↺ Retour au site d'autrice</a>
+      </aside>
+
+      <main class="mab-main">
+      <div class="mab-main-inner">
+
+        <div class="mab-tab" data-mabtab="accueil">
+        <div class="mab-hero">
+          <div class="mab-hero-text">
+            <h1>Bonjour,<br>moi c'est ${escapeHtml(SETTINGS.name||'')}.</h1>
+            ${SETTINGS.moreAboutTagline ? `<p class="mab-tagline">${escapeHtml(SETTINGS.moreAboutTagline)}</p>` : ''}
+          </div>
+          ${SETTINGS.moreAboutHeroImage ? `<img src="${escapeHtml(SETTINGS.moreAboutHeroImage)}" alt="" class="mab-hero-img">` : ''}
+        </div>
+
+        ${(writing.title || reading.title || listening.song) ? `
+        <div class="mab-now-title">En ce moment ✦</div>
+        <div class="mab-now-row">
+          ${writing.title ? `
+          <div class="mab-now-card">
+            <div class="mab-now-label">J'écris</div>
+            <div class="mab-now-main">${escapeHtml(writing.title)}</div>
+            ${writing.chapterLabel ? `<div class="mab-now-sub">${escapeHtml(writing.chapterLabel)}</div>` : ''}
+            ${writing.progress ? `
+            <div class="mab-progress-bar"><div class="mab-progress-fill" style="width:${writing.progress}%;"></div></div>
+            <div class="mab-progress-pct">${writing.progress}%</div>` : ''}
+          </div>` : ''}
+          ${reading.title ? `
+          <div class="mab-now-card">
+            <div class="mab-now-label">Je lis</div>
+            <div style="display:flex;gap:10px;align-items:center;">
+              ${reading.cover ? `<img src="${escapeHtml(reading.cover)}" class="mab-now-thumb" alt="">` : ''}
+              <div>
+                <div class="mab-now-main">${escapeHtml(reading.title)}</div>
+                ${reading.author ? `<div class="mab-now-sub">${escapeHtml(reading.author)}</div>` : ''}
+                ${reading.rating ? `<div class="mab-stars">${starsHtml(reading.rating)}</div>` : ''}
+              </div>
+            </div>
+          </div>` : ''}
+          ${listening.song ? `
+          <div class="mab-now-card">
+            <div class="mab-now-label">J'écoute</div>
+            <div style="display:flex;gap:10px;align-items:center;">
+              ${listening.cover ? `<img src="${escapeHtml(listening.cover)}" class="mab-now-thumb" alt="">` : `<div class="mab-now-thumb" style="display:flex;align-items:center;justify-content:center;">🎵</div>`}
+              <div>
+                <div class="mab-now-main">${escapeHtml(listening.song)}</div>
+                ${listening.artist ? `<div class="mab-now-sub">${escapeHtml(listening.artist)}</div>` : ''}
+              </div>
+            </div>
+          </div>` : ''}
+        </div>` : ''}
+        </div>
+
+        <div class="mab-tab" data-mabtab="bio" style="display:none;">
+          <div class="mab-section-title">Un peu plus sur moi</div>
+          ${SETTINGS.moreAboutBio ? `<div class="saga-desc">${richParagraphs(SETTINGS.moreAboutBio)}</div>` : `<p style="color:#8A7A64;font-style:italic;text-align:center;">Rien à afficher pour le moment.</p>`}
+        </div>
+
+        <div class="mab-tab" data-mabtab="journal" style="display:none;">
+          ${latestPost ? `
+          <div class="mab-now-title">Dernière publication ✦</div>
+          <div class="mab-featured-post" onclick="window.location.href='index.html#actualites/${latestPost.id}'">
+            ${latestPost.images && latestPost.images.length ? `<img src="${escapeHtml(latestPost.images[0])}" alt="" class="mab-featured-img">` : ''}
+            <div class="mab-featured-body">
+              <div class="mab-featured-date">${latestPost.date ? formatDate(latestPost.date) : ''}</div>
+              <div class="mab-featured-title">${escapeHtml(latestPost.title)}</div>
+              <div class="mab-featured-excerpt">${richParagraphs(latestPost.body).replace(/<[^>]+>/g,' ').trim().slice(0,180)}…</div>
+              <span class="cta-secondary" style="display:inline-block;margin-top:14px;">Lire la suite</span>
+            </div>
+          </div>` : `<p style="color:#8A7A64;font-style:italic;text-align:center;">Pas encore de publication dans le journal.</p>`}
+        </div>
+
+        <div class="mab-tab" data-mabtab="lectures" style="display:none;">
+          <div class="mab-section-title">Mes dernières lectures</div>
+          ${books.length ? `
+          <div class="mab-books-carousel">
+            <span class="updates-arrow" id="mabBooksPrev" onclick="scrollCharRow('mabBooksRow',-1)">←</span>
+            <div class="mab-books-row" id="mabBooksRow">
+              ${books.map(b=>`
+                <div class="mab-book-review-card">
+                  ${b.cover ? `<img src="${escapeHtml(b.cover)}" alt="${escapeHtml(b.title)}" class="mab-book-cover">` : `<div class="mab-book-cover placeholder">📖</div>`}
+                  <div class="mab-book-title">${escapeHtml(b.title)}</div>
+                  ${b.author ? `<div class="mab-book-author">${escapeHtml(b.author)}</div>` : ''}
+                  ${b.rating ? `<div class="mab-stars">${starsHtml(b.rating)}</div>` : ''}
+                  ${b.review ? `<div class="mab-book-review">« ${escapeHtml(b.review)} »</div>` : ''}
+                </div>
+              `).join('')}
+            </div>
+            <span class="updates-arrow" id="mabBooksNext" onclick="scrollCharRow('mabBooksRow',1)">→</span>
+          </div>` : `<p style="color:#8A7A64;font-style:italic;text-align:center;">Rien à afficher pour le moment.</p>`}
+        </div>
+
+        <div class="mab-tab" data-mabtab="favoris" style="display:none;">
+          <div class="mab-section-title">Mes favoris</div>
+          <div class="mab-books-grid">
+            ${books.filter(b=>b.favorite).map(b=>`
+              <div class="mab-book-card">
+                ${b.cover ? `<img src="${escapeHtml(b.cover)}" alt="${escapeHtml(b.title)}" class="mab-book-cover">` : `<div class="mab-book-cover placeholder">📖</div>`}
+                <div class="mab-book-title">${escapeHtml(b.title)}</div>
+                ${b.author ? `<div class="mab-book-author">${escapeHtml(b.author)}</div>` : ''}
+              </div>
+            `).join('') || '<p style="color:#8A7A64;font-style:italic;">Aucun favori marqué pour le moment.</p>'}
+          </div>
+        </div>
+
+      </div>
+      </main>
+
+      <aside class="mab-sidebar mab-sidebar-right">
+        ${socials.length ? `
+        <div>
+          <div class="mab-side-block-title">Retrouvez-moi ✦</div>
+          ${socials.map(s=>`<a href="${escapeHtml(s.url)}" target="_blank" rel="noopener" class="mab-side-link">${escapeHtml(s.label)}</a>`).join('')}
+        </div>` : ''}
+        ${(SETTINGS.moreAboutMood || SETTINGS.moreAboutInspiration) ? `
+        <div>
+          <div class="mab-side-block-title">Actuellement ✦</div>
+          ${SETTINGS.moreAboutMood ? `<div class="mab-side-item"><span>Humeur</span><span>${escapeHtml(SETTINGS.moreAboutMood)}</span></div>` : ''}
+          ${SETTINGS.moreAboutInspiration ? `<div class="mab-side-item"><span>Inspiration</span><span>${escapeHtml(SETTINGS.moreAboutInspiration)}</span></div>` : ''}
+        </div>` : ''}
+        ${friends.length ? `
+        <div>
+          <div class="mab-side-block-title">Mes copines ✦</div>
+          ${friends.map(f=>`
+            <a href="${escapeHtml(f.url||'#')}" target="_blank" rel="noopener" class="mab-friend-row">
+              ${f.avatar ? `<img src="${escapeHtml(f.avatar)}" class="mab-friend-avatar" alt="">` : `<div class="mab-friend-avatar placeholder">${escapeHtml((f.name||'?').charAt(0))}</div>`}
+              <div>
+                <div class="mab-friend-name">${escapeHtml(f.name)}</div>
+                ${f.tag ? `<div class="mab-friend-tag">${escapeHtml(f.tag)}</div>` : ''}
+              </div>
+            </a>
+          `).join('')}
+        </div>` : ''}
+      </aside>
+
+    </div>
+    </div>
+  `;
+
+  if(SETTINGS.moreAboutBgImage){
+    document.body.style.backgroundImage = `url('${SETTINGS.moreAboutBgImage.replace(/'/g,"\\'")}')`;
+    document.body.style.backgroundSize = 'cover';
+    document.body.style.backgroundPosition = 'center';
+  }
+
+  if(books.length) setTimeout(()=>refreshCarouselArrows('mabBooksRow','mabBooksPrev','mabBooksNext'), 60);
+}
+
+function mabShowTab(tab, linkEl){
+  document.querySelectorAll('.mab-tab').forEach(t=>{ t.style.display = t.dataset.mabtab===tab ? '' : 'none'; });
+  document.querySelectorAll('.mab-nav a').forEach(a=>a.classList.remove('active'));
+  if(linkEl) linkEl.classList.add('active');
+  const mainEl = document.querySelector('.mab-main');
+  if(mainEl) mainEl.scrollTop = 0;
+}
+
+/* ---------- chargement des données puis affichage ---------- */
+(async function init(){
+  try{
+    const [settingsRaw, postsRaw] = await Promise.all([
+      sbGet('site:settings'),
+      sbGet('site:posts')
+    ]);
+    SETTINGS = settingsRaw ? JSON.parse(settingsRaw) : {};
+    POSTS = postsRaw ? JSON.parse(postsRaw) : [];
+    renderCarnet();
+  }catch(err){
+    app.innerHTML = '<p class="loading-msg">Impossible de charger le carnet pour le moment.<br>Réessayez dans un instant.</p>';
+    console.error(err);
+  }
+})();
+</script>
+</body>
+</html>
