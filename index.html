@@ -227,7 +227,7 @@ main{max-width:1180px;margin:0 auto;padding:0 24px 100px;}
 .footer-socials a{display:inline-flex;margin:0;padding:7px 14px;border:1px solid var(--line);border-radius:20px;font-size:.78rem;}
 .footer-socials a:hover{border-color:var(--wine);background:var(--wine);color:#fff;}
 .footer-bottom{
-  max-width:1180px;margin:0 auto;padding:20px 24px;border-top:1px solid var(--line);
+  max-width:1180px;margin:0 auto;padding:4px 24px;
   font-family:'Jost',sans-serif;font-size:.75rem;color:var(--muted);text-align:center;
 }
 .footer-bottom a{color:var(--muted);cursor:pointer;border-bottom:1px solid var(--line);transition:.2s;}
@@ -278,6 +278,9 @@ main{max-width:1180px;margin:0 auto;padding:0 24px 100px;}
 .podcast-episode.open .podcast-tile{border-color:#8B6FA8;box-shadow:0 0 0 3px rgba(139,111,168,.15);}
 .podcast-tile-img{width:100%;height:100%;object-fit:cover;display:block;}
 .podcast-tile-img.placeholder{background:linear-gradient(160deg, var(--gold-soft), var(--bg-alt));}
+.podcast-tile-img.base, .podcast-tile-img.hover{position:absolute;inset:0;}
+.podcast-tile-img.hover{opacity:0;transition:opacity .3s;}
+.podcast-tile:hover .podcast-tile-img.hover{opacity:1;}
 .podcast-tile-overlay{
   position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
   background:linear-gradient(to top, rgba(19,33,58,.55), rgba(19,33,58,.08));color:#fff;
@@ -1855,29 +1858,6 @@ footer{border-top:1px solid var(--line);padding:34px 24px;text-align:center;font
 <main id="app"></main>
 
 <footer id="siteFooter">
-  <div class="footer-inner">
-    <div class="footer-col footer-brand">
-      <div class="footer-name" id="footerName">Nom de plume</div>
-      <div class="footer-tagline" id="footerTagline"></div>
-    </div>
-    <div class="footer-col">
-      <div class="footer-col-title">Explorer</div>
-      <a onclick="navigate('home')">Accueil</a>
-      <a onclick="navigate('univers')">Mes collections</a>
-      <a onclick="navigate('sagas')">Mes univers</a>
-      <a onclick="navigate('works')">Mes œuvres</a>
-      <a onclick="navigate('podcast')">Mon podcast</a>
-      <a onclick="navigate('favoris')">Vos favoris</a>
-      <a onclick="navigate('actualites')">Mes actualités</a>
-      <a onclick="navigate('calendrier')">Mon calendrier</a>
-      <a onclick="navigate('contact')">Contact</a>
-      <a onclick="navigate('presse')">Kit presse</a>
-    </div>
-    <div class="footer-col">
-      <div class="footer-col-title">Me suivre</div>
-      <div class="footer-socials" id="footerSocials"></div>
-    </div>
-  </div>
   <div class="footer-bottom">
     <span id="footerText">© 2026 Nom de plume — tous droits réservés</span>
     <span class="footer-sep">·</span>
@@ -3370,7 +3350,7 @@ function render(){
   else if(parts[0] === 'desinscription'){ setActiveNav(''); renderUnsubscribePage(); }
   else if(parts[0] === 'bibliotheque'){ setActiveNav('bibliotheque'); renderBibliotheque(); }
   else if(parts[0] === 'calendrier'){ setActiveNav('calendrier'); renderCalendrier(); }
-  else if(parts[0] === 'podcast'){ setActiveNav('podcast'); renderPodcastPage(); }
+  else if(parts[0] === 'podcast'){ setActiveNav('podcast'); renderPodcastPage(parts[1]); }
   else if(parts[0] === 'mentions-legales'){ setActiveNav(''); renderMentionsLegales(); }
   else if(parts[0] === 'confidentialite'){ setActiveNav(''); renderPrivacyPolicy(); }
   else if(parts[0] === 'favoris'){ setActiveNav('bibliotheque'); renderFavoris(); }
@@ -3497,6 +3477,10 @@ function getLatestUpdates(limit){
       items.push({ date: w.releaseDate, type: 'histoire', workId: w.id, title: w.title, workTitle: w.universe || '', image: w.cover || '', gradient: w.coverGradient });
     }
   });
+  PODCAST_EPISODES.forEach(ep=>{
+    if(!ep.date || ep.date > today) return;
+    items.push({ date: ep.date, type: 'episode', episodeId: ep.id, title: 'Épisode ' + ep.number, workTitle: 'La Charentaise dans la Parenthèse', image: ep.image || '', gradient: 'linear-gradient(160deg, #A794C4, #6B5389)' });
+  });
   items.sort((a,b) => b.date.localeCompare(a.date));
   return items.slice(0, limit || 6);
 }
@@ -3513,12 +3497,13 @@ function renderLatestUpdates(containerId){
         const bg = it.image
           ? `background-image:url('${it.image.replace(/'/g,"\\'")}');background-size:cover;background-position:center;`
           : `background:${it.gradient};`;
-        const dest = it.type === 'chapitre' ? `story/${it.workId}/${it.chapterId}` : `story/${it.workId}`;
-        const label = it.type === 'chapitre' ? 'Nouveau chapitre' : 'Nouveau tome';
+        const badgeType = it.type==='chapitre' ? 'chapitre' : (it.type==='episode' ? 'episode' : 'tome');
+        const dest = it.type === 'chapitre' ? `story/${it.workId}/${it.chapterId}` : (it.type === 'episode' ? `podcast/${it.episodeId}` : `story/${it.workId}`);
+        const label = it.type === 'chapitre' ? 'Nouveau chapitre' : (it.type === 'episode' ? 'Nouvel épisode' : 'Nouveau tome');
         return `
-          <div class="update-card" data-type="${it.type==='chapitre'?'chapitre':'tome'}" onclick="navigate('${dest}')">
+          <div class="update-card" data-type="${badgeType}" onclick="navigate('${dest}')">
             <div class="cover" style="${bg}"></div>
-            <span class="uc-badge" style="background:${hexToRgba(badgeColorsFor('updates')[it.type==='chapitre'?'chapitre':'tome'], .9)};">${label}</span>
+            <span class="uc-badge" style="background:${hexToRgba(badgeColorsFor('updates')[badgeType], .9)};">${label}</span>
             <span class="uc-title">${escapeHtml(it.title)}</span>
             <div class="update-overlay">
               <div class="uo-inner">
@@ -4617,14 +4602,22 @@ function checkReadMoreOverflow(wrapId, btnId){
 }
 
 function entryTargetRoute(e){
-  return e.type==='chapitre' ? `story/${e.workId}/${e.chapterId}` : `story/${e.workId}`;
+  if(e.type==='chapitre') return `story/${e.workId}/${e.chapterId}`;
+  if(e.type==='episode') return `podcast/${e.episodeId}`;
+  return `story/${e.workId}`;
+}
+function entryTypeKey(e){
+  return e.type==='chapitre' ? 'chapitre' : (e.type==='episode' ? 'episode' : 'tome');
+}
+function entryTypeLabel(e){
+  return e.type==='chapitre' ? 'Nouveau chapitre' : (e.type==='episode' ? 'Nouvel épisode' : 'Sortie de livre');
 }
 
 /* ---------- page "Mon podcast" ---------- */
 let podcastOpenEpisodeId = null;
 let podcastAudioEl = null;
 
-function renderPodcastPage(){
+function renderPodcastPage(directEpisodeId){
   podcastOpenEpisodeId = null;
   if(podcastAudioEl) podcastAudioEl.pause();
 
@@ -4655,6 +4648,13 @@ function renderPodcastPage(){
     </div>` : ''}
   `;
   drawPodcastGrid();
+  if(directEpisodeId && findEpisode(directEpisodeId)){
+    togglePodcastEpisode(directEpisodeId);
+    setTimeout(()=>{
+      const el = document.getElementById('podcastGrid');
+      if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+    }, 80);
+  }
 }
 
 function drawPodcastGrid(){
@@ -4670,7 +4670,8 @@ function drawPodcastGrid(){
     return `
       <div class="podcast-episode${isOpen?' open':''}">
         <div class="podcast-tile" onclick="togglePodcastEpisode('${ep.id}')" aria-expanded="${isOpen}" aria-label="Épisode ${escapeHtml(ep.number)}">
-          ${ep.image ? `<img src="${escapeHtml(ep.image)}" alt="" class="podcast-tile-img">` : `<div class="podcast-tile-img placeholder"></div>`}
+          ${ep.image ? `<img src="${escapeHtml(ep.image)}" alt="" class="podcast-tile-img base">` : `<div class="podcast-tile-img placeholder"></div>`}
+          ${ep.hoverImage ? `<img src="${escapeHtml(ep.hoverImage)}" alt="" class="podcast-tile-img hover">` : ''}
           <div class="podcast-tile-overlay">
             <div class="podcast-charentaise">{ 🥿 }</div>
             <div class="podcast-number">${escapeHtml(ep.number)}</div>
@@ -4786,12 +4787,14 @@ function renderCalendrier(){
         <span class="ctf-btn active" data-type="all">Tout</span>
         <span class="ctf-btn" data-type="chapitre">Nouveaux chapitres</span>
         <span class="ctf-btn" data-type="sortie">Sorties de livres</span>
+        <span class="ctf-btn" data-type="episode">Épisodes</span>
       </div>
     </div>
 
     <div class="cal-legend">
       <span><span class="cal-dot" style="background:${badgeColorsFor('updates')['chapitre']};"></span> Nouveau chapitre</span>
       <span><span class="cal-dot" style="background:${badgeColorsFor('updates')['tome']};"></span> Sortie de livre</span>
+      <span><span class="cal-dot" style="background:${badgeColorsFor('updates')['episode']};"></span> Nouvel épisode</span>
     </div>
 
     <div class="cal-layout">
@@ -4842,7 +4845,7 @@ function renderUpcomingCards(){
   el.innerHTML = upcoming.map(e=>`
     <div class="cal-upcoming-card" onclick="navigate('${entryTargetRoute(e)}')">
       <div class="cuc-date">${formatDate(e.date)}</div>
-      <div class="cuc-type" style="color:${badgeColorsFor('updates')[e.type==='chapitre'?'chapitre':'tome']};">${e.type==='chapitre'?'Nouveau chapitre':'Sortie de livre'}</div>
+      <div class="cuc-type" style="color:${badgeColorsFor('updates')[entryTypeKey(e)]};">${entryTypeLabel(e)}</div>
       <div class="cuc-title">${escapeHtml(e.title)}</div>
       <div class="cuc-work">${escapeHtml(e.workTitle)}</div>
     </div>
@@ -4865,6 +4868,10 @@ function getCalendarEntries(){
     if(w.shelf === 'parue' && w.releaseDate){
       entries.push({ date: w.releaseDate, type:'sortie', workId:w.id, title:w.title, workTitle:w.title });
     }
+  });
+  PODCAST_EPISODES.forEach(ep=>{
+    if(!ep.date) return;
+    entries.push({ date: ep.date, type:'episode', episodeId: ep.id, title:'Épisode '+ep.number, workTitle:'La Charentaise dans la Parenthèse' });
   });
   return entries;
 }
@@ -4914,11 +4921,12 @@ function drawCalendarMonth(){
     const isToday = dateStr === todayISO();
     const isSelected = dateStr === calendarSelectedDate;
     const hasChapitre = dayEntries.some(e=>e.type==='chapitre');
-    const hasTome = dayEntries.some(e=>e.type!=='chapitre');
+    const hasTome = dayEntries.some(e=>e.type==='sortie');
+    const hasEpisode = dayEntries.some(e=>e.type==='episode');
     cells += `
       <div class="cal-cell-c${isToday?' today':''}${dayEntries.length?' has-entry':''}${isSelected?' selected':''}" ${dayEntries.length?`onclick="selectCalendarDate('${dateStr}')"`:''} title="${dayEntries.map(e=>e.title).join(', ').replace(/"/g,'')}">
         <span class="ccc-num">${d}</span>
-        ${dayEntries.length ? `<span class="ccc-dots">${hasChapitre?`<span class="ccc-dot" style="background:${badgeColorsFor('updates').chapitre};"></span>`:''}${hasTome?`<span class="ccc-dot" style="background:${badgeColorsFor('updates').tome};"></span>`:''}</span>` : ''}
+        ${dayEntries.length ? `<span class="ccc-dots">${hasChapitre?`<span class="ccc-dot" style="background:${badgeColorsFor('updates').chapitre};"></span>`:''}${hasTome?`<span class="ccc-dot" style="background:${badgeColorsFor('updates').tome};"></span>`:''}${hasEpisode?`<span class="ccc-dot" style="background:${badgeColorsFor('updates').episode};"></span>`:''}</span>` : ''}
       </div>
     `;
   }
@@ -4965,7 +4973,7 @@ function renderMonthAgenda(entries, year, month){
           <div class="car-daynum">${dayNum}</div>
         </div>
         <div class="car-content">
-          <div class="car-type" style="color:${badgeColorsFor('updates')[e.type==='chapitre'?'chapitre':'tome']};">${e.type==='chapitre'?'Nouveau chapitre':'Sortie de livre'}</div>
+          <div class="car-type" style="color:${badgeColorsFor('updates')[entryTypeKey(e)]};">${entryTypeLabel(e)}</div>
           <div class="car-title">${escapeHtml(e.title)}</div>
           <div class="car-work">${escapeHtml(e.workTitle)}</div>
         </div>
@@ -5072,7 +5080,7 @@ const DEFAULT_BADGE_COLORS = {
     'À venir':'#8B6FA8', 'En cours de publication':'#5E86A8', 'Terminée':'#6E8B5E', 'Publié':'#6E8B5E'
   },
   shelf: { 'plateforme':'#6E8B5E', 'parue':'#5E86A8', 'a-venir':'#C78F49' },
-  updates: { 'chapitre':'#7C93C2', 'tome':'#C97B84' },
+  updates: { 'chapitre':'#7C93C2', 'tome':'#C97B84', 'episode':'#8B6FA8' },
   newBadge: '#5E86A8'
 };
 function badgeColorsFor(group){
@@ -7047,6 +7055,10 @@ function renderAdmin(){
           <div class="row2">
             <div><label>Nouveau chapitre</label><input type="color" id="clUpdateChapitre" value="${badgeColorsFor('updates')['chapitre']}"></div>
             <div><label>Nouveau tome</label><input type="color" id="clUpdateTome" value="${badgeColorsFor('updates')['tome']}"></div>
+          </div>
+          <div class="row2">
+            <div><label>Nouvel épisode (podcast)</label><input type="color" id="clUpdateEpisode" value="${badgeColorsFor('updates')['episode']}"></div>
+            <div></div>
           </div>        </div>
 
         <div class="wtab-content" data-wtab="autre" style="display:none;">
@@ -7536,6 +7548,10 @@ function renderAdmin(){
               <input type="text" id="pcNewImage" placeholder="https://...">
             </div>
           </div>
+          <div>
+            <label>Image de survol (facultatif — remplace la vignette au survol)</label>
+            <input type="text" id="pcNewHoverImage" placeholder="https://...">
+          </div>
           <div class="admin-msg" id="pcNewMsg"></div>
           <button type="button" class="submit-btn" onclick="submitNewEpisode()">Publier l'épisode</button>
 
@@ -7932,7 +7948,8 @@ function renderAdmin(){
         },
         updates: {
           'chapitre': document.getElementById('clUpdateChapitre').value,
-          'tome': document.getElementById('clUpdateTome').value
+          'tome': document.getElementById('clUpdateTome').value,
+          'episode': document.getElementById('clUpdateEpisode').value
         },
         newBadge: document.getElementById('clNewBadge').value,
         tropes: (SETTINGS.badgeColors && SETTINGS.badgeColors.tropes) || {},
@@ -8373,7 +8390,7 @@ function renderAdmin(){
   setTimeout(updateStorageModeBadge, 1200);
 
   // bouton d'envoi d'image sur les champs concernés
-  ['sHeroImage','sAuthorPhoto','sPressKitPhotoHD','mabBgImage','mabPlayingCover','apHoverImage','pcHeroImage','pcNewImage','hCover','hCoverDetail','hHoverImage','hCharHoverImage','uImageTile','uImageListBanner','uImageBanner','sgNewCoverVitrail','sgNewCoverBanner','sgNewCoverHero','ssCover','ssCoverHero','pImage','chImage','rcCover','sIndepHeroImage','sUniversHeroImage','sCollectionsHeroImage','sSiteBgImage','sQuickFactsBg','sChapterEndImage','ebCover','ebHoverImage','btnImgDefault','btnImgHover','btnImgActive','btnImgDisabled'].forEach(attachImageUploader);
+  ['sHeroImage','sAuthorPhoto','sPressKitPhotoHD','mabBgImage','mabPlayingCover','apHoverImage','pcHeroImage','pcNewImage','pcNewHoverImage','hCover','hCoverDetail','hHoverImage','hCharHoverImage','uImageTile','uImageListBanner','uImageBanner','sgNewCoverVitrail','sgNewCoverBanner','sgNewCoverHero','ssCover','ssCoverHero','pImage','chImage','rcCover','sIndepHeroImage','sUniversHeroImage','sCollectionsHeroImage','sSiteBgImage','sQuickFactsBg','sChapterEndImage','ebCover','ebHoverImage','btnImgDefault','btnImgHover','btnImgActive','btnImgDisabled'].forEach(attachImageUploader);
   renderLinksFieldGroup('hLinks', []);
   renderLinksFieldGroup('ebLinks', []);
   renderLinksFieldGroup('rcLinks', []);
@@ -10182,13 +10199,15 @@ async function submitNewEpisode(){
     date: document.getElementById('pcNewDate').value,
     audioUrl,
     duration: document.getElementById('pcNewDuration').value.trim(),
-    image: document.getElementById('pcNewImage').value.trim()
+    image: document.getElementById('pcNewImage').value.trim(),
+    hoverImage: document.getElementById('pcNewHoverImage').value.trim()
   });
   await savePodcastEpisodes();
   document.getElementById('pcNewNumber').value = nextEpisodeNumber();
   document.getElementById('pcNewAudioUrl').value = '';
   document.getElementById('pcNewDuration').value = '';
   document.getElementById('pcNewImage').value = '';
+  document.getElementById('pcNewHoverImage').value = '';
   msgEl.textContent = 'Épisode publié ✓';
   toast('Épisode publié.');
   renderEpisodesManageList();
@@ -10223,6 +10242,7 @@ function renderEpisodesManageList(){
           <div><label>Durée affichée</label><input type="text" id="epDuration-${ep.id}" value="${escapeHtml(ep.duration||'')}"></div>
           <div><label>Vignette</label><input type="text" id="epImage-${ep.id}" value="${escapeHtml(ep.image||'')}"></div>
         </div>
+        <div><label>Image de survol (facultatif)</label><input type="text" id="epHoverImage-${ep.id}" value="${escapeHtml(ep.hoverImage||'')}"></div>
         <div style="display:flex;align-items:center;gap:14px;">
           <div class="submit-btn" style="padding:9px 20px;font-size:.8rem;" onclick="saveEpisodeEdit('${ep.id}')">Enregistrer</div>
           <span class="admin-msg" id="epMsg-${ep.id}" style="margin:0;"></span>
@@ -10230,7 +10250,7 @@ function renderEpisodesManageList(){
       </div>
     </div>
   `).join('');
-  sorted.forEach(ep=>attachImageUploader('epImage-'+ep.id));
+  sorted.forEach(ep=>{ attachImageUploader('epImage-'+ep.id); attachImageUploader('epHoverImage-'+ep.id); });
 }
 function toggleEpisodeEdit(id){
   const block = document.getElementById('epEditBlock-'+id);
@@ -10244,6 +10264,7 @@ async function saveEpisodeEdit(id){
   ep.audioUrl = document.getElementById('epAudioUrl-'+id).value.trim();
   ep.duration = document.getElementById('epDuration-'+id).value.trim();
   ep.image = document.getElementById('epImage-'+id).value.trim();
+  ep.hoverImage = document.getElementById('epHoverImage-'+id).value.trim();
   await savePodcastEpisodes();
   document.getElementById('epMsg-'+id).textContent = 'Enregistré ✓';
   renderEpisodesManageList();
