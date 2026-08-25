@@ -265,6 +265,56 @@ main{max-width:1180px;margin:0 auto;padding:0 24px 100px;}
   box-shadow:0 24px 50px -26px rgba(36,51,82,.4);
 }
 
+/* ---------- page "Mon podcast" ---------- */
+.podcast-intro{max-width:640px;margin:36px auto 0;text-align:center;font-family:'Lora',serif;line-height:1.9;color:var(--ink);}
+.podcast-intro p{margin:0 0 1em;}
+.podcast-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:22px;margin-top:26px;}
+.podcast-episode{display:flex;flex-direction:column;}
+.podcast-tile{
+  position:relative;aspect-ratio:1/1;border-radius:8px;overflow:hidden;cursor:pointer;
+  background:var(--bg-alt);border:1px solid var(--line);transition:transform .25s ease, border-color .25s ease;
+}
+.podcast-tile:hover{transform:translateY(-3px);border-color:#8B6FA8;}
+.podcast-episode.open .podcast-tile{border-color:#8B6FA8;box-shadow:0 0 0 3px rgba(139,111,168,.15);}
+.podcast-tile-img{width:100%;height:100%;object-fit:cover;display:block;}
+.podcast-tile-img.placeholder{background:linear-gradient(160deg, var(--gold-soft), var(--bg-alt));}
+.podcast-tile-overlay{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+  background:linear-gradient(to top, rgba(19,33,58,.55), rgba(19,33,58,.08));color:#fff;
+}
+.podcast-charentaise{font-size:1.25rem;transition:transform .3s ease;}
+.podcast-tile:hover .podcast-charentaise{transform:translateY(-3px) rotate(-8deg);}
+@media(prefers-reduced-motion: reduce){
+  .podcast-tile, .podcast-charentaise{transition:none !important;}
+  .podcast-tile:hover{transform:none;}
+  .podcast-tile:hover .podcast-charentaise{transform:none;}
+}
+.podcast-number{font-family:'Playfair Display',serif;font-size:1.05rem;letter-spacing:.05em;}
+.podcast-meta{display:flex;justify-content:center;gap:10px;font-family:'Jost',sans-serif;font-size:.66rem;color:var(--muted);margin-top:8px;}
+.podcast-player{
+  margin-top:10px;padding:9px 12px;background:var(--bg-card);border:1px solid var(--line);border-radius:20px;
+  display:flex;align-items:center;gap:9px;
+}
+.podcast-play-btn{
+  width:28px;height:28px;border-radius:50%;background:#8B6FA8;color:#fff;display:flex;align-items:center;
+  justify-content:center;cursor:pointer;flex-shrink:0;font-size:.7rem;
+}
+.podcast-play-btn:hover{background:#75568F;}
+.podcast-progress-track{flex:1;height:4px;background:var(--bg-alt);border-radius:4px;cursor:pointer;position:relative;min-width:0;}
+.podcast-progress-fill{height:100%;width:0%;background:var(--gold);border-radius:4px;}
+.podcast-time{font-family:'Jost',sans-serif;font-size:.6rem;color:var(--muted);white-space:nowrap;}
+.podcast-volume{width:46px;accent-color:#8B6FA8;flex-shrink:0;}
+.podcast-discord-cta{
+  max-width:520px;margin:70px auto 20px;text-align:center;padding:34px 30px;border-radius:14px;
+  background:var(--bg-card);border:1px solid var(--line);border-top:3px solid #8B6FA8;
+}
+.podcast-discord-title{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--ink);margin-bottom:10px;}
+.podcast-discord-cta p{font-family:'Lora',serif;font-style:italic;color:var(--muted);line-height:1.7;margin-bottom:22px;}
+@media(max-width:600px){
+  .podcast-grid{grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:16px;}
+  .podcast-player{flex-wrap:wrap;}
+}
+
 /* ---------- page "Mes romans indépendants" ---------- */
 .indep-hero{display:flex;align-items:center;gap:48px;margin:36px 0 20px;flex-wrap:wrap;}
 .indep-hero-text{flex:1 1 340px;min-width:280px;}
@@ -1772,13 +1822,13 @@ footer{border-top:1px solid var(--line);padding:34px 24px;text-align:center;font
     </div>
     <div style="display:flex;align-items:center;gap:28px;">
       <nav class="links" id="navLinks">
-        <a onclick="navigate('home')" data-nav="home">Accueil</a>
         <a onclick="navigate('univers')" data-nav="univers">Mes collections</a>
         <a onclick="navigate('sagas')" data-nav="sagas">Mes univers</a>
         <a onclick="navigate('works')" data-nav="works">Mes œuvres</a>
-        <a onclick="navigate('favoris')" data-nav="favoris">Vos favoris</a>
+        <a onclick="navigate('podcast')" data-nav="podcast">Mon podcast</a>
         <a onclick="navigate('actualites')" data-nav="actualites">Mes actualités</a>
         <a onclick="navigate('calendrier')" data-nav="calendrier">Mon calendrier</a>
+        <a onclick="navigate('favoris')" data-nav="favoris">Vos favoris</a>
       </nav>
       <div class="nav-right">
         <span class="nav-search-icon" onclick="toggleSiteSearch()" aria-label="Rechercher" title="Rechercher">
@@ -1816,6 +1866,7 @@ footer{border-top:1px solid var(--line);padding:34px 24px;text-align:center;font
       <a onclick="navigate('univers')">Mes collections</a>
       <a onclick="navigate('sagas')">Mes univers</a>
       <a onclick="navigate('works')">Mes œuvres</a>
+      <a onclick="navigate('podcast')">Mon podcast</a>
       <a onclick="navigate('favoris')">Vos favoris</a>
       <a onclick="navigate('actualites')">Mes actualités</a>
       <a onclick="navigate('calendrier')">Mon calendrier</a>
@@ -2345,6 +2396,10 @@ const SEED_SETTINGS = {
   moreAboutWriting: {},
   moreAboutReading: {},
   moreAboutListening: {},
+  moreAboutPlaying: {},
+  podcastHeroImage: '',
+  podcastIntro: "Bonjour les étoiles… Ici, je partage simplement une réflexion, une idée, une expérience autour de l'écriture, de la créativité ou de ma vie d'autrice — comme un vocal envoyé à une copine. Pas de fréquence fixe, pas de durée stricte, juste une parenthèse.",
+  podcastDiscordUrl: '',
   moreAboutMood: '',
   moreAboutInspiration: '',
   moreAboutFriends: [],
@@ -2527,6 +2582,30 @@ function ensureCategoryRegistered(name){
 }
 function activePostCategories(){
   return postCategories().filter(c => catMeta(c).active !== false);
+}
+function allRegisteredCategories(){
+  return [...new Set([...Object.keys(POST_CATEGORIES), ...postCategories()])];
+}
+
+/* ---------- épisodes du podcast ---------- */
+const PODCAST_KEY = 'site:podcastEpisodes';
+let PODCAST_EPISODES = [];
+async function loadPodcastEpisodes(){
+  try{
+    const res = await window.storage.get(PODCAST_KEY, true);
+    if(res && res.value){ PODCAST_EPISODES = JSON.parse(res.value); return; }
+  }catch(e){
+    console.error("Échec du chargement des épisodes du podcast, on ne les écrase surtout pas :", e);
+  }
+  PODCAST_EPISODES = [];
+}
+async function savePodcastEpisodes(){
+  try{ await window.storage.set(PODCAST_KEY, JSON.stringify(PODCAST_EPISODES), true); }catch(e){}
+}
+function findEpisode(id){ return PODCAST_EPISODES.find(e=>e.id===id); }
+function nextEpisodeNumber(){
+  const max = PODCAST_EPISODES.reduce((m,e)=>Math.max(m, parseInt(e.number,10)||0), -1);
+  return String(max+1).padStart(3,'0');
 }
 
 const UNIVERSE_META_KEY = 'site:universeMeta';
@@ -3161,7 +3240,7 @@ window.addEventListener('DOMContentLoaded', async ()=>{
   }
   app.innerHTML = '<p style="padding:80px 0;text-align:center;color:var(--muted);font-family:\'Jost\',sans-serif;">Chargement…</p>';
   await loadTropeCategories();
-  await Promise.all([loadWorks(), loadUniverseMeta(), loadSagaMeta(), loadSousSagaMeta(), loadTropesList(), loadSettings(), loadPosts(), loadPostCategoriesMeta()]);
+  await Promise.all([loadWorks(), loadUniverseMeta(), loadSagaMeta(), loadSousSagaMeta(), loadTropesList(), loadSettings(), loadPosts(), loadPostCategoriesMeta(), loadPodcastEpisodes()]);
   applySettingsToChrome();
   render();
   refreshReadingWidget();
@@ -3291,6 +3370,7 @@ function render(){
   else if(parts[0] === 'desinscription'){ setActiveNav(''); renderUnsubscribePage(); }
   else if(parts[0] === 'bibliotheque'){ setActiveNav('bibliotheque'); renderBibliotheque(); }
   else if(parts[0] === 'calendrier'){ setActiveNav('calendrier'); renderCalendrier(); }
+  else if(parts[0] === 'podcast'){ setActiveNav('podcast'); renderPodcastPage(); }
   else if(parts[0] === 'mentions-legales'){ setActiveNav(''); renderMentionsLegales(); }
   else if(parts[0] === 'confidentialite'){ setActiveNav(''); renderPrivacyPolicy(); }
   else if(parts[0] === 'favoris'){ setActiveNav('bibliotheque'); renderFavoris(); }
@@ -4538,6 +4618,152 @@ function checkReadMoreOverflow(wrapId, btnId){
 
 function entryTargetRoute(e){
   return e.type==='chapitre' ? `story/${e.workId}/${e.chapterId}` : `story/${e.workId}`;
+}
+
+/* ---------- page "Mon podcast" ---------- */
+let podcastOpenEpisodeId = null;
+let podcastAudioEl = null;
+
+function renderPodcastPage(){
+  podcastOpenEpisodeId = null;
+  if(podcastAudioEl) podcastAudioEl.pause();
+
+  app.innerHTML = `
+    ${SETTINGS.podcastHeroImage ? `
+    <img class="home-hero-banner" src="${escapeHtml(SETTINGS.podcastHeroImage)}" alt="">
+    ` : `
+    <section class="indep-hero">
+      <div class="indep-hero-text">
+        <div class="eyebrow">Podcast</div>
+        <h1>La Charentaise dans la Parenthèse</h1>
+        <div class="hand-swash" style="margin:14px 0;"></div>
+        <div class="script-line">« Enfile tes chaussons et viens parcourir avec moi la parenthèse du jour. »</div>
+      </div>
+    </section>
+    `}
+
+    <div class="podcast-intro">${richParagraphs(SETTINGS.podcastIntro)}</div>
+
+    <div class="section-title" style="margin-top:50px;justify-content:center;text-align:center;"><h2 style="width:100%;">Les épisodes</h2><div class="rule"></div></div>
+    <div class="podcast-grid" id="podcastGrid"></div>
+
+    ${SETTINGS.podcastDiscordUrl ? `
+    <div class="podcast-discord-cta">
+      <div class="podcast-discord-title">La Parenthèse étoilée</div>
+      <p>Une parenthèse t'a donné envie de répondre ? Viens poursuivre la conversation avec les autres étoiles.</p>
+      <a href="${escapeHtml(SETTINGS.podcastDiscordUrl)}" target="_blank" rel="noopener" class="cta-primary" style="display:inline-flex;">Rejoindre le Discord</a>
+    </div>` : ''}
+  `;
+  drawPodcastGrid();
+}
+
+function drawPodcastGrid(){
+  const el = document.getElementById('podcastGrid');
+  if(!el) return;
+  const episodes = PODCAST_EPISODES.slice().sort((a,b)=> (b.number||'').localeCompare(a.number||''));
+  if(!episodes.length){
+    el.innerHTML = '<p style="text-align:center;color:var(--muted);font-style:italic;grid-column:1/-1;">Aucun épisode pour le moment.</p>';
+    return;
+  }
+  el.innerHTML = episodes.map(ep=>{
+    const isOpen = podcastOpenEpisodeId === ep.id;
+    return `
+      <div class="podcast-episode${isOpen?' open':''}">
+        <div class="podcast-tile" onclick="togglePodcastEpisode('${ep.id}')" aria-expanded="${isOpen}" aria-label="Épisode ${escapeHtml(ep.number)}">
+          ${ep.image ? `<img src="${escapeHtml(ep.image)}" alt="" class="podcast-tile-img">` : `<div class="podcast-tile-img placeholder"></div>`}
+          <div class="podcast-tile-overlay">
+            <div class="podcast-charentaise">{ 🥿 }</div>
+            <div class="podcast-number">${escapeHtml(ep.number)}</div>
+          </div>
+        </div>
+        <div class="podcast-meta">
+          ${ep.date ? `<span>${formatDate(ep.date)}</span>` : ''}
+          ${ep.duration ? `<span>${escapeHtml(ep.duration)}</span>` : ''}
+        </div>
+        ${isOpen ? renderPodcastPlayerHtml(ep) : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+function renderPodcastPlayerHtml(ep){
+  return `
+    <div class="podcast-player">
+      <span class="podcast-play-btn" id="podcastPlayBtn" onclick="podcastPlayPause()" title="Lecture / pause">▶</span>
+      <div class="podcast-progress-track" id="podcastProgressTrack" onclick="podcastSeek(event)">
+        <div class="podcast-progress-fill" id="podcastProgressFill"></div>
+      </div>
+      <span class="podcast-time" id="podcastTimeLabel">0:00 / ${ep.duration ? escapeHtml(ep.duration) : '--:--'}</span>
+      <input type="range" class="podcast-volume" min="0" max="1" step="0.05" value="1" oninput="podcastSetVolume(this.value)" aria-label="Volume">
+    </div>
+  `;
+}
+
+function ensurePodcastAudioEl(){
+  if(!podcastAudioEl){
+    podcastAudioEl = new Audio();
+    podcastAudioEl.preload = 'none';
+    podcastAudioEl.addEventListener('timeupdate', updatePodcastProgress);
+    podcastAudioEl.addEventListener('loadedmetadata', updatePodcastProgress);
+    podcastAudioEl.addEventListener('ended', ()=>setPodcastPlayIcon(false));
+  }
+  return podcastAudioEl;
+}
+
+function togglePodcastEpisode(id){
+  const audio = ensurePodcastAudioEl();
+  audio.pause(); // referme proprement la parenthèse précédente avant toute chose
+
+  if(podcastOpenEpisodeId === id){
+    podcastOpenEpisodeId = null;
+  }else{
+    podcastOpenEpisodeId = id;
+    const ep = findEpisode(id);
+    if(ep){
+      audio.src = ep.audioUrl || '';
+      audio.play().catch(()=>{});
+    }
+  }
+  drawPodcastGrid();
+}
+
+function podcastPlayPause(){
+  if(!podcastAudioEl) return;
+  if(podcastAudioEl.paused){ podcastAudioEl.play().catch(()=>{}); setPodcastPlayIcon(true); }
+  else{ podcastAudioEl.pause(); setPodcastPlayIcon(false); }
+}
+function setPodcastPlayIcon(playing){
+  const btn = document.getElementById('podcastPlayBtn');
+  if(btn) btn.textContent = playing ? '⏸' : '▶';
+}
+function updatePodcastProgress(){
+  const bar = document.getElementById('podcastProgressFill');
+  const timeEl = document.getElementById('podcastTimeLabel');
+  if(!podcastAudioEl || !bar) return;
+  const pct = podcastAudioEl.duration ? (podcastAudioEl.currentTime/podcastAudioEl.duration)*100 : 0;
+  bar.style.width = pct+'%';
+  setPodcastPlayIcon(!podcastAudioEl.paused);
+  if(timeEl){
+    const ep = findEpisode(podcastOpenEpisodeId);
+    const totalLabel = podcastAudioEl.duration ? formatAudioTime(podcastAudioEl.duration) : (ep && ep.duration ? escapeHtml(ep.duration) : '--:--');
+    timeEl.textContent = formatAudioTime(podcastAudioEl.currentTime) + ' / ' + totalLabel;
+  }
+}
+function formatAudioTime(sec){
+  sec = Math.floor(sec||0);
+  const m = Math.floor(sec/60);
+  const s = sec%60;
+  return m+':'+String(s).padStart(2,'0');
+}
+function podcastSeek(event){
+  const track = document.getElementById('podcastProgressTrack');
+  if(!track || !podcastAudioEl || !podcastAudioEl.duration) return;
+  const rect = track.getBoundingClientRect();
+  const pct = Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width));
+  podcastAudioEl.currentTime = pct * podcastAudioEl.duration;
+}
+function podcastSetVolume(val){
+  if(podcastAudioEl) podcastAudioEl.volume = +val;
 }
 
 function renderCalendrier(){
@@ -6249,6 +6475,7 @@ function renderAdmin(){
             <div class="admin-sidebar-group-title">Communauté</div>
             <div class="admin-tab admin-nav-link" data-tab="messages">Messages</div>
             <div class="admin-tab admin-nav-link" data-tab="commentaires">Commentaires <span id="pendingCommentsBadge"></span></div>
+            <div class="admin-tab admin-nav-link" data-tab="podcast">Podcast</div>
             <div class="admin-tab admin-nav-link" data-tab="actualites">Actualités</div>
             <div class="admin-tab admin-nav-link" data-tab="abonnees">Abonnés</div>
             <div class="admin-tab admin-nav-link" data-tab="newsletter">Newsletter</div>
@@ -7262,8 +7489,100 @@ function renderAdmin(){
         <div class="admin-list" id="manageList"></div>
       </div>
 
-      <div class="admin-section" data-section="actualites">
+      <div class="admin-section" data-section="podcast">
         <div class="admin-form">
+          <h3>Réglages du podcast</h3>
+          <div>
+            <label>Image de bannière (facultatif — sinon un titre simple s'affiche)</label>
+            <input type="text" id="pcHeroImage" value="${escapeHtml(SETTINGS.podcastHeroImage||'')}" placeholder="https://...">
+          </div>
+          <div>
+            <label>Texte de présentation</label>
+            ${formattingToolbar('pcIntro', SETTINGS.podcastIntro||'', 'Présentation du podcast')}
+            <textarea id="pcIntro" style="min-height:100px;">${escapeHtml(SETTINGS.podcastIntro||'')}</textarea>
+          </div>
+          <div>
+            <label>Lien du Discord « La Parenthèse étoilée » (facultatif)</label>
+            <input type="text" id="pcDiscordUrl" value="${escapeHtml(SETTINGS.podcastDiscordUrl||'')}" placeholder="https://discord.gg/...">
+            <div class="hint" style="margin-top:6px;">Laissez vide pour ne pas afficher l'encart Discord sur la page.</div>
+          </div>
+          <div class="admin-msg" id="pcSettingsMsg"></div>
+          <button type="button" class="submit-btn" onclick="savePodcastSettings()">Enregistrer</button>
+        </div>
+
+        <div class="admin-form">
+          <h3>Nouvel épisode</h3>
+          <div class="row2">
+            <div>
+              <label>Numéro (3 chiffres)</label>
+              <input type="text" id="pcNewNumber" value="${nextEpisodeNumber()}" maxlength="3" placeholder="000">
+            </div>
+            <div>
+              <label>Date (facultatif)</label>
+              <input type="date" id="pcNewDate" value="${todayISO()}">
+            </div>
+          </div>
+          <div>
+            <label>Lien audio (hébergeur de podcast externe, ou fichier hébergé par vos soins)</label>
+            <input type="text" id="pcNewAudioUrl" placeholder="https://...">
+          </div>
+          <div class="row2">
+            <div>
+              <label>Durée affichée (facultatif)</label>
+              <input type="text" id="pcNewDuration" placeholder="4:32">
+            </div>
+            <div>
+              <label>Vignette (facultatif)</label>
+              <input type="text" id="pcNewImage" placeholder="https://...">
+            </div>
+          </div>
+          <div class="admin-msg" id="pcNewMsg"></div>
+          <button type="button" class="submit-btn" onclick="submitNewEpisode()">Publier l'épisode</button>
+
+          <div class="section-title" style="margin-top:40px;"><h2>Épisodes publiés</h2><div class="rule"></div></div>
+          <div class="admin-list" id="episodesManageList"></div>
+        </div>
+      </div>
+
+      <div class="admin-section" data-section="actualites">
+        <div class="admin-form" id="formActualites">
+        <div class="wtabs-bar" style="margin:-24px -24px 20px;padding:14px 24px;">
+          <div class="wtabs-nav">
+            <span class="wtab-btn active" data-tab="actu-categories" onclick="switchActualitesTab('actu-categories')">Catégories</span>
+            <span class="wtab-btn" data-tab="actu-articles" onclick="switchActualitesTab('actu-articles')">Articles</span>
+          </div>
+        </div>
+
+        <div class="wtab-content" data-wtab="actu-categories">
+          <h3>Nouvelle catégorie</h3>
+          <div class="admin-msg" style="margin-bottom:10px;">Une catégorie se crée aussi automatiquement dès que vous la tapez sur un article — ce formulaire sert à en préparer une à l'avance, avec son icône et sa description déjà prêtes.</div>
+          <div>
+            <label>Nom de la catégorie</label>
+            <input type="text" id="catNewName" list="apCategoryList" placeholder="Ex. Coulisses d'écriture, Spécial St-Valentin...">
+          </div>
+          <div>
+            <label>Icône (URL, facultatif — un petit rond affiché en haut de la page « Mes actualités »)</label>
+            <input type="text" id="catNewIcon" placeholder="https://...">
+          </div>
+          <div>
+            <label>Description (facultatif — affichée sous le titre quand la catégorie est ouverte)</label>
+            <textarea id="catNewDescription" style="min-height:70px;"></textarea>
+          </div>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+            <input type="checkbox" id="catNewActive" checked style="width:auto;">
+            Catégorie active (visible sur le site)
+          </label>
+          <div class="admin-msg" id="catNewMsg" style="margin-top:10px;"></div>
+          <button type="button" class="submit-btn" onclick="submitNewCategory()">Créer la catégorie</button>
+
+          <div class="section-title" style="margin-top:40px;"><h2>Catégories existantes</h2><div class="rule"></div></div>
+          <div class="admin-msg" style="margin-bottom:14px;">
+            Configurez l'icône et la description, et désactivez une catégorie quand vous n'en parlez plus — seules les catégories actives s'affichent sur le site (6 maximum affichées).
+          </div>
+          <div class="admin-list" id="categoriesManageList"></div>
+        </div>
+
+        <div class="wtab-content" data-wtab="actu-articles" style="display:none;">
           <h3>Nouvel article</h3>
           <div class="row2">
             <div>
@@ -7318,16 +7637,11 @@ function renderAdmin(){
           </div>
           <div class="admin-msg" id="apMsg"></div>
           <button type="button" class="submit-btn" onclick="submitNewPost()">Publier l'article</button>
-        </div>
 
-        <div class="section-title" style="margin-top:40px;"><h2>Catégories</h2><div class="rule"></div></div>
-        <div class="admin-msg" style="margin-bottom:14px;">
-          Une catégorie apparaît automatiquement ici dès que vous l'utilisez sur un article. Configurez son icône (petit rond affiché en haut de la page « Mes actualités ») et sa description, et désactivez-la quand vous n'en parlez plus — seules les catégories actives s'affichent sur le site (6 maximum affichées).
+          <div class="section-title" style="margin-top:40px;"><h2>Articles publiés</h2><div class="rule"></div></div>
+          <div class="admin-list" id="postsManageList"></div>
         </div>
-        <div class="admin-list" id="categoriesManageList"></div>
-
-        <div class="section-title" style="margin-top:40px;"><h2>Articles publiés</h2><div class="rule"></div></div>
-        <div class="admin-list" id="postsManageList"></div>
+        </div>
       </div>
 
       <div class="admin-section" data-section="abonnees">
@@ -7462,12 +7776,19 @@ function renderAdmin(){
             <div><label>Note sur 5 (facultatif)</label><input type="number" id="mabReadingRating" min="0" max="5" value="${(SETTINGS.moreAboutReading||{}).rating||''}"></div>
           </div>
 
-          <div class="admin-msg" style="margin:18px 0 10px;">🎧 J'écoute</div>
+          <div class="admin-msg" style="margin:18px 0 10px;">🎮 Je joue</div>
           <div class="row2">
-            <div><label>Titre du morceau</label><input type="text" id="mabListeningSong" value="${escapeHtml((SETTINGS.moreAboutListening||{}).song||'')}"></div>
-            <div><label>Artiste</label><input type="text" id="mabListeningArtist" value="${escapeHtml((SETTINGS.moreAboutListening||{}).artist||'')}"></div>
+            <div><label>Titre du jeu</label><input type="text" id="mabPlayingTitle" value="${escapeHtml((SETTINGS.moreAboutPlaying||{}).title||'')}"></div>
+            <div><label>Plateforme (facultatif)</label><input type="text" id="mabPlayingPlatform" value="${escapeHtml((SETTINGS.moreAboutPlaying||{}).platform||'')}" placeholder="Switch, PC..."></div>
           </div>
-          <div><label>Pochette (URL, facultatif)</label><input type="text" id="mabListeningCover" value="${escapeHtml((SETTINGS.moreAboutListening||{}).cover||'')}"></div>
+          <div><label>Jaquette (URL, facultatif)</label><input type="text" id="mabPlayingCover" value="${escapeHtml((SETTINGS.moreAboutPlaying||{}).cover||'')}"></div>
+        </div>
+
+        <div class="admin-form">
+          <h3>Ma playlist (facultatif)</h3>
+          <label>Lien d'intégration Spotify</label>
+          <input type="text" id="mabSpotify" value="${escapeHtml(SETTINGS.moreAboutSpotify||'')}" placeholder="https://open.spotify.com/embed/playlist/...">
+          <div class="hint" style="margin-top:6px;">Dans Spotify : ouvrez votre playlist → ⋯ → Partager → Copier le code d'intégration, puis collez le lien "src" trouvé dedans ici. Affichée dans la colonne de droite du carnet.</div>
         </div>
 
         <div class="admin-form">
@@ -8042,6 +8363,7 @@ function renderAdmin(){
   bindSubscribersActions();
   renderPostsManageList();
   renderCategoriesManageList();
+  renderEpisodesManageList();
   updateApCategorySuggestions();
   renderMabBooksList();
   renderMabFriendsList();
@@ -8051,7 +8373,7 @@ function renderAdmin(){
   setTimeout(updateStorageModeBadge, 1200);
 
   // bouton d'envoi d'image sur les champs concernés
-  ['sHeroImage','sAuthorPhoto','sPressKitPhotoHD','mabBgImage','apHoverImage','hCover','hCoverDetail','hHoverImage','hCharHoverImage','uImageTile','uImageListBanner','uImageBanner','sgNewCoverVitrail','sgNewCoverBanner','sgNewCoverHero','ssCover','ssCoverHero','pImage','chImage','rcCover','sIndepHeroImage','sUniversHeroImage','sCollectionsHeroImage','sSiteBgImage','sQuickFactsBg','sChapterEndImage','ebCover','ebHoverImage','btnImgDefault','btnImgHover','btnImgActive','btnImgDisabled'].forEach(attachImageUploader);
+  ['sHeroImage','sAuthorPhoto','sPressKitPhotoHD','mabBgImage','mabPlayingCover','apHoverImage','pcHeroImage','pcNewImage','hCover','hCoverDetail','hHoverImage','hCharHoverImage','uImageTile','uImageListBanner','uImageBanner','sgNewCoverVitrail','sgNewCoverBanner','sgNewCoverHero','ssCover','ssCoverHero','pImage','chImage','rcCover','sIndepHeroImage','sUniversHeroImage','sCollectionsHeroImage','sSiteBgImage','sQuickFactsBg','sChapterEndImage','ebCover','ebHoverImage','btnImgDefault','btnImgHover','btnImgActive','btnImgDisabled'].forEach(attachImageUploader);
   renderLinksFieldGroup('hLinks', []);
   renderLinksFieldGroup('ebLinks', []);
   renderLinksFieldGroup('rcLinks', []);
@@ -8414,7 +8736,7 @@ function updateApCategorySuggestions(){
   }else if(collection){
     suggestions = WORKS.filter(w=>w.universe===collection).map(w=>w.title);
   }else{
-    suggestions = postCategories();
+    suggestions = allRegisteredCategories();
   }
   suggestions = [...new Set(suggestions.filter(Boolean))];
   listEl.innerHTML = suggestions.map(s=>`<option value="${escapeHtml(s)}">`).join('');
@@ -8564,11 +8886,12 @@ async function saveMoreAboutSettings(){
     cover: document.getElementById('mabReadingCover').value.trim(),
     rating: +document.getElementById('mabReadingRating').value || 0
   };
-  SETTINGS.moreAboutListening = {
-    song: document.getElementById('mabListeningSong').value.trim(),
-    artist: document.getElementById('mabListeningArtist').value.trim(),
-    cover: document.getElementById('mabListeningCover').value.trim()
+  SETTINGS.moreAboutPlaying = {
+    title: document.getElementById('mabPlayingTitle').value.trim(),
+    platform: document.getElementById('mabPlayingPlatform').value.trim(),
+    cover: document.getElementById('mabPlayingCover').value.trim()
   };
+  SETTINGS.moreAboutSpotify = document.getElementById('mabSpotify').value.trim();
   SETTINGS.moreAboutMood = document.getElementById('mabMood').value.trim();
   SETTINGS.moreAboutInspiration = document.getElementById('mabInspiration').value.trim();
   SETTINGS.moreAboutFriends = getMabFriendsFromEditor();
@@ -8591,20 +8914,21 @@ async function saveMoreAboutSettings(){
 function renderCategoriesManageList(){
   const el = document.getElementById('categoriesManageList');
   if(!el) return;
-  const names = postCategories();
+  const names = allRegisteredCategories();
   if(!names.length){
-    el.innerHTML = '<p style="color:var(--muted);font-style:italic;">Aucune catégorie pour le moment — elle apparaîtra ici dès que vous en utiliserez une sur un article.</p>';
+    el.innerHTML = '<p style="color:var(--muted);font-style:italic;">Aucune catégorie pour le moment — créez-en une ci-dessus, ou elle apparaîtra ici dès que vous en utiliserez une sur un article.</p>';
     return;
   }
   el.innerHTML = names.map(name=>{
     const meta = catMeta(name);
     const slug = slugify(name);
+    const postCount = POSTS.filter(p=>p.category===name).length;
     return `
     <div class="admin-item" style="flex-direction:column;align-items:stretch;">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
         <div class="info">
           <div class="t">${escapeHtml(name)}</div>
-          <div class="s">${meta.active !== false ? 'Active — visible sur le site' : 'Désactivée — masquée du site'}</div>
+          <div class="s">${meta.active !== false ? 'Active' : 'Désactivée'} · ${postCount} article${postCount>1?'s':''}</div>
         </div>
         <span class="toggle-btn" onclick="toggleCategoryEdit('${slug}')">Modifier</span>
       </div>
@@ -9838,6 +10162,127 @@ function closeWorkDetail(){
   editingWorkId = null;
   renderManageList();
 }
+/* ---------- gestion admin du podcast ---------- */
+async function savePodcastSettings(){
+  SETTINGS.podcastHeroImage = document.getElementById('pcHeroImage').value.trim();
+  SETTINGS.podcastIntro = document.getElementById('pcIntro').value.trim();
+  SETTINGS.podcastDiscordUrl = document.getElementById('pcDiscordUrl').value.trim();
+  await saveSettings();
+  document.getElementById('pcSettingsMsg').textContent = 'Enregistré ✓';
+  toast('Réglages du podcast enregistrés.');
+}
+async function submitNewEpisode(){
+  const msgEl = document.getElementById('pcNewMsg');
+  const number = document.getElementById('pcNewNumber').value.trim();
+  const audioUrl = document.getElementById('pcNewAudioUrl').value.trim();
+  if(!number || !audioUrl){ msgEl.textContent = "Merci de renseigner au moins le numéro et le lien audio."; return; }
+  PODCAST_EPISODES.push({
+    id: 'ep_' + Date.now() + '_' + Math.random().toString(36).slice(2,7),
+    number,
+    date: document.getElementById('pcNewDate').value,
+    audioUrl,
+    duration: document.getElementById('pcNewDuration').value.trim(),
+    image: document.getElementById('pcNewImage').value.trim()
+  });
+  await savePodcastEpisodes();
+  document.getElementById('pcNewNumber').value = nextEpisodeNumber();
+  document.getElementById('pcNewAudioUrl').value = '';
+  document.getElementById('pcNewDuration').value = '';
+  document.getElementById('pcNewImage').value = '';
+  msgEl.textContent = 'Épisode publié ✓';
+  toast('Épisode publié.');
+  renderEpisodesManageList();
+}
+function renderEpisodesManageList(){
+  const el = document.getElementById('episodesManageList');
+  if(!el) return;
+  if(!PODCAST_EPISODES.length){
+    el.innerHTML = '<p style="color:var(--muted);font-style:italic;">Aucun épisode pour le moment.</p>';
+    return;
+  }
+  const sorted = PODCAST_EPISODES.slice().sort((a,b)=> (b.number||'').localeCompare(a.number||''));
+  el.innerHTML = sorted.map(ep=>`
+    <div class="admin-item" style="flex-direction:column;align-items:stretch;">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+        <div class="info">
+          <div class="t">Épisode ${escapeHtml(ep.number)}</div>
+          <div class="s">${ep.date ? formatDate(ep.date) : 'Sans date'}${ep.duration ? ' · ' + escapeHtml(ep.duration) : ''}</div>
+        </div>
+        <span style="display:flex;gap:14px;align-items:center;flex-shrink:0;">
+          <span class="toggle-btn" onclick="toggleEpisodeEdit('${ep.id}')">Modifier</span>
+          <span class="del-btn" onclick="deleteEpisode('${ep.id}')">Supprimer</span>
+        </span>
+      </div>
+      <div id="epEditBlock-${ep.id}" class="wm-edit" style="display:none;margin-top:14px;">
+        <div class="row2">
+          <div><label>Numéro</label><input type="text" id="epNumber-${ep.id}" value="${escapeHtml(ep.number)}" maxlength="3"></div>
+          <div><label>Date</label><input type="date" id="epDate-${ep.id}" value="${escapeHtml(ep.date||'')}"></div>
+        </div>
+        <div><label>Lien audio</label><input type="text" id="epAudioUrl-${ep.id}" value="${escapeHtml(ep.audioUrl||'')}"></div>
+        <div class="row2">
+          <div><label>Durée affichée</label><input type="text" id="epDuration-${ep.id}" value="${escapeHtml(ep.duration||'')}"></div>
+          <div><label>Vignette</label><input type="text" id="epImage-${ep.id}" value="${escapeHtml(ep.image||'')}"></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div class="submit-btn" style="padding:9px 20px;font-size:.8rem;" onclick="saveEpisodeEdit('${ep.id}')">Enregistrer</div>
+          <span class="admin-msg" id="epMsg-${ep.id}" style="margin:0;"></span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+  sorted.forEach(ep=>attachImageUploader('epImage-'+ep.id));
+}
+function toggleEpisodeEdit(id){
+  const block = document.getElementById('epEditBlock-'+id);
+  if(block) block.style.display = block.style.display==='none' ? 'block' : 'none';
+}
+async function saveEpisodeEdit(id){
+  const ep = findEpisode(id);
+  if(!ep) return;
+  ep.number = document.getElementById('epNumber-'+id).value.trim();
+  ep.date = document.getElementById('epDate-'+id).value;
+  ep.audioUrl = document.getElementById('epAudioUrl-'+id).value.trim();
+  ep.duration = document.getElementById('epDuration-'+id).value.trim();
+  ep.image = document.getElementById('epImage-'+id).value.trim();
+  await savePodcastEpisodes();
+  document.getElementById('epMsg-'+id).textContent = 'Enregistré ✓';
+  renderEpisodesManageList();
+  toast('Épisode mis à jour.');
+}
+async function deleteEpisode(id){
+  if(!confirm('Supprimer cet épisode ?')) return;
+  PODCAST_EPISODES = PODCAST_EPISODES.filter(e=>e.id!==id);
+  await savePodcastEpisodes();
+  renderEpisodesManageList();
+  toast('Épisode supprimé.');
+}
+
+function switchActualitesTab(tab){
+  const form = document.getElementById('formActualites');
+  if(!form) return;
+  form.querySelectorAll('.wtab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
+  form.querySelectorAll('.wtab-content').forEach(c=>{ c.style.display = c.dataset.wtab===tab ? '' : 'none'; });
+}
+async function submitNewCategory(){
+  const msgEl = document.getElementById('catNewMsg');
+  const name = document.getElementById('catNewName').value.trim();
+  if(!name){ msgEl.textContent = "Merci d'indiquer un nom de catégorie."; return; }
+  POST_CATEGORIES[name] = {
+    icon: document.getElementById('catNewIcon').value.trim(),
+    description: document.getElementById('catNewDescription').value.trim(),
+    active: document.getElementById('catNewActive').checked
+  };
+  await savePostCategoriesMeta();
+  document.getElementById('catNewName').value = '';
+  document.getElementById('catNewIcon').value = '';
+  document.getElementById('catNewDescription').value = '';
+  document.getElementById('catNewActive').checked = true;
+  msgEl.textContent = 'Catégorie créée ✓';
+  toast('Catégorie créée.');
+  renderCategoriesManageList();
+  updateApCategorySuggestions();
+}
+
 function switchApparenceTab(tab){
   const form = document.getElementById('formApparence');
   if(!form) return;
