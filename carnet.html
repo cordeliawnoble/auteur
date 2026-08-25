@@ -46,12 +46,17 @@
   .mab-back-link:hover{color:#D9B36C;}
 
   .mab-main{
-    background:#FBF3E4;padding:50px clamp(24px, 4vw, 56px);box-sizing:border-box;min-width:0;
+    --mab-pad-x: clamp(24px, 4vw, 56px);
+    background:#FBF3E4;padding:50px var(--mab-pad-x);box-sizing:border-box;min-width:0;
     height:100%;overflow-y:auto;
   }
   .mab-main-inner{max-width:760px;margin:0 auto;}
 
   .mab-hero{display:flex;flex-wrap:wrap;gap:30px;align-items:center;margin-bottom:44px;}
+  .mab-hero-img-full{
+    display:block;width:calc(100% + 2*var(--mab-pad-x));margin:-50px calc(-1 * var(--mab-pad-x)) 44px;
+    max-height:420px;object-fit:cover;
+  }
   .mab-hero-text{flex:1;min-width:220px;}
   .mab-hero-text h1{font-family:'Playfair Display',serif;font-size:2.1rem;color:#2A2118;line-height:1.25;margin:0 0 12px;}
   .mab-tagline{font-family:'Lora',serif;font-style:italic;color:#7A6A55;line-height:1.7;max-width:42ch;}
@@ -70,6 +75,7 @@
   .mab-stars{color:#B8863E;letter-spacing:1px;font-size:.85rem;margin-top:4px;}
 
   .mab-tab{scroll-margin-top:36px;}
+  .mab-section{margin-bottom:60px;scroll-margin-top:36px;}
   .mab-section-title{font-family:'Playfair Display',serif;font-size:1.4rem;color:#2A2118;margin-bottom:20px;text-align:center;}
 
   .mab-featured-post{
@@ -143,11 +149,13 @@
     .mab-avatar-frame{width:64px;height:64px;margin:0 14px 0 0;}
     .mab-nav{flex-direction:row;flex-wrap:wrap;justify-content:center;width:auto;margin-top:14px;gap:6px;}
     .mab-back-link{width:auto;border-top:none;margin-top:14px;padding-top:0;}
-    .mab-main{padding:40px 24px;height:auto;overflow:visible;}
+    .mab-main{--mab-pad-x:24px;padding:40px var(--mab-pad-x);height:auto;overflow:visible;}
+    .mab-hero-img-full{margin-top:0;}
   }
   @media(max-width:640px){
     .mab-sidebar-left{order:1;}
-    .mab-main{order:2;padding:32px 18px;}
+    .mab-main{--mab-pad-x:18px;order:2;padding:32px var(--mab-pad-x);}
+    .mab-hero-img-full{margin-top:0;}
     .mab-sidebar-right{order:3;padding:32px 22px;}
     .mab-hero-text h1{font-size:1.7rem;}
   }
@@ -246,7 +254,7 @@ function renderCarnet(){
   const writing = SETTINGS.moreAboutWriting || {};
   const reading = SETTINGS.moreAboutReading || {};
   const playing = SETTINGS.moreAboutPlaying || {};
-  const socials = (SETTINGS.socials||[]).filter(s=>s.url);
+  const socials = (SETTINGS.socials||[]).filter(s=>s.url && /instagram/i.test(s.label||''));
   const latestPost = POSTS.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''))[0];
 
   app.innerHTML = `
@@ -258,26 +266,18 @@ function renderCarnet(){
         <div class="mab-side-name">${escapeHtml(SETTINGS.name||'')}</div>
         ${SETTINGS.moreAboutSubtitle ? `<div class="mab-side-subtitle">${escapeHtml(SETTINGS.moreAboutSubtitle)}</div>` : ''}
         <nav class="mab-nav">
-          <a onclick="mabShowTab('accueil',this)" class="active">Accueil</a>
-          <a onclick="mabShowTab('bio',this)">À propos</a>
-          <a onclick="mabShowTab('journal',this)">Journal</a>
-          <a onclick="mabShowTab('lectures',this)">Mes lectures</a>
-          <a onclick="mabShowTab('favoris',this)">Mes favoris</a>
+          <a onclick="mabScrollTo('mab-top',this)" class="active">Accueil</a>
+          <a onclick="mabScrollTo('mab-bio',this)">À propos</a>
+          <a onclick="mabScrollTo('mab-journal',this)">Journal</a>
+          <a onclick="mabScrollTo('mab-lectures',this)">Mes lectures</a>
+          <a onclick="mabScrollTo('mab-favoris',this)">Mes favoris</a>
         </nav>
         <a href="index.html" class="mab-back-link">↺ Retour au site d'autrice</a>
       </aside>
 
-      <main class="mab-main">
+      <main class="mab-main" id="mab-top">
+        ${SETTINGS.moreAboutHeroImage ? `<img src="${escapeHtml(SETTINGS.moreAboutHeroImage)}" alt="" class="mab-hero-img-full">` : ''}
       <div class="mab-main-inner">
-
-        <div class="mab-tab" data-mabtab="accueil">
-        <div class="mab-hero">
-          <div class="mab-hero-text">
-            <h1>Bonjour,<br>moi c'est ${escapeHtml(SETTINGS.name||'')}.</h1>
-            ${SETTINGS.moreAboutTagline ? `<p class="mab-tagline">${escapeHtml(SETTINGS.moreAboutTagline)}</p>` : ''}
-          </div>
-          ${SETTINGS.moreAboutHeroImage ? `<img src="${escapeHtml(SETTINGS.moreAboutHeroImage)}" alt="" class="mab-hero-img">` : ''}
-        </div>
 
         ${(writing.title || reading.title || playing.title) ? `
         <div class="mab-now-title">En ce moment ✦</div>
@@ -315,14 +315,13 @@ function renderCarnet(){
             </div>
           </div>` : ''}
         </div>` : ''}
-        </div>
 
-        <div class="mab-tab" data-mabtab="bio" style="display:none;">
+        <div id="mab-bio" class="mab-section">
           <div class="mab-section-title">Un peu plus sur moi</div>
           ${SETTINGS.moreAboutBio ? `<div class="saga-desc">${richParagraphs(SETTINGS.moreAboutBio)}</div>` : `<p style="color:#8A7A64;font-style:italic;text-align:center;">Rien à afficher pour le moment.</p>`}
         </div>
 
-        <div class="mab-tab" data-mabtab="journal" style="display:none;">
+        <div id="mab-journal" class="mab-section">
           ${latestPost ? `
           <div class="mab-now-title">Dernière publication ✦</div>
           <div class="mab-featured-post" onclick="window.location.href='index.html#actualites/${latestPost.id}'">
@@ -336,7 +335,7 @@ function renderCarnet(){
           </div>` : `<p style="color:#8A7A64;font-style:italic;text-align:center;">Pas encore de publication dans le journal.</p>`}
         </div>
 
-        <div class="mab-tab" data-mabtab="lectures" style="display:none;">
+        <div id="mab-lectures" class="mab-section">
           <div class="mab-section-title">Mes dernières lectures</div>
           ${books.length ? `
           <div class="mab-books-carousel">
@@ -356,7 +355,7 @@ function renderCarnet(){
           </div>` : `<p style="color:#8A7A64;font-style:italic;text-align:center;">Rien à afficher pour le moment.</p>`}
         </div>
 
-        <div class="mab-tab" data-mabtab="favoris" style="display:none;">
+        <div id="mab-favoris" class="mab-section">
           <div class="mab-section-title">Mes favoris</div>
           <div class="mab-books-grid">
             ${books.filter(b=>b.favorite).map(b=>`
@@ -417,12 +416,11 @@ function renderCarnet(){
   if(books.length) setTimeout(()=>refreshCarouselArrows('mabBooksRow','mabBooksPrev','mabBooksNext'), 60);
 }
 
-function mabShowTab(tab, linkEl){
-  document.querySelectorAll('.mab-tab').forEach(t=>{ t.style.display = t.dataset.mabtab===tab ? '' : 'none'; });
+function mabScrollTo(id, linkEl){
+  const el = document.getElementById(id);
+  if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
   document.querySelectorAll('.mab-nav a').forEach(a=>a.classList.remove('active'));
   if(linkEl) linkEl.classList.add('active');
-  const mainEl = document.querySelector('.mab-main');
-  if(mainEl) mainEl.scrollTop = 0;
 }
 
 /* ---------- chargement des données puis affichage ---------- */
