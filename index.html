@@ -2380,6 +2380,7 @@ const SEED_SETTINGS = {
   podcastHeroImage: '',
   podcastIntro: "Bonjour les étoiles… Ici, je partage simplement une réflexion, une idée, une expérience autour de l'écriture, de la créativité ou de ma vie d'autrice — comme un vocal envoyé à une copine. Pas de fréquence fixe, pas de durée stricte, juste une parenthèse.",
   podcastDiscordUrl: '',
+  actualitesHeroImage: '',
   moreAboutMood: '',
   moreAboutInspiration: '',
   moreAboutFriends: [],
@@ -2759,11 +2760,6 @@ function applySettingsToChrome(){
   document.getElementById('siteTitle').textContent = SETTINGS.name;
   document.title = SETTINGS.name + " — Histoires";
   document.getElementById('footerText').textContent = (SETTINGS.copyrightText || '© 2026 {nom} — tous droits réservés').replace('{nom}', SETTINGS.name);
-  document.getElementById('footerName').textContent = SETTINGS.name;
-  document.getElementById('footerTagline').textContent = SETTINGS.tagline || SETTINGS.scriptLine || '';
-  document.getElementById('footerSocials').innerHTML = (SETTINGS.socials||[]).filter(s=>s.url).map(s=>
-    `<a href="${escapeHtml(s.url)}" target="_blank" rel="noopener">${escapeHtml(s.label)}</a>`
-  ).join('');
 
   const btnImg = SETTINGS.primaryButtonImages || {};
   const root = document.documentElement.style;
@@ -4299,6 +4295,7 @@ function renderActualitesPage(directPostId){
     }
   }
   app.innerHTML = `
+    ${SETTINGS.actualitesHeroImage ? `<img class="home-hero-banner" src="${escapeHtml(SETTINGS.actualitesHeroImage)}" alt="">` : ''}
     <div class="section-title" style="margin-top:56px;justify-content:center;text-align:center;"><h2 style="width:100%;">Mes actualités</h2><div class="rule"></div></div>
     <p class="univers-intro">Coulisses, annonces et petits mots au fil de l'écriture.</p>
     <div class="actu-icon-row" id="actuIconRow" style="margin-top:30px;"></div>
@@ -7562,7 +7559,14 @@ function renderAdmin(){
 
       <div class="admin-section" data-section="actualites">
         <div class="admin-form" id="formActualites">
-        <div class="wtabs-bar" style="margin:-24px -24px 20px;padding:14px 24px;">
+        <div>
+          <label>Image de bannière de la page (facultatif)</label>
+          <input type="text" id="actuHeroImage" value="${escapeHtml(SETTINGS.actualitesHeroImage||'')}" placeholder="https://...">
+          <div class="hint" style="margin-top:6px;">Affichée tout en haut de la page « Mes actualités », comme sur les autres grandes pages du site.</div>
+          <button type="button" class="submit-btn" style="margin-top:10px;padding:9px 20px;font-size:.8rem;" onclick="saveActualitesHero()">Enregistrer</button>
+          <span class="admin-msg" id="actuHeroMsg" style="margin-left:12px;"></span>
+        </div>
+        <div class="wtabs-bar" style="margin:24px -24px 20px;padding:14px 24px;">
           <div class="wtabs-nav">
             <span class="wtab-btn active" data-tab="actu-categories" onclick="switchActualitesTab('actu-categories')">Catégories</span>
             <span class="wtab-btn" data-tab="actu-articles" onclick="switchActualitesTab('actu-articles')">Articles</span>
@@ -8390,7 +8394,7 @@ function renderAdmin(){
   setTimeout(updateStorageModeBadge, 1200);
 
   // bouton d'envoi d'image sur les champs concernés
-  ['sHeroImage','sAuthorPhoto','sPressKitPhotoHD','mabBgImage','mabPlayingCover','apHoverImage','pcHeroImage','pcNewImage','pcNewHoverImage','hCover','hCoverDetail','hHoverImage','hCharHoverImage','uImageTile','uImageListBanner','uImageBanner','sgNewCoverVitrail','sgNewCoverBanner','sgNewCoverHero','ssCover','ssCoverHero','pImage','chImage','rcCover','sIndepHeroImage','sUniversHeroImage','sCollectionsHeroImage','sSiteBgImage','sQuickFactsBg','sChapterEndImage','ebCover','ebHoverImage','btnImgDefault','btnImgHover','btnImgActive','btnImgDisabled'].forEach(attachImageUploader);
+  ['sHeroImage','sAuthorPhoto','sPressKitPhotoHD','mabBgImage','mabPlayingCover','apHoverImage','pcHeroImage','pcNewImage','pcNewHoverImage','actuHeroImage','hCover','hCoverDetail','hHoverImage','hCharHoverImage','uImageTile','uImageListBanner','uImageBanner','sgNewCoverVitrail','sgNewCoverBanner','sgNewCoverHero','ssCover','ssCoverHero','pImage','chImage','rcCover','sIndepHeroImage','sUniversHeroImage','sCollectionsHeroImage','sSiteBgImage','sQuickFactsBg','sChapterEndImage','ebCover','ebHoverImage','btnImgDefault','btnImgHover','btnImgActive','btnImgDisabled'].forEach(attachImageUploader);
   renderLinksFieldGroup('hLinks', []);
   renderLinksFieldGroup('ebLinks', []);
   renderLinksFieldGroup('rcLinks', []);
@@ -10180,6 +10184,12 @@ function closeWorkDetail(){
   renderManageList();
 }
 /* ---------- gestion admin du podcast ---------- */
+async function saveActualitesHero(){
+  SETTINGS.actualitesHeroImage = document.getElementById('actuHeroImage').value.trim();
+  await saveSettings();
+  document.getElementById('actuHeroMsg').textContent = 'Enregistré ✓';
+  toast('Bannière mise à jour.');
+}
 async function savePodcastSettings(){
   SETTINGS.podcastHeroImage = document.getElementById('pcHeroImage').value.trim();
   SETTINGS.podcastIntro = document.getElementById('pcIntro').value.trim();
