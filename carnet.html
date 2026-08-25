@@ -95,6 +95,29 @@
   }
   .mab-featured-title{font-family:'Playfair Display',serif;font-size:1.15rem;color:#2A2118;line-height:1.35;}
   .mab-featured-excerpt{font-family:'Lora',serif;font-size:.88rem;color:#7A6A55;line-height:1.7;margin-top:10px;}
+
+  .mab-cat-icon-row{display:flex;flex-wrap:wrap;justify-content:center;gap:22px;margin-top:20px;}
+  .mab-cat-icon{display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer;width:76px;}
+  .mab-cat-icon-avatar{
+    width:56px;height:56px;border-radius:50%;overflow:hidden;background:#fff;
+    border:2px solid rgba(217,179,108,.35);display:flex;align-items:center;justify-content:center;transition:.2s;
+    font-family:'Playfair Display',serif;font-size:1.2rem;color:#8A7A64;
+  }
+  .mab-cat-icon-avatar img{width:100%;height:100%;object-fit:cover;}
+  .mab-cat-icon:hover .mab-cat-icon-avatar{border-color:#B8863E;transform:translateY(-2px);}
+  .mab-cat-icon.active .mab-cat-icon-avatar{border-color:#B8863E;box-shadow:0 0 0 3px rgba(217,179,108,.18);}
+  .mab-cat-icon-label{font-family:'Jost',sans-serif;font-size:.68rem;color:#8A7A64;text-align:center;line-height:1.3;}
+  .mab-cat-icon.active .mab-cat-icon-label{color:#B8863E;}
+
+  .mab-cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:26px;}
+  .mab-cat-card{background:#fff;border:1px solid rgba(217,179,108,.3);border-radius:12px;overflow:hidden;cursor:pointer;transition:.2s;box-shadow:0 10px 20px -16px rgba(36,26,10,.2);}
+  .mab-cat-card:hover{transform:translateY(-3px);box-shadow:0 16px 28px -18px rgba(36,26,10,.3);}
+  .mab-cat-card-img{width:100%;aspect-ratio:16/10;object-fit:cover;display:block;}
+  .mab-cat-card-img.placeholder{display:flex;align-items:center;justify-content:center;background:rgba(217,179,108,.12);color:#B8863E;font-size:1.3rem;}
+  .mab-cat-card-body{padding:12px 13px 14px;}
+  .mab-cat-card-title{font-family:'Lora',serif;font-size:.82rem;color:#2A2118;line-height:1.35;margin-top:4px;}
+  @media(max-width:760px){.mab-cat-grid{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:480px){.mab-cat-grid{grid-template-columns:1fr;}}
   .cta-secondary{
     font-family:'Jost',sans-serif;font-size:.8rem;border:1px solid rgba(217,179,108,.5);color:#B8863E;
     padding:11px 18px;border-radius:30px;text-align:center;line-height:1.3;cursor:pointer;transition:.2s;
@@ -336,6 +359,12 @@ function renderCarnet(){
               <span class="cta-secondary" style="display:inline-block;margin-top:14px;">Lire la suite</span>
             </div>
           </div>` : `<p style="color:#8A7A64;font-style:italic;text-align:center;">Pas encore de publication dans le journal.</p>`}
+
+          ${activePostCategories().length ? `
+          <div class="mab-now-title" style="margin-top:44px;">Parcourir par catégorie ✦</div>
+          <div class="mab-cat-icon-row" id="mabCatIconRow"></div>
+          <div class="mab-cat-grid" id="mabCatGrid"></div>
+          ` : ''}
         </div>
 
         <div id="mab-lectures" class="mab-section">
@@ -417,6 +446,50 @@ function renderCarnet(){
   }
 
   if(books.length) setTimeout(()=>refreshCarouselArrows('mabBooksRow','mabBooksPrev','mabBooksNext'), 60);
+  drawMabCatIconRow();
+}
+
+let mabOpenCategory = null;
+function drawMabCatIconRow(){
+  const el = document.getElementById('mabCatIconRow');
+  if(!el) return;
+  const active = activePostCategories().map(cat=>{
+    const latest = POSTS.filter(p=>p.category===cat).sort((a,b)=>(b.date||'').localeCompare(a.date||''))[0];
+    return { cat, latestDate: latest ? latest.date||'' : '' };
+  }).sort((a,b)=> b.latestDate.localeCompare(a.latestDate)).slice(0,6).map(x=>x.cat);
+
+  el.innerHTML = active.map(cat=>{
+    const meta = catMeta(cat);
+    const isOpen = mabOpenCategory === cat;
+    return `
+      <div class="mab-cat-icon${isOpen?' active':''}" onclick="toggleMabCategory('${cat.replace(/'/g,"\\'")}')">
+        <div class="mab-cat-icon-avatar">
+          ${meta.icon ? `<img src="${escapeHtml(meta.icon)}" alt="${escapeHtml(cat)}">` : `<span>${escapeHtml(cat.charAt(0).toUpperCase())}</span>`}
+        </div>
+        <span class="mab-cat-icon-label">${escapeHtml(cat)}</span>
+      </div>
+    `;
+  }).join('');
+}
+function toggleMabCategory(cat){
+  mabOpenCategory = (mabOpenCategory === cat) ? null : cat;
+  drawMabCatIconRow();
+  drawMabCatGrid();
+}
+function drawMabCatGrid(){
+  const el = document.getElementById('mabCatGrid');
+  if(!el) return;
+  if(!mabOpenCategory){ el.innerHTML = ''; return; }
+  const postsInCat = POSTS.filter(p=>p.category===mabOpenCategory).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  el.innerHTML = postsInCat.map(p=>`
+    <div class="mab-cat-card" onclick="window.location.href='index.html#actualites/${p.id}'">
+      ${(p.images&&p.images[0]) ? `<img src="${escapeHtml(p.images[0])}" alt="" class="mab-cat-card-img">` : `<div class="mab-cat-card-img placeholder">✎</div>`}
+      <div class="mab-cat-card-body">
+        <div class="mab-featured-date">${p.date ? formatDate(p.date) : ''}${p.subcategory ? `<span class="actu-subcat-badge">${escapeHtml(p.subcategory)}</span>` : ''}</div>
+        <div class="mab-cat-card-title">${escapeHtml(p.title)}</div>
+      </div>
+    </div>
+  `).join('') || '<p style="color:#8A7A64;font-style:italic;grid-column:1/-1;">Aucun article dans cette catégorie.</p>';
 }
 
 function mabScrollTo(id, linkEl){
@@ -427,14 +500,21 @@ function mabScrollTo(id, linkEl){
 }
 
 /* ---------- chargement des données puis affichage ---------- */
+let POST_CATEGORIES = {};
+function catMeta(name){ return POST_CATEGORIES[name] || { icon:'', description:'', active:true }; }
+function postCategories(){ return [...new Set(POSTS.map(p=>p.category).filter(Boolean))]; }
+function activePostCategories(){ return postCategories().filter(c => catMeta(c).active !== false); }
+
 (async function init(){
   try{
-    const [settingsRaw, postsRaw] = await Promise.all([
+    const [settingsRaw, postsRaw, catsRaw] = await Promise.all([
       sbGet('site:settings'),
-      sbGet('site:posts')
+      sbGet('site:posts'),
+      sbGet('site:postCategoriesMeta')
     ]);
     SETTINGS = settingsRaw ? JSON.parse(settingsRaw) : {};
     POSTS = postsRaw ? JSON.parse(postsRaw) : [];
+    POST_CATEGORIES = catsRaw ? JSON.parse(catsRaw) : {};
     renderCarnet();
   }catch(err){
     app.innerHTML = '<p class="loading-msg">Impossible de charger le carnet pour le moment.<br>Réessayez dans un instant.</p>';
