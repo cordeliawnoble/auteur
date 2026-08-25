@@ -80,6 +80,11 @@
   .mab-featured-img{width:100%;max-width:280px;object-fit:cover;flex:1;min-width:220px;}
   .mab-featured-body{flex:2;min-width:220px;padding:22px 22px 22px 0;}
   .mab-featured-date{font-family:'Jost',sans-serif;font-size:.68rem;color:#8A7A64;margin-bottom:6px;}
+  .actu-subcat-badge{
+    display:inline-block;font-family:'Jost',sans-serif;font-size:.64rem;letter-spacing:.04em;
+    padding:3px 11px;border-radius:20px;background:rgba(217,179,108,.18);color:#B8863E;
+    border:1px solid rgba(217,179,108,.4);margin-left:8px;vertical-align:middle;
+  }
   .mab-featured-title{font-family:'Playfair Display',serif;font-size:1.15rem;color:#2A2118;line-height:1.35;}
   .mab-featured-excerpt{font-family:'Lora',serif;font-size:.88rem;color:#7A6A55;line-height:1.7;margin-top:10px;}
   .cta-secondary{
@@ -240,7 +245,7 @@ function renderCarnet(){
   const friends = SETTINGS.moreAboutFriends || [];
   const writing = SETTINGS.moreAboutWriting || {};
   const reading = SETTINGS.moreAboutReading || {};
-  const listening = SETTINGS.moreAboutListening || {};
+  const playing = SETTINGS.moreAboutPlaying || {};
   const socials = (SETTINGS.socials||[]).filter(s=>s.url);
   const latestPost = POSTS.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''))[0];
 
@@ -274,7 +279,7 @@ function renderCarnet(){
           ${SETTINGS.moreAboutHeroImage ? `<img src="${escapeHtml(SETTINGS.moreAboutHeroImage)}" alt="" class="mab-hero-img">` : ''}
         </div>
 
-        ${(writing.title || reading.title || listening.song) ? `
+        ${(writing.title || reading.title || playing.title) ? `
         <div class="mab-now-title">En ce moment ✦</div>
         <div class="mab-now-row">
           ${writing.title ? `
@@ -298,14 +303,14 @@ function renderCarnet(){
               </div>
             </div>
           </div>` : ''}
-          ${listening.song ? `
+          ${playing.title ? `
           <div class="mab-now-card">
-            <div class="mab-now-label">J'écoute</div>
+            <div class="mab-now-label">Je joue</div>
             <div style="display:flex;gap:10px;align-items:center;">
-              ${listening.cover ? `<img src="${escapeHtml(listening.cover)}" class="mab-now-thumb" alt="">` : `<div class="mab-now-thumb" style="display:flex;align-items:center;justify-content:center;">🎵</div>`}
+              ${playing.cover ? `<img src="${escapeHtml(playing.cover)}" class="mab-now-thumb" alt="">` : `<div class="mab-now-thumb" style="display:flex;align-items:center;justify-content:center;">🎮</div>`}
               <div>
-                <div class="mab-now-main">${escapeHtml(listening.song)}</div>
-                ${listening.artist ? `<div class="mab-now-sub">${escapeHtml(listening.artist)}</div>` : ''}
+                <div class="mab-now-main">${escapeHtml(playing.title)}</div>
+                ${playing.platform ? `<div class="mab-now-sub">${escapeHtml(playing.platform)}</div>` : ''}
               </div>
             </div>
           </div>` : ''}
@@ -323,7 +328,7 @@ function renderCarnet(){
           <div class="mab-featured-post" onclick="window.location.href='index.html#actualites/${latestPost.id}'">
             ${latestPost.images && latestPost.images.length ? `<img src="${escapeHtml(latestPost.images[0])}" alt="" class="mab-featured-img">` : ''}
             <div class="mab-featured-body">
-              <div class="mab-featured-date">${latestPost.date ? formatDate(latestPost.date) : ''}</div>
+              <div class="mab-featured-date">${latestPost.date ? formatDate(latestPost.date) : ''}${latestPost.subcategory ? `<span class="actu-subcat-badge">${escapeHtml(latestPost.subcategory)}</span>` : ''}</div>
               <div class="mab-featured-title">${escapeHtml(latestPost.title)}</div>
               <div class="mab-featured-excerpt">${richParagraphs(latestPost.body).replace(/<[^>]+>/g,' ').trim().slice(0,180)}…</div>
               <span class="cta-secondary" style="display:inline-block;margin-top:14px;">Lire la suite</span>
@@ -372,6 +377,11 @@ function renderCarnet(){
         <div>
           <div class="mab-side-block-title">Retrouvez-moi ✦</div>
           ${socials.map(s=>`<a href="${escapeHtml(s.url)}" target="_blank" rel="noopener" class="mab-side-link">${escapeHtml(s.label)}</a>`).join('')}
+        </div>` : ''}
+        ${SETTINGS.moreAboutSpotify ? `
+        <div>
+          <div class="mab-side-block-title">Ma playlist ✦</div>
+          <iframe src="${escapeHtml(SETTINGS.moreAboutSpotify)}" width="100%" height="152" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" style="border-radius:10px;"></iframe>
         </div>` : ''}
         ${(SETTINGS.moreAboutMood || SETTINGS.moreAboutInspiration) ? `
         <div>
