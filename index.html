@@ -16,7 +16,7 @@
 </script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Nom de plume — Histoires</title>
+<title>Cordélia w Noble</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 28S3 19 3 10.5C3 5.3 7 2 11.5 2c2.6 0 4.9 1.4 4.5 4-.4-2.6 1.9-4 4.5-4C25 2 29 5.3 29 10.5 29 19 16 28 16 28z' fill='%231B3A6B'/%3E%3C/svg%3E">
 
 <!-- PWA : permet d'ajouter le site à l'écran d'accueil, comme une application -->
@@ -2555,14 +2555,14 @@ async function savePostCategoriesMeta(){
   try{ await window.storage.set(POST_CATEGORIES_KEY, JSON.stringify(POST_CATEGORIES), true); }catch(e){}
 }
 function catMeta(name){
-  return POST_CATEGORIES[name] || { icon:'', description:'', active:true };
+  return POST_CATEGORIES[name] || { icon:'', description:'', active:true, carnetOnly:false };
 }
 function ensureCategoryRegistered(name){
   if(!name) return;
-  if(!POST_CATEGORIES[name]) POST_CATEGORIES[name] = { icon:'', description:'', active:true };
+  if(!POST_CATEGORIES[name]) POST_CATEGORIES[name] = { icon:'', description:'', active:true, carnetOnly:false };
 }
 function activePostCategories(){
-  return postCategories().filter(c => catMeta(c).active !== false);
+  return postCategories().filter(c => catMeta(c).active !== false && !catMeta(c).carnetOnly);
 }
 function allRegisteredCategories(){
   return [...new Set([...Object.keys(POST_CATEGORIES), ...postCategories()])];
@@ -7592,6 +7592,10 @@ function renderAdmin(){
             <input type="checkbox" id="catNewActive" checked style="width:auto;">
             Catégorie active (visible sur le site)
           </label>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-top:8px;">
+            <input type="checkbox" id="catNewCarnetOnly" style="width:auto;">
+            Réservée au carnet (n'apparaît pas sur la page « Mes actualités » du site, seulement dans le carnet)
+          </label>
           <div class="admin-msg" id="catNewMsg" style="margin-top:10px;"></div>
           <button type="button" class="submit-btn" onclick="submitNewCategory()">Créer la catégorie</button>
 
@@ -8949,7 +8953,7 @@ function renderCategoriesManageList(){
       <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
         <div class="info">
           <div class="t">${escapeHtml(name)}</div>
-          <div class="s">${meta.active !== false ? 'Active' : 'Désactivée'} · ${postCount} article${postCount>1?'s':''}</div>
+          <div class="s">${meta.active !== false ? 'Active' : 'Désactivée'}${meta.carnetOnly ? ' · Carnet uniquement' : ''} · ${postCount} article${postCount>1?'s':''}</div>
         </div>
         <span class="toggle-btn" onclick="toggleCategoryEdit('${slug}')">Modifier</span>
       </div>
@@ -8965,6 +8969,10 @@ function renderCategoriesManageList(){
         <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
           <input type="checkbox" id="catActive-${slug}" ${meta.active !== false ? 'checked' : ''} style="width:auto;">
           Catégorie active (visible sur le site)
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-top:8px;">
+          <input type="checkbox" id="catCarnetOnly-${slug}" ${meta.carnetOnly ? 'checked' : ''} style="width:auto;">
+          Réservée au carnet (n'apparaît pas sur la page « Mes actualités » du site, seulement dans le carnet)
         </label>
         <div style="display:flex;align-items:center;gap:14px;margin-top:10px;">
           <div class="submit-btn" style="padding:9px 20px;font-size:.8rem;" onclick="saveCategoryEdit('${slug}','${name.replace(/'/g,"\\'")}')">Enregistrer</div>
@@ -8984,7 +8992,8 @@ async function saveCategoryEdit(slug, name){
   POST_CATEGORIES[name] = {
     icon: document.getElementById('catIcon-'+slug).value.trim(),
     description: document.getElementById('catDescription-'+slug).value.trim(),
-    active: document.getElementById('catActive-'+slug).checked
+    active: document.getElementById('catActive-'+slug).checked,
+    carnetOnly: document.getElementById('catCarnetOnly-'+slug).checked
   };
   await savePostCategoriesMeta();
   document.getElementById('catMsg-'+slug).textContent = 'Enregistré ✓';
@@ -10301,13 +10310,15 @@ async function submitNewCategory(){
   POST_CATEGORIES[name] = {
     icon: document.getElementById('catNewIcon').value.trim(),
     description: document.getElementById('catNewDescription').value.trim(),
-    active: document.getElementById('catNewActive').checked
+    active: document.getElementById('catNewActive').checked,
+    carnetOnly: document.getElementById('catNewCarnetOnly').checked
   };
   await savePostCategoriesMeta();
   document.getElementById('catNewName').value = '';
   document.getElementById('catNewIcon').value = '';
   document.getElementById('catNewDescription').value = '';
   document.getElementById('catNewActive').checked = true;
+  document.getElementById('catNewCarnetOnly').checked = false;
   msgEl.textContent = 'Catégorie créée ✓';
   toast('Catégorie créée.');
   renderCategoriesManageList();
