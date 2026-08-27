@@ -265,6 +265,12 @@ main{max-width:1180px;margin:0 auto;padding:0 24px 100px;}
   box-shadow:0 24px 50px -26px rgba(36,51,82,.4);
 }
 
+/* ---------- page en préparation (réutilisable pour toute page désactivée) ---------- */
+.page-coming-soon{max-width:440px;margin:100px auto;text-align:center;}
+.page-coming-soon-icon{font-size:2.4rem;margin-bottom:10px;}
+.page-coming-soon h2{font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--ink);margin:0 0 10px;}
+.page-coming-soon p{font-family:'Lora',serif;font-style:italic;color:var(--muted);line-height:1.7;}
+
 /* ---------- page "Mon podcast" ---------- */
 .podcast-intro{max-width:640px;margin:36px auto 0;text-align:center;font-family:'Lora',serif;line-height:1.9;color:var(--ink);}
 .podcast-intro p{margin:0 0 1em;}
@@ -1828,7 +1834,7 @@ footer{border-top:1px solid var(--line);padding:34px 24px;text-align:center;font
         <a onclick="navigate('univers')" data-nav="univers">Mes collections</a>
         <a onclick="navigate('sagas')" data-nav="sagas">Mes univers</a>
         <a onclick="navigate('works')" data-nav="works">Mes œuvres</a>
-        <a onclick="navigate('podcast')" data-nav="podcast">Mon podcast</a>
+        <a onclick="navigate('podcast')" data-nav="podcast" data-page="podcast">Mon podcast</a>
         <a onclick="navigate('actualites')" data-nav="actualites">Mes actualités</a>
         <a onclick="navigate('calendrier')" data-nav="calendrier">Mon calendrier</a>
         <a onclick="navigate('favoris')" data-nav="favoris">Vos favoris</a>
@@ -2381,6 +2387,7 @@ const SEED_SETTINGS = {
   podcastIntro: "Bonjour les étoiles… Ici, je partage simplement une réflexion, une idée, une expérience autour de l'écriture, de la créativité ou de ma vie d'autrice — comme un vocal envoyé à une copine. Pas de fréquence fixe, pas de durée stricte, juste une parenthèse.",
   podcastDiscordUrl: '',
   actualitesHeroImage: '',
+  pageActive: {},
   moreAboutMood: '',
   moreAboutInspiration: '',
   moreAboutFriends: [],
@@ -2566,6 +2573,9 @@ function activePostCategories(){
 }
 function allRegisteredCategories(){
   return [...new Set([...Object.keys(POST_CATEGORIES), ...postCategories()])];
+}
+function isPageActive(key){
+  return (SETTINGS.pageActive||{})[key] !== false;
 }
 
 /* ---------- épisodes du podcast ---------- */
@@ -2760,6 +2770,9 @@ function applySettingsToChrome(){
   document.getElementById('siteTitle').textContent = SETTINGS.name;
   document.title = SETTINGS.name + " — Histoires";
   document.getElementById('footerText').textContent = (SETTINGS.copyrightText || '© 2026 {nom} — tous droits réservés').replace('{nom}', SETTINGS.name);
+  document.querySelectorAll('[data-page]').forEach(el=>{
+    el.style.display = isPageActive(el.dataset.page) ? '' : 'none';
+  });
 
   const btnImg = SETTINGS.primaryButtonImages || {};
   const root = document.documentElement.style;
@@ -4617,6 +4630,18 @@ let podcastAudioEl = null;
 function renderPodcastPage(directEpisodeId){
   podcastOpenEpisodeId = null;
   if(podcastAudioEl) podcastAudioEl.pause();
+
+  if(!isPageActive('podcast')){
+    app.innerHTML = `
+      <div class="page-coming-soon">
+        <div class="page-coming-soon-icon">🥿</div>
+        <h2>Bientôt disponible</h2>
+        <p>Cette page est en préparation — revenez très vite !</p>
+        <a onclick="navigate('home')" class="cta-secondary" style="display:inline-block;margin-top:10px;">← Retour à l'accueil</a>
+      </div>
+    `;
+    return;
+  }
 
   app.innerHTML = `
     ${SETTINGS.podcastHeroImage ? `
@@ -7501,6 +7526,11 @@ function renderAdmin(){
       <div class="admin-section" data-section="podcast">
         <div class="admin-form">
           <h3>Réglages du podcast</h3>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:18px;padding:12px 14px;background:var(--bg-alt);border-radius:8px;">
+            <input type="checkbox" id="pcPageActive" ${isPageActive('podcast') ? 'checked' : ''} style="width:auto;">
+            Page active sur le site
+          </label>
+          <div class="admin-msg" style="margin:-8px 0 18px;">Décochée : « Mon podcast » disparaît du menu, et le lien direct affiche « Bientôt disponible » — votre travail (épisodes, réglages) reste intact en coulisses, prêt à être publié en cochant cette case le jour venu.</div>
           <div>
             <label>Image de bannière (facultatif — sinon un titre simple s'affiche)</label>
             <input type="text" id="pcHeroImage" value="${escapeHtml(SETTINGS.podcastHeroImage||'')}" placeholder="https://...">
@@ -10203,7 +10233,10 @@ async function savePodcastSettings(){
   SETTINGS.podcastHeroImage = document.getElementById('pcHeroImage').value.trim();
   SETTINGS.podcastIntro = document.getElementById('pcIntro').value.trim();
   SETTINGS.podcastDiscordUrl = document.getElementById('pcDiscordUrl').value.trim();
+  if(!SETTINGS.pageActive) SETTINGS.pageActive = {};
+  SETTINGS.pageActive.podcast = document.getElementById('pcPageActive').checked;
   await saveSettings();
+  applySettingsToChrome();
   document.getElementById('pcSettingsMsg').textContent = 'Enregistré ✓';
   toast('Réglages du podcast enregistrés.');
 }
