@@ -3,193 +3,86 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Carnet personnel</title>
+<title>Carnet — Cordélia W. Noble</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,500;1,400&family=Jost:wght@400;500;600&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
+  :root{
+    --bg:#FBF3E4; --card:#fff; --ink:#2A2118; --muted:#8A7A64; --gold:#B8863E; --gold-soft:rgba(217,179,108,.18); --line:rgba(217,179,108,.3);
+  }
   *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;height:100%;font-family:'Jost',sans-serif;}
-  body{overflow:hidden;background:#10192E;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--bg);font-family:'Jost',sans-serif;color:var(--ink);}
+  a{color:inherit;}
+  .carnet-wrap{max-width:900px;margin:0 auto;padding:0 24px 100px;}
 
-  /* ---------- page "carnet personnel" — identité indépendante du site ---------- */
-  .mab-theme{position:fixed;inset:0;overflow:hidden;background:transparent;}
-  .mab-layout{
-    display:grid;height:100vh;height:100dvh;
-    grid-template-columns: clamp(210px, 19vw, 320px) 1fr clamp(200px, 17vw, 300px);
-    gap:0;align-items:stretch;
+  .carnet-back{
+    display:inline-block;margin:26px 0 0;font-family:'Jost',sans-serif;font-size:.78rem;color:var(--muted);
+    text-decoration:none;
   }
-  .mab-sidebar{
-    height:100%;overflow-y:auto;padding:36px 26px;box-sizing:border-box;
-    color:#EDEFF7;background:none;
-  }
-  .mab-sidebar-right{background:none;}
-  .mab-sidebar-left{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;}
-  .mab-avatar-frame{
-    width:110px;height:110px;border-radius:50%;overflow:hidden;border:2px solid #D9B36C;
-    box-shadow:0 0 0 5px rgba(233,237,246,.08);margin-bottom:14px;flex-shrink:0;
-  }
-  .mab-avatar-frame img{width:100%;height:100%;object-fit:cover;}
-  .mab-side-name{font-family:'Playfair Display',serif;font-size:1.3rem;color:#F4EFE1;}
-  .mab-side-subtitle{font-family:'Caveat',cursive;font-size:1.1rem;color:#D9B36C;margin-bottom:22px;}
-  .mab-nav{display:flex;flex-direction:column;gap:4px;width:100%;margin-top:10px;}
-  .mab-nav a{
-    font-family:'Jost',sans-serif;font-size:.85rem;color:rgba(237,239,247,.75);padding:10px 16px;border-radius:8px;
-    cursor:pointer;transition:.2s;border:1px solid transparent;
-  }
-  .mab-nav a:hover{background:rgba(233,237,246,.08);color:#fff;}
-  .mab-nav a.active{background:rgba(217,179,108,.14);color:#F4EFE1;border-color:rgba(217,179,108,.5);}
-  .mab-back-link{
-    margin-top:32px;font-family:'Jost',sans-serif;font-size:.75rem;color:rgba(237,239,247,.6);cursor:pointer;
-    border-top:1px solid rgba(237,239,247,.15);padding-top:18px;width:100%;text-decoration:none;display:block;
-  }
-  .mab-back-link:hover{color:#D9B36C;}
+  .carnet-back:hover{color:var(--gold);}
 
-  .mab-main{
-    --mab-pad-x: clamp(24px, 4vw, 56px);
-    background:#FBF3E4;padding:50px var(--mab-pad-x);box-sizing:border-box;min-width:0;
-    height:100%;overflow-y:auto;
-    scrollbar-width:none;-ms-overflow-style:none;
+  .carnet-hero{text-align:center;padding:50px 0 40px;}
+  .carnet-hero h1{font-family:'Playfair Display',serif;font-size:2.6rem;color:var(--ink);margin:0 0 10px;}
+  .carnet-hero-sub{font-family:'Caveat',cursive;font-size:1.4rem;color:var(--gold);margin:0 0 22px;}
+  .carnet-hero-text{font-family:'Lora',serif;font-style:italic;color:var(--muted);line-height:1.8;max-width:52ch;margin:0 auto;}
+
+  .carnet-section{margin-top:70px;}
+  .carnet-section-title{text-align:center;margin-bottom:8px;}
+  .carnet-section-title h2{font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--ink);margin:0;}
+  .carnet-section-sub{text-align:center;font-family:'Lora',serif;font-style:italic;color:var(--muted);font-size:.9rem;margin:6px 0 30px;}
+
+  /* En ce moment */
+  .carnet-now-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .carnet-now-card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;box-shadow:0 10px 22px -18px rgba(36,26,10,.25);}
+  .carnet-now-label{font-family:'Jost',sans-serif;font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
+  .carnet-now-main{font-family:'Lora',serif;font-size:.9rem;color:var(--ink);line-height:1.35;}
+  .carnet-now-sub{font-family:'Jost',sans-serif;font-size:.72rem;color:var(--muted);margin-top:2px;}
+  .carnet-now-stars{color:var(--gold);letter-spacing:1px;font-size:.8rem;margin-top:4px;}
+  .carnet-now-empty{grid-column:1/-1;text-align:center;color:var(--muted);font-style:italic;font-family:'Lora',serif;font-size:.9rem;}
+  @media(max-width:700px){ .carnet-now-grid{grid-template-columns:repeat(2,1fr);} }
+  @media(max-width:460px){ .carnet-now-grid{grid-template-columns:1fr;} }
+
+  /* Fragments de moi */
+  .carnet-fragments-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;}
+  .carnet-fragment-card{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px;
+    box-shadow:0 10px 22px -18px rgba(36,26,10,.2);
   }
-  .mab-main::-webkit-scrollbar{display:none;}
-  .mab-main-inner{max-width:760px;margin:0 auto;}
+  .carnet-fragment-title{font-family:'Playfair Display',serif;font-size:.95rem;color:var(--gold);margin-bottom:8px;}
+  .carnet-fragment-body{font-family:'Lora',serif;font-size:.88rem;line-height:1.6;color:var(--ink);}
+  .carnet-fragment-body p{margin:0 0 .7em;}
 
-  .mab-hero{display:flex;flex-wrap:wrap;gap:30px;align-items:center;margin-bottom:44px;}
-  .mab-hero-img-full{
-    display:block;width:calc(100% + 2*var(--mab-pad-x));margin:-50px calc(-1 * var(--mab-pad-x)) 44px;
-    max-height:420px;object-fit:cover;
+  /* Notes de marge */
+  .carnet-notes-list{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card);}
+  .carnet-note{padding:20px 22px;border-bottom:1px solid var(--line);cursor:pointer;transition:.15s;}
+  .carnet-note:last-child{border-bottom:none;}
+  .carnet-note:hover{background:var(--gold-soft);}
+  .carnet-note-date{font-family:'Jost',sans-serif;font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
+  .carnet-note-title{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--ink);margin-bottom:4px;}
+  .carnet-note-excerpt{font-family:'Lora',serif;font-size:.85rem;color:var(--muted);line-height:1.6;}
+  .carnet-more-link{display:block;text-align:center;margin-top:22px;font-family:'Jost',sans-serif;font-size:.82rem;color:var(--gold);text-decoration:none;}
+  .carnet-more-link:hover{text-decoration:underline;}
+
+  /* Portes Bibliothèque / Ludothèque */
+  .carnet-doors-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  .carnet-door{
+    display:block;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:30px 26px;
+    text-decoration:none;text-align:center;transition:.2s;box-shadow:0 10px 22px -18px rgba(36,26,10,.2);
   }
-  .mab-hero-text{flex:1;min-width:220px;}
-  .mab-hero-text h1{font-family:'Playfair Display',serif;font-size:2.1rem;color:#2A2118;line-height:1.25;margin:0 0 12px;}
-  .mab-tagline{font-family:'Lora',serif;font-style:italic;color:#7A6A55;line-height:1.7;max-width:42ch;}
-  .mab-hero-img{flex:1;min-width:240px;max-width:380px;border-radius:12px;box-shadow:0 26px 50px -24px rgba(36,26,10,.35);}
+  .carnet-door:hover{transform:translateY(-3px);box-shadow:0 18px 32px -20px rgba(36,26,10,.3);}
+  .carnet-door-icon{font-size:1.8rem;margin-bottom:10px;}
+  .carnet-door-title{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--ink);margin-bottom:8px;}
+  .carnet-door-sub{font-family:'Lora',serif;font-style:italic;font-size:.85rem;color:var(--muted);margin-bottom:14px;}
+  .carnet-door-cta{font-family:'Jost',sans-serif;font-size:.8rem;color:var(--gold);}
+  @media(max-width:640px){ .carnet-doors-grid{grid-template-columns:1fr;} }
 
-  .mab-now-title{font-family:'Playfair Display',serif;font-size:1.15rem;color:#2A2118;margin:0 0 16px;}
-  .mab-now-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:50px;}
-  .mab-now-card{background:#fff;border:1px solid rgba(217,179,108,.35);border-radius:12px;padding:18px;box-shadow:0 10px 24px -18px rgba(36,26,10,.25);}
-  .mab-now-label{font-family:'Jost',sans-serif;font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:#B8863E;margin-bottom:8px;}
-  .mab-now-main{font-family:'Lora',serif;font-size:.92rem;color:#2A2118;}
-  .mab-now-sub{font-family:'Jost',sans-serif;font-size:.75rem;color:#8A7A64;margin-top:2px;}
-  .mab-now-thumb{width:44px;height:44px;border-radius:8px;object-fit:cover;flex-shrink:0;background:rgba(217,179,108,.18);font-size:1.3rem;}
-  .mab-progress-bar{height:5px;background:rgba(217,179,108,.18);border-radius:4px;overflow:hidden;margin-top:12px;}
-  .mab-progress-fill{height:100%;background:#B8863E;}
-  .mab-progress-pct{font-family:'Jost',sans-serif;font-size:.68rem;color:#8A7A64;margin-top:4px;text-align:right;}
-  .mab-stars{color:#B8863E;letter-spacing:1px;font-size:.85rem;margin-top:4px;}
-
-  .mab-tab{scroll-margin-top:36px;}
-  .mab-section{margin-bottom:60px;scroll-margin-top:36px;}
-  .mab-section-title{font-family:'Playfair Display',serif;font-size:1.4rem;color:#2A2118;margin-bottom:20px;text-align:center;}
-
-  .mab-featured-post{
-    display:flex;flex-wrap:wrap;gap:24px;background:#fff;border:1px solid rgba(217,179,108,.35);
-    border-radius:14px;overflow:hidden;cursor:pointer;transition:.2s;box-shadow:0 10px 24px -18px rgba(36,26,10,.25);
-  }
-  .mab-featured-post:hover{box-shadow:0 20px 40px -22px rgba(36,26,10,.3);}
-  .mab-featured-img{width:100%;max-width:280px;object-fit:cover;flex:1;min-width:220px;}
-  .mab-featured-body{flex:2;min-width:220px;padding:22px 22px 22px 0;}
-  .mab-featured-date{font-family:'Jost',sans-serif;font-size:.68rem;color:#8A7A64;margin-bottom:6px;}
-  .actu-subcat-badge{
-    display:inline-block;font-family:'Jost',sans-serif;font-size:.64rem;letter-spacing:.04em;
-    padding:3px 11px;border-radius:20px;background:rgba(217,179,108,.18);color:#B8863E;
-    border:1px solid rgba(217,179,108,.4);margin-left:8px;vertical-align:middle;
-  }
-  .mab-featured-title{font-family:'Playfair Display',serif;font-size:1.15rem;color:#2A2118;line-height:1.35;}
-  .mab-featured-excerpt{font-family:'Lora',serif;font-size:.88rem;color:#7A6A55;line-height:1.7;margin-top:10px;}
-
-  .mab-cat-icon-row{display:flex;flex-wrap:wrap;justify-content:center;gap:22px;margin-top:20px;}
-  .mab-cat-icon{display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer;width:76px;}
-  .mab-cat-icon-avatar{
-    width:56px;height:56px;border-radius:50%;overflow:hidden;background:#fff;
-    border:2px solid rgba(217,179,108,.35);display:flex;align-items:center;justify-content:center;transition:.2s;
-    font-family:'Playfair Display',serif;font-size:1.2rem;color:#8A7A64;
-  }
-  .mab-cat-icon-avatar img{width:100%;height:100%;object-fit:cover;}
-  .mab-cat-icon:hover .mab-cat-icon-avatar{border-color:#B8863E;transform:translateY(-2px);}
-  .mab-cat-icon.active .mab-cat-icon-avatar{border-color:#B8863E;box-shadow:0 0 0 3px rgba(217,179,108,.18);}
-  .mab-cat-icon-label{font-family:'Jost',sans-serif;font-size:.68rem;color:#8A7A64;text-align:center;line-height:1.3;}
-  .mab-cat-icon.active .mab-cat-icon-label{color:#B8863E;}
-
-  .mab-cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:26px;}
-  .mab-cat-card{background:#fff;border:1px solid rgba(217,179,108,.3);border-radius:12px;overflow:hidden;cursor:pointer;transition:.2s;box-shadow:0 10px 20px -16px rgba(36,26,10,.2);}
-  .mab-cat-card:hover{transform:translateY(-3px);box-shadow:0 16px 28px -18px rgba(36,26,10,.3);}
-  .mab-cat-card-img{width:100%;aspect-ratio:16/10;object-fit:cover;display:block;}
-  .mab-cat-card-img.placeholder{display:flex;align-items:center;justify-content:center;background:rgba(217,179,108,.12);color:#B8863E;font-size:1.3rem;}
-  .mab-cat-card-body{padding:12px 13px 14px;}
-  .mab-cat-card-title{font-family:'Lora',serif;font-size:.82rem;color:#2A2118;line-height:1.35;margin-top:4px;}
-  @media(max-width:760px){.mab-cat-grid{grid-template-columns:repeat(2,1fr);}}
-  @media(max-width:480px){.mab-cat-grid{grid-template-columns:1fr;}}
-  .cta-secondary{
-    font-family:'Jost',sans-serif;font-size:.8rem;border:1px solid rgba(217,179,108,.5);color:#B8863E;
-    padding:11px 18px;border-radius:30px;text-align:center;line-height:1.3;cursor:pointer;transition:.2s;
-    background:transparent;display:inline-block;
-  }
-  .cta-secondary:hover{border-color:#B8863E;background:rgba(217,179,108,.12);}
-
-  .mab-books-carousel{position:relative;display:flex;align-items:center;gap:10px;}
-  .mab-books-row{display:flex;gap:18px;overflow-x:auto;flex:1;min-width:0;padding:4px 4px 10px;scrollbar-width:none;-ms-overflow-style:none;}
-  .mab-books-row::-webkit-scrollbar{display:none;}
-  .mab-book-review-card{flex:0 0 170px;background:#fff;border:1px solid rgba(217,179,108,.35);border-radius:10px;padding:14px;box-shadow:0 10px 24px -18px rgba(36,26,10,.2);}
-  .mab-book-review{font-family:'Lora',serif;font-style:italic;font-size:.78rem;color:#8A7A64;line-height:1.5;margin-top:8px;}
-  .updates-arrow{
-    flex-shrink:0;width:38px;height:38px;border-radius:50%;background:#fff;border:1px solid rgba(217,179,108,.4);
-    display:flex;align-items:center;justify-content:center;cursor:pointer;color:#B8863E;font-size:1rem;
-    transition:.2s;box-shadow:0 8px 18px -10px rgba(36,26,10,.3);
-  }
-  .updates-arrow:hover{background:#B8863E;color:#fff;}
-
-  .mab-books-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:22px;}
-  .mab-book-card{text-align:center;}
-  .mab-book-cover{width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:6px;box-shadow:0 14px 26px -16px rgba(36,26,10,.3);}
-  .mab-book-cover.placeholder{display:flex;align-items:center;justify-content:center;background:rgba(217,179,108,.15);font-size:2rem;}
-  .mab-book-title{font-family:'Lora',serif;font-size:.85rem;color:#2A2118;margin-top:10px;line-height:1.4;}
-  .mab-book-author{font-family:'Jost',sans-serif;font-size:.72rem;color:#8A7A64;margin-top:2px;}
-
-  .mab-sidebar-right{display:flex;flex-direction:column;gap:28px;}
-  .mab-side-block-title{font-family:'Jost',sans-serif;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:#D9B36C;margin-bottom:12px;}
-  .mab-side-link{display:block;font-family:'Lora',serif;font-size:.85rem;color:#EDEFF7;margin-bottom:8px;text-decoration:none;}
-  .mab-side-link:hover{text-decoration:underline;}
-  .mab-side-item{display:flex;justify-content:space-between;gap:10px;font-family:'Jost',sans-serif;font-size:.78rem;margin-bottom:10px;}
-  .mab-side-item span:first-child{color:rgba(237,239,247,.6);}
-  .mab-side-item span:last-child{color:#EDEFF7;text-align:right;}
-  .mab-friend-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;text-decoration:none;}
-  .mab-friend-avatar{width:34px;height:34px;border-radius:50%;object-fit:cover;flex-shrink:0;}
-  .mab-friend-avatar.placeholder{display:flex;align-items:center;justify-content:center;background:rgba(217,179,108,.2);color:#D9B36C;font-family:'Playfair Display',serif;font-size:.95rem;}
-  .mab-friend-name{font-family:'Lora',serif;font-size:.82rem;color:#EDEFF7;}
-  .mab-friend-tag{font-family:'Jost',sans-serif;font-size:.68rem;color:rgba(237,239,247,.55);}
-
-  .saga-desc{color:#3B4A63;line-height:1.8;text-align:justify;}
-  .mab-tab .saga-desc{color:#4A3F30;}
-  .mab-tab .saga-desc p{margin:0 0 1em;}
-
-  @media(max-width:1180px){
-    .mab-layout{grid-template-columns: clamp(180px, 16vw, 240px) 1fr clamp(170px, 14vw, 220px);}
-    .mab-sidebar{padding:28px 18px;}
-  }
-  @media(max-width:900px){
-    .mab-theme{position:static;inset:auto;overflow:visible;}
-    .mab-layout{grid-template-columns:1fr;height:auto;}
-    body{overflow:visible;}
-    .mab-sidebar{height:auto;overflow:visible;}
-    .mab-sidebar-left{flex-direction:row;flex-wrap:wrap;justify-content:center;padding:22px 20px;}
-    .mab-avatar-frame{width:64px;height:64px;margin:0 14px 0 0;}
-    .mab-nav{flex-direction:row;flex-wrap:wrap;justify-content:center;width:auto;margin-top:14px;gap:6px;}
-    .mab-back-link{width:auto;border-top:none;margin-top:14px;padding-top:0;}
-    .mab-main{--mab-pad-x:24px;padding:40px var(--mab-pad-x);height:auto;overflow:visible;}
-    .mab-hero-img-full{margin-top:0;}
-  }
-  @media(max-width:640px){
-    .mab-sidebar-left{order:1;}
-    .mab-main{--mab-pad-x:18px;order:2;padding:32px var(--mab-pad-x);}
-    .mab-hero-img-full{margin-top:0;}
-    .mab-sidebar-right{order:3;padding:32px 22px;}
-    .mab-hero-text h1{font-size:1.7rem;}
-  }
-
-  .loading-msg{color:#EDEFF7;font-family:'Jost',sans-serif;text-align:center;padding-top:40vh;}
+  .loading-msg{text-align:center;padding:100px 20px;color:var(--muted);font-family:'Jost',sans-serif;}
 </style>
 </head>
 <body>
-<div id="app"><p class="loading-msg">Chargement…</p></div>
+<div class="carnet-wrap" id="app"><p class="loading-msg">Chargement…</p></div>
 
 <script>
 /* ---------- connexion Supabase (identique à celle du site principal) ---------- */
@@ -227,40 +120,37 @@ function extractFieldStyle(text){
   const m = /^<!--style:([^>]*)-->/.exec(text||'');
   if(!m) return { font:'', size:'', body:text||'' };
   const params = {};
-  m[1].split(';').forEach(p=>{ const [k,v]=p.split('='); if(k) params[k]=v||''; });
+  m[1].split(';').forEach(p=>{ const parts=p.split('='); const k=parts[0]; const v=parts[1]; if(k) params[k]=v||''; });
   return { font: params.font||'', size: params.size||'', body: (text||'').slice(m[0].length) };
 }
 function fieldStyleCss(font, size){
   let css = '';
-  if(font && RICH_FIELD_FONTS[font]) css += `font-family:${RICH_FIELD_FONTS[font]};`;
-  if(size) css += `font-size:${size}px;`;
+  if(font && RICH_FIELD_FONTS[font]) css += 'font-family:'+RICH_FIELD_FONTS[font]+';';
+  if(size) css += 'font-size:'+size+'px;';
   return css;
 }
 function richParagraphs(text){
   const parsed = extractFieldStyle(text);
-  const html = (parsed.body||'').split(/\n\s*\n/).map(p=>p.trim()).filter(Boolean).map(p=>`<p>${formatRichText(p).replace(/\n/g,'<br>')}</p>`).join('');
+  const html = (parsed.body||'').split(/\n\s*\n/).map(p=>p.trim()).filter(Boolean).map(p=>'<p>'+formatRichText(p).replace(/\n/g,'<br>')+'</p>').join('');
   const css = fieldStyleCss(parsed.font, parsed.size);
-  return css ? `<div style="${css}">${html}</div>` : html;
+  return css ? '<div style="'+css+'">'+html+'</div>' : html;
 }
 function formatDate(iso){
-  if(!iso) return '—';
+  if(!iso) return '';
   const d = new Date(iso + 'T00:00:00');
   if(isNaN(d)) return escapeHtml(iso);
-  return d.toLocaleDateString('fr-FR', {day:'numeric', month:'short', year:'numeric'});
+  return d.toLocaleDateString('fr-FR', {day:'numeric', month:'long', year:'numeric'});
 }
-function scrollCharRow(rowId, dir){
-  const row = document.getElementById(rowId);
-  if(!row) return;
-  row.scrollBy({ left: dir * 320, behavior: 'smooth' });
+function starsHtml(rating){
+  rating = Math.round(rating||0);
+  return '★★★★★☆☆☆☆☆'.slice(5-rating, 10-rating);
 }
-function refreshCarouselArrows(rowId, prevId, nextId){
-  const row = document.getElementById(rowId);
-  const prev = document.getElementById(prevId);
-  const next = document.getElementById(nextId);
-  if(!row || !prev || !next) return;
-  const overflow = row.scrollWidth > row.clientWidth + 4;
-  prev.style.display = overflow ? 'flex' : 'none';
-  next.style.display = overflow ? 'flex' : 'none';
+
+/* ---------- catégories d'actualités ---------- */
+let POST_CATEGORIES = {};
+function catMeta(name){ return POST_CATEGORIES[name] || { icon:'', description:'', active:true }; }
+function postsInCategory(cat){
+  return POSTS.filter(function(p){ return p.category===cat; }).sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
 }
 
 /* ---------- rendu de la page ---------- */
@@ -268,253 +158,119 @@ const app = document.getElementById('app');
 let SETTINGS = {};
 let POSTS = [];
 
-function starsHtml(rating){
-  rating = Math.round(rating||0);
-  return '★★★★★☆☆☆☆☆'.slice(5-rating, 10-rating);
-}
-
 function renderCarnet(){
-  const books = SETTINGS.moreAboutBooks || [];
-  const friends = SETTINGS.moreAboutFriends || [];
-  const writing = SETTINGS.moreAboutWriting || {};
   const reading = SETTINGS.moreAboutReading || {};
   const playing = SETTINGS.moreAboutPlaying || {};
-  const socials = (SETTINGS.socials||[]).filter(s=>s.url && /instagram/i.test(s.label||''));
-  const latestPost = POSTS.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''))[0];
+  const watching = SETTINGS.moreAboutWatching || {};
+  const listening = SETTINGS.moreAboutListening || {};
+  const obsession = SETTINGS.moreAboutObsession || {};
+  const craving = SETTINGS.moreAboutCraving || {};
 
-  app.innerHTML = `
-    <div class="mab-theme">
-    <div class="mab-layout">
+  const nowEntries = [
+    { label:'Je lis', main: reading.title, sub: reading.author, stars: reading.rating },
+    { label:'Je joue', main: playing.title, sub: playing.platform },
+    { label:'Je regarde', main: watching.title, sub: watching.detail },
+    { label:"J'écoute", main: listening.song, sub: listening.artist },
+    { label:'Mon obsession du moment', main: obsession.title, sub: obsession.detail },
+    { label:"J'ai envie de", main: craving.title, sub: craving.detail }
+  ].filter(function(e){ return e.main; });
 
-      <aside class="mab-sidebar mab-sidebar-left">
-        ${SETTINGS.moreAboutAvatar ? `<div class="mab-avatar-frame"><img src="${escapeHtml(SETTINGS.moreAboutAvatar)}" alt=""></div>` : ''}
-        <div class="mab-side-name">${escapeHtml(SETTINGS.name||'')}</div>
-        ${SETTINGS.moreAboutSubtitle ? `<div class="mab-side-subtitle">${escapeHtml(SETTINGS.moreAboutSubtitle)}</div>` : ''}
-        <nav class="mab-nav">
-          <a onclick="mabScrollTo('mab-top',this)" class="active">Accueil</a>
-          <a onclick="mabScrollTo('mab-bio',this)">À propos</a>
-          <a onclick="mabScrollTo('mab-journal',this)">Journal</a>
-          <a onclick="mabScrollTo('mab-lectures',this)">Mes lectures</a>
-          <a onclick="mabScrollTo('mab-favoris',this)">Mes favoris</a>
-        </nav>
-        <a href="https://cordeliawnoble.fr/" class="mab-back-link">↺ Retour au site d'autrice</a>
-      </aside>
+  const fragments = postsInCategory('fragments-de-moi');
+  const allNotes = postsInCategory('notes-de-marge');
+  const notes = allNotes.slice(0,3);
+  const firstNotePost = allNotes[0];
 
-      <main class="mab-main">
-        <div id="mab-top"></div>
-        ${SETTINGS.moreAboutHeroImage ? `<img src="${escapeHtml(SETTINGS.moreAboutHeroImage)}" alt="" class="mab-hero-img-full">` : ''}
-      <div class="mab-main-inner">
+  let html = '';
+  html += '<a href="https://cordeliawnoble.fr/" class="carnet-back">↺ Retour au site d\'autrice</a>';
 
-        ${(writing.title || reading.title || playing.title) ? `
-        <div class="mab-now-title">En ce moment ✦</div>
-        <div class="mab-now-row">
-          ${writing.title ? `
-          <div class="mab-now-card">
-            <div class="mab-now-label">J'écris</div>
-            <div class="mab-now-main">${escapeHtml(writing.title)}</div>
-            ${writing.chapterLabel ? `<div class="mab-now-sub">${escapeHtml(writing.chapterLabel)}</div>` : ''}
-            ${writing.progress ? `
-            <div class="mab-progress-bar"><div class="mab-progress-fill" style="width:${writing.progress}%;"></div></div>
-            <div class="mab-progress-pct">${writing.progress}%</div>` : ''}
-          </div>` : ''}
-          ${reading.title ? `
-          <div class="mab-now-card">
-            <div class="mab-now-label">Je lis</div>
-            <div style="display:flex;gap:10px;align-items:center;">
-              ${reading.cover ? `<img src="${escapeHtml(reading.cover)}" class="mab-now-thumb" alt="">` : ''}
-              <div>
-                <div class="mab-now-main">${escapeHtml(reading.title)}</div>
-                ${reading.author ? `<div class="mab-now-sub">${escapeHtml(reading.author)}</div>` : ''}
-                ${reading.rating ? `<div class="mab-stars">${starsHtml(reading.rating)}</div>` : ''}
-              </div>
-            </div>
-          </div>` : ''}
-          ${playing.title ? `
-          <div class="mab-now-card">
-            <div class="mab-now-label">Je joue</div>
-            <div style="display:flex;gap:10px;align-items:center;">
-              ${playing.cover ? `<img src="${escapeHtml(playing.cover)}" class="mab-now-thumb" alt="">` : `<div class="mab-now-thumb" style="display:flex;align-items:center;justify-content:center;">🎮</div>`}
-              <div>
-                <div class="mab-now-main">${escapeHtml(playing.title)}</div>
-                ${playing.platform ? `<div class="mab-now-sub">${escapeHtml(playing.platform)}</div>` : ''}
-              </div>
-            </div>
-          </div>` : ''}
-        </div>` : ''}
+  html += '<header class="carnet-hero">';
+  html += '<h1>Carnet</h1>';
+  html += '<p class="carnet-hero-sub">Quelques morceaux de moi, entre deux histoires.</p>';
+  html += '<p class="carnet-hero-text">' + (SETTINGS.carnetIntro ? richParagraphs(SETTINGS.carnetIntro) : "Ici se trouvent mes lectures du moment, mes jeux, mes découvertes, mes petites obsessions, et quelques fragments un peu plus personnels.") + '</p>';
+  html += '</header>';
 
-        <div id="mab-bio" class="mab-section">
-          <div class="mab-section-title">Un peu plus sur moi</div>
-          ${SETTINGS.moreAboutBio ? `<div class="saga-desc">${richParagraphs(SETTINGS.moreAboutBio)}</div>` : `<p style="color:#8A7A64;font-style:italic;text-align:center;">Rien à afficher pour le moment.</p>`}
-        </div>
+  html += '<section class="carnet-section">';
+  html += '<div class="carnet-section-title"><h2>En ce moment</h2></div>';
+  html += '<div class="carnet-now-grid">';
+  if(nowEntries.length){
+    nowEntries.forEach(function(e){
+      html += '<div class="carnet-now-card">';
+      html += '<div class="carnet-now-label">'+escapeHtml(e.label)+'</div>';
+      html += '<div class="carnet-now-main">'+escapeHtml(e.main)+'</div>';
+      if(e.sub) html += '<div class="carnet-now-sub">'+escapeHtml(e.sub)+'</div>';
+      if(e.stars) html += '<div class="carnet-now-stars" role="img" aria-label="Note : '+e.stars+' sur 5">'+starsHtml(e.stars)+'</div>';
+      html += '</div>';
+    });
+  }else{
+    html += '<div class="carnet-now-empty">Rien à afficher pour le moment.</div>';
+  }
+  html += '</div></section>';
 
-        <div id="mab-journal" class="mab-section">
-          ${latestPost ? `
-          <div class="mab-now-title">Dernière publication ✦</div>
-          <div class="mab-featured-post" onclick="window.location.href='index.html#actualites/${latestPost.id}'">
-            ${latestPost.images && latestPost.images.length ? `<img src="${escapeHtml(latestPost.images[0])}" alt="" class="mab-featured-img">` : ''}
-            <div class="mab-featured-body">
-              <div class="mab-featured-date">${latestPost.date ? formatDate(latestPost.date) : ''}${latestPost.subcategory ? `<span class="actu-subcat-badge">${escapeHtml(latestPost.subcategory)}</span>` : ''}</div>
-              <div class="mab-featured-title">${escapeHtml(latestPost.title)}</div>
-              <div class="mab-featured-excerpt">${richParagraphs(latestPost.body).replace(/<[^>]+>/g,' ').trim().slice(0,180)}…</div>
-              <span class="cta-secondary" style="display:inline-block;margin-top:14px;">Lire la suite</span>
-            </div>
-          </div>` : `<p style="color:#8A7A64;font-style:italic;text-align:center;">Pas encore de publication dans le journal.</p>`}
-
-          ${activePostCategories().length ? `
-          <div class="mab-now-title" style="margin-top:44px;">Parcourir par catégorie ✦</div>
-          <div class="mab-cat-icon-row" id="mabCatIconRow"></div>
-          <div class="mab-cat-grid" id="mabCatGrid"></div>
-          ` : ''}
-        </div>
-
-        <div id="mab-lectures" class="mab-section">
-          <div class="mab-section-title">Mes dernières lectures</div>
-          ${books.length ? `
-          <div class="mab-books-carousel">
-            <span class="updates-arrow" id="mabBooksPrev" onclick="scrollCharRow('mabBooksRow',-1)">←</span>
-            <div class="mab-books-row" id="mabBooksRow">
-              ${books.map(b=>`
-                <div class="mab-book-review-card">
-                  ${b.cover ? `<img src="${escapeHtml(b.cover)}" alt="${escapeHtml(b.title)}" class="mab-book-cover">` : `<div class="mab-book-cover placeholder">📖</div>`}
-                  <div class="mab-book-title">${escapeHtml(b.title)}</div>
-                  ${b.author ? `<div class="mab-book-author">${escapeHtml(b.author)}</div>` : ''}
-                  ${b.rating ? `<div class="mab-stars">${starsHtml(b.rating)}</div>` : ''}
-                  ${b.review ? `<div class="mab-book-review">« ${escapeHtml(b.review)} »</div>` : ''}
-                </div>
-              `).join('')}
-            </div>
-            <span class="updates-arrow" id="mabBooksNext" onclick="scrollCharRow('mabBooksRow',1)">→</span>
-          </div>` : `<p style="color:#8A7A64;font-style:italic;text-align:center;">Rien à afficher pour le moment.</p>`}
-        </div>
-
-        <div id="mab-favoris" class="mab-section">
-          <div class="mab-section-title">Mes favoris</div>
-          <div class="mab-books-grid">
-            ${books.filter(b=>b.favorite).map(b=>`
-              <div class="mab-book-card">
-                ${b.cover ? `<img src="${escapeHtml(b.cover)}" alt="${escapeHtml(b.title)}" class="mab-book-cover">` : `<div class="mab-book-cover placeholder">📖</div>`}
-                <div class="mab-book-title">${escapeHtml(b.title)}</div>
-                ${b.author ? `<div class="mab-book-author">${escapeHtml(b.author)}</div>` : ''}
-              </div>
-            `).join('') || '<p style="color:#8A7A64;font-style:italic;">Aucun favori marqué pour le moment.</p>'}
-          </div>
-        </div>
-
-      </div>
-      </main>
-
-      <aside class="mab-sidebar mab-sidebar-right">
-        ${socials.length ? `
-        <div>
-          <div class="mab-side-block-title">Retrouvez-moi ✦</div>
-          ${socials.map(s=>`<a href="${escapeHtml(s.url)}" target="_blank" rel="noopener" class="mab-side-link">${escapeHtml(s.label)}</a>`).join('')}
-        </div>` : ''}
-        ${SETTINGS.moreAboutSpotify ? `
-        <div>
-          <div class="mab-side-block-title">Ma playlist ✦</div>
-          <iframe src="${escapeHtml(SETTINGS.moreAboutSpotify)}" width="100%" height="152" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" style="border-radius:10px;"></iframe>
-        </div>` : ''}
-        ${(SETTINGS.moreAboutMood || SETTINGS.moreAboutInspiration) ? `
-        <div>
-          <div class="mab-side-block-title">Actuellement ✦</div>
-          ${SETTINGS.moreAboutMood ? `<div class="mab-side-item"><span>Humeur</span><span>${escapeHtml(SETTINGS.moreAboutMood)}</span></div>` : ''}
-          ${SETTINGS.moreAboutInspiration ? `<div class="mab-side-item"><span>Inspiration</span><span>${escapeHtml(SETTINGS.moreAboutInspiration)}</span></div>` : ''}
-        </div>` : ''}
-        ${friends.length ? `
-        <div>
-          <div class="mab-side-block-title">Mes copines ✦</div>
-          ${friends.map(f=>`
-            <a href="${escapeHtml(f.url||'#')}" target="_blank" rel="noopener" class="mab-friend-row">
-              ${f.avatar ? `<img src="${escapeHtml(f.avatar)}" class="mab-friend-avatar" alt="">` : `<div class="mab-friend-avatar placeholder">${escapeHtml((f.name||'?').charAt(0))}</div>`}
-              <div>
-                <div class="mab-friend-name">${escapeHtml(f.name)}</div>
-                ${f.tag ? `<div class="mab-friend-tag">${escapeHtml(f.tag)}</div>` : ''}
-              </div>
-            </a>
-          `).join('')}
-        </div>` : ''}
-      </aside>
-
-    </div>
-    </div>
-  `;
-
-  if(SETTINGS.moreAboutBgImage){
-    document.body.style.backgroundImage = `url('${SETTINGS.moreAboutBgImage.replace(/'/g,"\\'")}')`;
-    document.body.style.backgroundSize = 'cover';
-    document.body.style.backgroundPosition = 'center';
+  if(fragments.length){
+    html += '<section class="carnet-section">';
+    html += '<div class="carnet-section-title"><h2>Fragments de moi</h2></div>';
+    html += '<p class="carnet-section-sub">Quelques informations d\'une importance très discutable.</p>';
+    html += '<div class="carnet-fragments-grid">';
+    fragments.forEach(function(p){
+      html += '<div class="carnet-fragment-card">';
+      if(p.title) html += '<div class="carnet-fragment-title">'+escapeHtml(p.title)+'</div>';
+      html += '<div class="carnet-fragment-body">'+richParagraphs(p.body)+'</div>';
+      html += '</div>';
+    });
+    html += '</div></section>';
   }
 
-  if(books.length) setTimeout(()=>refreshCarouselArrows('mabBooksRow','mabBooksPrev','mabBooksNext'), 60);
-  drawMabCatIconRow();
-}
+  if(notes.length){
+    html += '<section class="carnet-section">';
+    html += '<div class="carnet-section-title"><h2>Notes de marge</h2></div>';
+    html += '<p class="carnet-section-sub">Des pensées, des découvertes et des choses que j\'avais simplement envie de déposer ici.</p>';
+    html += '<div class="carnet-notes-list">';
+    notes.forEach(function(p){
+      const excerpt = richParagraphs(p.body).replace(/<[^>]+>/g,' ').trim().slice(0,140);
+      html += '<div class="carnet-note" onclick="window.location.href=\'index.html#actualites/'+p.id+'\'">';
+      if(p.date) html += '<div class="carnet-note-date">'+formatDate(p.date)+'</div>';
+      html += '<div class="carnet-note-title">'+escapeHtml(p.title)+'</div>';
+      html += '<div class="carnet-note-excerpt">'+excerpt+'…</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+    if(firstNotePost) html += '<a href="index.html#actualites/'+firstNotePost.id+'" class="carnet-more-link">Toutes les notes →</a>';
+    html += '</section>';
+  }
 
-let mabOpenCategory = null;
-function drawMabCatIconRow(){
-  const el = document.getElementById('mabCatIconRow');
-  if(!el) return;
-  const active = activePostCategories().map(cat=>{
-    const latest = POSTS.filter(p=>p.category===cat).sort((a,b)=>(b.date||'').localeCompare(a.date||''))[0];
-    return { cat, latestDate: latest ? latest.date||'' : '' };
-  }).sort((a,b)=> b.latestDate.localeCompare(a.latestDate)).slice(0,6).map(x=>x.cat);
+  html += '<section class="carnet-section">';
+  html += '<div class="carnet-section-title"><h2>Mes petits terriers</h2></div>';
+  html += '<div class="carnet-doors-grid">';
+  html += '<a href="bibliotheque.html" class="carnet-door">';
+  html += '<div class="carnet-door-icon">📚</div><div class="carnet-door-title">Bibliothèque</div>';
+  html += '<div class="carnet-door-sub">Les livres qui sont restés.</div>';
+  html += '<div class="carnet-door-cta">Entrer dans ma bibliothèque →</div></a>';
+  html += '<a href="ludotheque.html" class="carnet-door">';
+  html += '<div class="carnet-door-icon">🎮</div><div class="carnet-door-title">Ludothèque</div>';
+  html += '<div class="carnet-door-sub">Les mondes dans lesquels j\'ai passé beaucoup trop de temps.</div>';
+  html += '<div class="carnet-door-cta">Explorer ma ludothèque →</div></a>';
+  html += '</div></section>';
 
-  el.innerHTML = active.map(cat=>{
-    const meta = catMeta(cat);
-    const isOpen = mabOpenCategory === cat;
-    return `
-      <div class="mab-cat-icon${isOpen?' active':''}" onclick="toggleMabCategory('${cat.replace(/'/g,"\\'")}')">
-        <div class="mab-cat-icon-avatar">
-          ${meta.icon ? `<img src="${escapeHtml(meta.icon)}" alt="${escapeHtml(cat)}">` : `<span>${escapeHtml(cat.charAt(0).toUpperCase())}</span>`}
-        </div>
-        <span class="mab-cat-icon-label">${escapeHtml(cat)}</span>
-      </div>
-    `;
-  }).join('');
-}
-function toggleMabCategory(cat){
-  mabOpenCategory = (mabOpenCategory === cat) ? null : cat;
-  drawMabCatIconRow();
-  drawMabCatGrid();
-}
-function drawMabCatGrid(){
-  const el = document.getElementById('mabCatGrid');
-  if(!el) return;
-  if(!mabOpenCategory){ el.innerHTML = ''; return; }
-  const postsInCat = POSTS.filter(p=>p.category===mabOpenCategory).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
-  el.innerHTML = postsInCat.map(p=>`
-    <div class="mab-cat-card" onclick="window.location.href='index.html#actualites/${p.id}'">
-      ${(p.images&&p.images[0]) ? `<img src="${escapeHtml(p.images[0])}" alt="" class="mab-cat-card-img">` : `<div class="mab-cat-card-img placeholder">✎</div>`}
-      <div class="mab-cat-card-body">
-        <div class="mab-featured-date">${p.date ? formatDate(p.date) : ''}${p.subcategory ? `<span class="actu-subcat-badge">${escapeHtml(p.subcategory)}</span>` : ''}</div>
-        <div class="mab-cat-card-title">${escapeHtml(p.title)}</div>
-      </div>
-    </div>
-  `).join('') || '<p style="color:#8A7A64;font-style:italic;grid-column:1/-1;">Aucun article dans cette catégorie.</p>';
-}
+  app.innerHTML = html;
 
-function mabScrollTo(id, linkEl){
-  const el = document.getElementById(id);
-  if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
-  document.querySelectorAll('.mab-nav a').forEach(a=>a.classList.remove('active'));
-  if(linkEl) linkEl.classList.add('active');
+  if(SETTINGS.moreAboutBgImage){
+    document.body.style.backgroundImage = "url('" + SETTINGS.moreAboutBgImage.replace(/'/g,"\\'") + "')";
+    document.body.style.backgroundSize = 'cover';
+    document.body.style.backgroundAttachment = 'fixed';
+  }
 }
 
 /* ---------- chargement des données puis affichage ---------- */
-let POST_CATEGORIES = {};
-function catMeta(name){ return POST_CATEGORIES[name] || { icon:'', description:'', active:true }; }
-function postCategories(){ return [...new Set(POSTS.map(p=>p.category).filter(Boolean))]; }
-function activePostCategories(){ return postCategories().filter(c => catMeta(c).active !== false); }
-
 (async function init(){
   try{
-    const [settingsRaw, postsRaw, catsRaw] = await Promise.all([
+    const results = await Promise.all([
       sbGet('site:settings'),
       sbGet('site:posts'),
       sbGet('site:postCategoriesMeta')
     ]);
-    SETTINGS = settingsRaw ? JSON.parse(settingsRaw) : {};
-    POSTS = postsRaw ? JSON.parse(postsRaw) : [];
-    POST_CATEGORIES = catsRaw ? JSON.parse(catsRaw) : {};
+    SETTINGS = results[0] ? JSON.parse(results[0]) : {};
+    POSTS = results[1] ? JSON.parse(results[1]) : [];
+    POST_CATEGORIES = results[2] ? JSON.parse(results[2]) : {};
     renderCarnet();
   }catch(err){
     app.innerHTML = '<p class="loading-msg">Impossible de charger le carnet pour le moment.<br>Réessayez dans un instant.</p>';
