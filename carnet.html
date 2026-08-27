@@ -172,10 +172,10 @@
     transition:.25s;
   }
   .carnet-door-library{
-    background:linear-gradient(180deg, rgba(38,21,31,.15), rgba(38,21,31,.9)), url('assets/carnet/library-door.webp') center/cover no-repeat, linear-gradient(160deg, #3F253E, #26151F);
+    background:linear-gradient(160deg, #3F253E, #26151F);
   }
   .carnet-door-gaming{
-    background:linear-gradient(180deg, rgba(38,21,31,.15), rgba(38,21,31,.9)), url('assets/carnet/gaming-door.webp') center/cover no-repeat, linear-gradient(160deg, #2E2050, #26151F);
+    background:linear-gradient(160deg, #2E2050, #26151F);
   }
   .carnet-door:hover{transform:translateY(-4px);box-shadow:0 20px 40px -20px rgba(0,0,0,.6);}
   .carnet-door-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:1.5rem;color:var(--carnet-cream);margin-bottom:6px;}
@@ -372,14 +372,21 @@ function renderCarnet(){
     html += '</section>';
   }
 
+  const libraryImg = SETTINGS.carnetLibraryImage
+    ? "background-image:linear-gradient(180deg, rgba(38,21,31,.15), rgba(38,21,31,.9)), url('"+SETTINGS.carnetLibraryImage.replace(/'/g,"\\'")+"');background-size:cover;background-position:center;"
+    : '';
+  const gamingImg = SETTINGS.carnetLudothequeImage
+    ? "background-image:linear-gradient(180deg, rgba(38,21,31,.15), rgba(38,21,31,.9)), url('"+SETTINGS.carnetLudothequeImage.replace(/'/g,"\\'")+"');background-size:cover;background-position:center;"
+    : '';
+
   html += '<section class="carnet-section">';
   html += '<div class="carnet-section-title"><h2>Mes petits terriers</h2></div>';
   html += '<div class="carnet-doors-grid">';
-  html += '<a href="bibliotheque.html" class="carnet-door carnet-door-library">';
+  html += '<a href="bibliotheque.html" class="carnet-door carnet-door-library" style="'+libraryImg+'">';
   html += '<div class="carnet-door-title">Ma bibliothèque</div>';
   html += '<div class="carnet-door-sub">Les livres qui sont restés.</div>';
   html += '<div class="carnet-door-cta">Entrer dans ma bibliothèque →</div></a>';
-  html += '<a href="ludotheque.html" class="carnet-door carnet-door-gaming">';
+  html += '<a href="ludotheque.html" class="carnet-door carnet-door-gaming" style="'+gamingImg+'">';
   html += '<div class="carnet-door-title">Ma ludothèque</div>';
   html += '<div class="carnet-door-sub">Les mondes dans lesquels j\'ai passé beaucoup trop de temps.</div>';
   html += '<div class="carnet-door-cta">Explorer ma ludothèque →</div></a>';
