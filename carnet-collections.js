@@ -78,8 +78,8 @@ function starsBlock(noteStr){
 function bookCardHtml(item){
   const title = item.titre || 'Sans titre';
   const cover = item.image_url
-    ? `<img src="${escapeHtml(item.image_url)}" alt="Couverture de ${escapeHtml(title)}" loading="lazy" class="coll-cover" onerror="this.onerror=null;this.replaceWith(collPlaceholder('${escapeHtml(title).replace(/'/g,"\\'")}','📖'));">`
-    : collPlaceholder(title, '📖');
+    ? `<img src="${escapeHtml(item.image_url)}" alt="Couverture de ${escapeHtml(title)}" loading="lazy" class="coll-cover" onerror="this.onerror=null;this.replaceWith(collPlaceholder('${escapeHtml(title).replace(/'/g,"\\'")}'));">`
+    : collPlaceholderHtml(title);
   return `
     <div class="coll-card">
       <div class="coll-cover-wrap">${cover}</div>
@@ -94,8 +94,8 @@ function bookCardHtml(item){
 function gameCardHtml(item){
   const title = item.titre || 'Sans titre';
   const cover = item.image_url
-    ? `<img src="${escapeHtml(item.image_url)}" alt="Jaquette de ${escapeHtml(title)}" loading="lazy" class="coll-cover" onerror="this.onerror=null;this.replaceWith(collPlaceholder('${escapeHtml(title).replace(/'/g,"\\'")}','🎮'));">`
-    : collPlaceholder(title, '🎮');
+    ? `<img src="${escapeHtml(item.image_url)}" alt="Jaquette de ${escapeHtml(title)}" loading="lazy" class="coll-cover" onerror="this.onerror=null;this.replaceWith(collPlaceholder('${escapeHtml(title).replace(/'/g,"\\'")}'));">`
+    : collPlaceholderHtml(title);
   return `
     <div class="coll-card">
       <div class="coll-cover-wrap">${cover}</div>
@@ -106,12 +106,16 @@ function gameCardHtml(item){
   `;
 }
 
-/** Vignette de repli quand il n'y a pas d'image, ou que l'image casse au chargement. Renvoie un vrai noeud DOM (utilisé par onerror). */
-function collPlaceholder(title, emoji){
+/** Repli en HTML (chaîne) — pas de couverture renseignée dans le CSV. */
+function collPlaceholderHtml(title){
+  return `<div class="coll-cover coll-cover-placeholder" role="img" aria-label="Pas de couverture pour ${escapeHtml(title)}">${escapeHtml(title)}</div>`;
+}
+/** Repli en noeud DOM — utilisé quand l'image casse au chargement (onerror). */
+function collPlaceholder(title){
   const div = document.createElement('div');
   div.className = 'coll-cover coll-cover-placeholder';
   div.setAttribute('role','img');
   div.setAttribute('aria-label', 'Pas de couverture pour ' + title);
-  div.textContent = emoji;
+  div.textContent = title;
   return div;
 }
