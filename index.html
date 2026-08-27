@@ -2375,10 +2375,6 @@ const SEED_SETTINGS = {
   moreAboutGalleryImages: [],
   moreAboutColors: {},
   moreAboutBgImage: '',
-  moreAboutSubtitle: '',
-  moreAboutTagline: '',
-  moreAboutAvatar: '',
-  moreAboutHeroImage: '',
   moreAboutWriting: {},
   moreAboutReading: {},
   moreAboutListening: {},
@@ -7784,28 +7780,6 @@ function renderAdmin(){
         </div>
 
         <div class="admin-form">
-          <h3>En-tête de la page</h3>
-          <div>
-            <label>Portrait / avatar (facultatif — photo ronde en haut de la colonne de gauche)</label>
-            <input type="text" id="mabAvatar" value="${escapeHtml(SETTINGS.moreAboutAvatar||'')}" placeholder="https://...">
-          </div>
-          <div class="row2">
-            <div>
-              <label>Sous-titre sous votre nom (facultatif)</label>
-              <input type="text" id="mabSubtitle" value="${escapeHtml(SETTINGS.moreAboutSubtitle||'')}" placeholder="Carnet personnel">
-            </div>
-            <div>
-              <label>Petite phrase sous "Bonjour, moi c'est..." (facultatif)</label>
-              <input type="text" id="mabTagline" value="${escapeHtml(SETTINGS.moreAboutTagline||'')}" placeholder="Autrice, rêveuse, collectionneuse d'histoires...">
-            </div>
-          </div>
-          <div>
-            <label>Grande illustration d'en-tête (facultatif)</label>
-            <input type="text" id="mabHeroImage" value="${escapeHtml(SETTINGS.moreAboutHeroImage||'')}" placeholder="https://...">
-          </div>
-        </div>
-
-        <div class="admin-form">
           <h3>Un peu plus sur moi</h3>
           <div>
             <label>Texte (facultatif — plus développé que votre bio d'accueil)</label>
@@ -8953,10 +8927,6 @@ function getMabFriendsFromEditor(){
 
 async function saveMoreAboutSettings(){
   SETTINGS.moreAboutBio = document.getElementById('mabBio').value.trim();
-  SETTINGS.moreAboutAvatar = document.getElementById('mabAvatar').value.trim();
-  SETTINGS.moreAboutSubtitle = document.getElementById('mabSubtitle').value.trim();
-  SETTINGS.moreAboutTagline = document.getElementById('mabTagline').value.trim();
-  SETTINGS.moreAboutHeroImage = document.getElementById('mabHeroImage').value.trim();
   SETTINGS.moreAboutWriting = {
     title: document.getElementById('mabWritingTitle').value.trim(),
     chapterLabel: document.getElementById('mabWritingChapter').value.trim(),
