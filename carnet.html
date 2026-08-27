@@ -6,82 +6,178 @@
 <title>Carnet — Cordélia W. Noble</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,500;1,400&family=Jost:wght@400;500;600&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Lora:ital,wght@0,400;0,500;1,400&family=Jost:wght@400;500;600&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
+  /* ==========================================================
+     CARNET — direction artistique "cozy witch"
+     Variables propres au Carnet, aucun impact sur le site principal.
+     ========================================================== */
   :root{
-    --bg:#FBF3E4; --card:#fff; --ink:#2A2118; --muted:#8A7A64; --gold:#B8863E; --gold-soft:rgba(217,179,108,.18); --line:rgba(217,179,108,.3);
+    --carnet-bg: #241726;          /* aubergine très sombre, fond général */
+    --carnet-bg-alt: #32203A;      /* prune, fond des cartes sombres */
+    --carnet-bg-alt2: #3D2745;     /* prune un peu plus clair, hover/accent */
+    --carnet-purple: #8C6AA8;      /* mauve profond, accent principal */
+    --carnet-mauve: #C6AFDA;       /* mauve clair, texte secondaire sur fond sombre */
+    --carnet-rose: #E3AFC2;        /* vieux rose, accent doux */
+    --carnet-pink: #F0C9D8;        /* rose poudré clair */
+    --carnet-cream: #F4E9D8;       /* crème chaud, "papier" */
+    --carnet-parchment: #EFE2C8;   /* parchemin, fond des notes/fragments */
+    --carnet-parchment-dark: #E4D2B0;
+    --carnet-amber: #E3A857;       /* ambre doré, étoiles/accents lumineux */
+    --carnet-text: #F4EBF2;        /* texte clair sur fond sombre */
+    --carnet-text-dark: #3A2740;   /* texte sombre sur parchemin */
+    --carnet-muted: #B79CC7;       /* texte discret sur fond sombre */
+    --carnet-muted-dark: #7A6852;  /* texte discret sur parchemin */
+    --carnet-line: rgba(230, 200, 220, .14);
+    --carnet-line-parchment: rgba(90, 60, 40, .16);
+    --carnet-glow: rgba(227, 168, 87, .25);
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
-  body{background:var(--bg);font-family:'Jost',sans-serif;color:var(--ink);}
+  body{
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(140,106,168,.25), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 100% 10%, rgba(227,175,194,.12), transparent 55%),
+      var(--carnet-bg);
+    font-family:'Lora',serif;color:var(--carnet-text);
+    -webkit-font-smoothing:antialiased;
+  }
   a{color:inherit;}
-  .carnet-wrap{max-width:900px;margin:0 auto;padding:0 24px 100px;}
+  .carnet-wrap{max-width:960px;margin:0 auto;padding:0 24px 110px;}
+
+  /* points lumineux discrets, dessinés en CSS (pas une illustration) */
+  .carnet-stars{
+    position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:
+      radial-gradient(circle, rgba(244,235,242,.6) 1px, transparent 1.4px) 10% 8%/140px 140px,
+      radial-gradient(circle, rgba(244,235,242,.4) 1px, transparent 1.4px) 60% 20%/180px 180px,
+      radial-gradient(circle, rgba(227,168,87,.5) 1.2px, transparent 1.6px) 85% 5%/220px 220px,
+      radial-gradient(circle, rgba(244,235,242,.35) 1px, transparent 1.4px) 30% 45%/160px 160px;
+    animation: carnetTwinkle 6s ease-in-out infinite alternate;
+  }
+  @keyframes carnetTwinkle{ from{opacity:.5;} to{opacity:1;} }
+  @media(prefers-reduced-motion: reduce){ .carnet-stars{animation:none;opacity:.75;} }
 
   .carnet-back{
-    display:inline-block;margin:26px 0 0;font-family:'Jost',sans-serif;font-size:.78rem;color:var(--muted);
-    text-decoration:none;
+    position:relative;z-index:1;display:inline-block;margin:26px 0 0;font-family:'Jost',sans-serif;
+    font-size:.78rem;color:var(--carnet-muted);text-decoration:none;letter-spacing:.02em;
   }
-  .carnet-back:hover{color:var(--gold);}
+  .carnet-back:hover{color:var(--carnet-rose);}
 
-  .carnet-hero{text-align:center;padding:50px 0 40px;}
-  .carnet-hero h1{font-family:'Playfair Display',serif;font-size:2.6rem;color:var(--ink);margin:0 0 10px;}
-  .carnet-hero-sub{font-family:'Caveat',cursive;font-size:1.4rem;color:var(--gold);margin:0 0 22px;}
-  .carnet-hero-text{font-family:'Lora',serif;font-style:italic;color:var(--muted);line-height:1.8;max-width:52ch;margin:0 auto;}
+  /* ---------- Hero ---------- */
+  .carnet-hero{
+    position:relative;z-index:1;text-align:center;padding:56px 24px 60px;margin:20px 0 10px;
+    border-radius:22px;overflow:hidden;
+    background:
+      linear-gradient(180deg, rgba(36,23,38,.35), rgba(36,23,38,.75)),
+      url('assets/carnet/hero-carnet.webp') center/cover no-repeat,
+      linear-gradient(160deg, #3D2745, #241726 70%);
+  }
+  .carnet-moon{
+    width:46px;height:46px;border-radius:50%;margin:0 auto 18px;
+    background:var(--carnet-cream);
+    box-shadow:-15px -3px 0 2px var(--carnet-bg-alt2) inset, 0 0 24px var(--carnet-glow);
+  }
+  .carnet-hero h1{
+    font-family:'Caveat',cursive;font-weight:600;font-size:3.4rem;color:var(--carnet-cream);
+    margin:0 0 6px;line-height:1;
+  }
+  .carnet-hero-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.25rem;color:var(--carnet-rose);margin:0 0 18px;}
+  .carnet-hero-text{font-family:'Lora',serif;color:var(--carnet-mauve);line-height:1.8;max-width:48ch;margin:0 auto;font-size:.95rem;}
 
-  .carnet-section{margin-top:70px;}
-  .carnet-section-title{text-align:center;margin-bottom:8px;}
-  .carnet-section-title h2{font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--ink);margin:0;}
-  .carnet-section-sub{text-align:center;font-family:'Lora',serif;font-style:italic;color:var(--muted);font-size:.9rem;margin:6px 0 30px;}
+  /* ---------- Sections génériques ---------- */
+  .carnet-section{position:relative;z-index:1;margin-top:64px;}
+  .carnet-section-title{text-align:center;margin-bottom:6px;}
+  .carnet-section-title h2{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:1.9rem;color:var(--carnet-pink);margin:0;}
+  .carnet-section-sub{text-align:center;font-family:'Lora',serif;font-style:italic;color:var(--carnet-muted);font-size:.88rem;margin:6px 0 32px;}
 
-  /* En ce moment */
-  .carnet-now-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
-  .carnet-now-card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;box-shadow:0 10px 22px -18px rgba(36,26,10,.25);}
-  .carnet-now-label{font-family:'Jost',sans-serif;font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
-  .carnet-now-main{font-family:'Lora',serif;font-size:.9rem;color:var(--ink);line-height:1.35;}
-  .carnet-now-sub{font-family:'Jost',sans-serif;font-size:.72rem;color:var(--muted);margin-top:2px;}
-  .carnet-now-stars{color:var(--gold);letter-spacing:1px;font-size:.8rem;margin-top:4px;}
-  .carnet-now-empty{grid-column:1/-1;text-align:center;color:var(--muted);font-style:italic;font-family:'Lora',serif;font-size:.9rem;}
+  /* ---------- En ce moment ---------- */
+  .carnet-now-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  .carnet-now-card{
+    background:var(--carnet-bg-alt);border:1px solid var(--carnet-line);border-radius:14px;
+    padding:18px 16px;transition:.25s;
+  }
+  .carnet-now-card:hover{background:var(--carnet-bg-alt2);border-color:var(--carnet-purple);}
+  .carnet-now-icon{
+    width:30px;height:30px;margin-bottom:10px;opacity:.9;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .carnet-now-icon img{width:100%;height:100%;object-fit:contain;}
+  .carnet-now-icon .icon-fallback{width:8px;height:8px;border-radius:50%;background:var(--carnet-amber);}
+  .carnet-now-label{font-family:'Jost',sans-serif;font-size:.63rem;letter-spacing:.09em;text-transform:uppercase;color:var(--carnet-amber);margin-bottom:6px;}
+  .carnet-now-main{font-family:'Lora',serif;font-size:.9rem;color:var(--carnet-text);line-height:1.35;}
+  .carnet-now-sub{font-family:'Jost',sans-serif;font-size:.72rem;color:var(--carnet-muted);margin-top:3px;}
+  .carnet-now-stars{color:var(--carnet-amber);letter-spacing:1px;font-size:.8rem;margin-top:5px;}
+  .carnet-now-empty{grid-column:1/-1;text-align:center;color:var(--carnet-muted);font-style:italic;font-family:'Lora',serif;font-size:.9rem;padding:20px 0;}
   @media(max-width:700px){ .carnet-now-grid{grid-template-columns:repeat(2,1fr);} }
   @media(max-width:460px){ .carnet-now-grid{grid-template-columns:1fr;} }
 
-  /* Fragments de moi */
-  .carnet-fragments-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;}
+  /* ---------- Fragments de moi (petites fiches façon parchemin) ---------- */
+  .carnet-fragments-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:20px;}
   .carnet-fragment-card{
-    background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px;
-    box-shadow:0 10px 22px -18px rgba(36,26,10,.2);
+    background:var(--carnet-parchment);color:var(--carnet-text-dark);border-radius:4px;
+    padding:20px 20px 22px;box-shadow:0 14px 26px -16px rgba(0,0,0,.45);
+    position:relative;
   }
-  .carnet-fragment-title{font-family:'Playfair Display',serif;font-size:.95rem;color:var(--gold);margin-bottom:8px;}
-  .carnet-fragment-body{font-family:'Lora',serif;font-size:.88rem;line-height:1.6;color:var(--ink);}
+  .carnet-fragment-card:nth-child(3n+1){ transform:rotate(-1.1deg); }
+  .carnet-fragment-card:nth-child(3n+2){ transform:rotate(.8deg); }
+  .carnet-fragment-card:nth-child(3n+3){ transform:rotate(-.5deg); }
+  .carnet-fragment-card::before{
+    content:'';position:absolute;top:-9px;left:50%;transform:translateX(-50%) rotate(-3deg);
+    width:52px;height:18px;background:rgba(227,168,87,.5);border-radius:2px;
+  }
+  .carnet-fragment-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:1.05rem;color:var(--carnet-purple);margin-bottom:8px;}
+  .carnet-fragment-body{font-family:'Lora',serif;font-size:.86rem;line-height:1.6;}
   .carnet-fragment-body p{margin:0 0 .7em;}
 
-  /* Notes de marge */
-  .carnet-notes-list{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card);}
-  .carnet-note{padding:20px 22px;border-bottom:1px solid var(--line);cursor:pointer;transition:.15s;}
-  .carnet-note:last-child{border-bottom:none;}
-  .carnet-note:hover{background:var(--gold-soft);}
-  .carnet-note-date{font-family:'Jost',sans-serif;font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
-  .carnet-note-title{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--ink);margin-bottom:4px;}
-  .carnet-note-excerpt{font-family:'Lora',serif;font-size:.85rem;color:var(--muted);line-height:1.6;}
-  .carnet-more-link{display:block;text-align:center;margin-top:22px;font-family:'Jost',sans-serif;font-size:.82rem;color:var(--gold);text-decoration:none;}
+  /* ---------- Notes de marge (petits billets) ---------- */
+  .carnet-notes-list{display:flex;flex-direction:column;gap:14px;}
+  .carnet-note{
+    display:flex;gap:18px;background:var(--carnet-bg-alt);border:1px solid var(--carnet-line);
+    border-radius:12px;padding:18px 22px;cursor:pointer;transition:.2s;
+  }
+  .carnet-note:hover{background:var(--carnet-bg-alt2);border-color:var(--carnet-rose);}
+  .carnet-note-date{
+    flex-shrink:0;width:64px;font-family:'Jost',sans-serif;font-size:.66rem;letter-spacing:.05em;
+    text-transform:uppercase;color:var(--carnet-amber);border-right:1px solid var(--carnet-line);padding-right:16px;
+    line-height:1.4;
+  }
+  .carnet-note-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:1.15rem;color:var(--carnet-pink);margin-bottom:4px;}
+  .carnet-note-excerpt{font-family:'Lora',serif;font-size:.85rem;color:var(--carnet-mauve);line-height:1.6;}
+  .carnet-more-link{
+    display:block;text-align:center;margin-top:24px;font-family:'Jost',sans-serif;font-size:.82rem;
+    color:var(--carnet-amber);text-decoration:none;letter-spacing:.02em;
+  }
   .carnet-more-link:hover{text-decoration:underline;}
+  @media(max-width:520px){
+    .carnet-note{flex-direction:column;gap:6px;}
+    .carnet-note-date{border-right:none;border-bottom:1px solid var(--carnet-line);padding:0 0 8px;width:auto;}
+  }
 
-  /* Portes Bibliothèque / Ludothèque */
+  /* ---------- Mes petits terriers (portes) ---------- */
   .carnet-doors-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
   .carnet-door{
-    display:block;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:30px 26px;
-    text-decoration:none;text-align:center;transition:.2s;box-shadow:0 10px 22px -18px rgba(36,26,10,.2);
+    position:relative;display:block;min-height:230px;border-radius:16px;overflow:hidden;
+    text-decoration:none;padding:26px 24px;display:flex;flex-direction:column;justify-content:flex-end;
+    transition:.25s;
   }
-  .carnet-door:hover{transform:translateY(-3px);box-shadow:0 18px 32px -20px rgba(36,26,10,.3);}
-  .carnet-door-icon{font-size:1.8rem;margin-bottom:10px;}
-  .carnet-door-title{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--ink);margin-bottom:8px;}
-  .carnet-door-sub{font-family:'Lora',serif;font-style:italic;font-size:.85rem;color:var(--muted);margin-bottom:14px;}
-  .carnet-door-cta{font-family:'Jost',sans-serif;font-size:.8rem;color:var(--gold);}
+  .carnet-door-library{
+    background:linear-gradient(180deg, rgba(36,23,38,.15), rgba(36,23,38,.9)), url('assets/carnet/library-door.webp') center/cover no-repeat, linear-gradient(160deg, #3D2745, #241726);
+  }
+  .carnet-door-gaming{
+    background:linear-gradient(180deg, rgba(36,23,38,.15), rgba(36,23,38,.9)), url('assets/carnet/gaming-door.webp') center/cover no-repeat, linear-gradient(160deg, #2E2050, #241726);
+  }
+  .carnet-door:hover{transform:translateY(-4px);box-shadow:0 20px 40px -20px rgba(0,0,0,.6);}
+  .carnet-door-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:1.5rem;color:var(--carnet-cream);margin-bottom:6px;}
+  .carnet-door-sub{font-family:'Lora',serif;font-style:italic;font-size:.85rem;color:var(--carnet-mauve);margin-bottom:14px;}
+  .carnet-door-cta{font-family:'Jost',sans-serif;font-size:.8rem;color:var(--carnet-amber);}
   @media(max-width:640px){ .carnet-doors-grid{grid-template-columns:1fr;} }
 
-  .loading-msg{text-align:center;padding:100px 20px;color:var(--muted);font-family:'Jost',sans-serif;}
+  .loading-msg{text-align:center;padding:100px 20px;color:var(--carnet-muted);font-family:'Jost',sans-serif;position:relative;z-index:1;}
 </style>
 </head>
 <body>
+<div class="carnet-stars" aria-hidden="true"></div>
 <div class="carnet-wrap" id="app"><p class="loading-msg">Chargement…</p></div>
 
 <script>
@@ -135,11 +231,11 @@ function richParagraphs(text){
   const css = fieldStyleCss(parsed.font, parsed.size);
   return css ? '<div style="'+css+'">'+html+'</div>' : html;
 }
-function formatDate(iso){
+function formatDateShort(iso){
   if(!iso) return '';
   const d = new Date(iso + 'T00:00:00');
   if(isNaN(d)) return escapeHtml(iso);
-  return d.toLocaleDateString('fr-FR', {day:'numeric', month:'long', year:'numeric'});
+  return d.toLocaleDateString('fr-FR', {day:'numeric', month:'short'}).toUpperCase();
 }
 function starsHtml(rating){
   rating = Math.round(rating||0);
@@ -151,6 +247,12 @@ let POST_CATEGORIES = {};
 function catMeta(name){ return POST_CATEGORIES[name] || { icon:'', description:'', active:true }; }
 function postsInCategory(cat){
   return POSTS.filter(function(p){ return p.category===cat; }).sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
+}
+
+/* icônes "En ce moment" : emplacement prévu pour vos SVG (assets/carnet/icon-*.svg).
+   Repli discret (petit point doré) tant que le fichier n'existe pas. */
+function nowIconHtml(key, label){
+  return '<div class="carnet-now-icon"><img src="assets/carnet/icon-'+key+'.svg" alt="" onerror="this.replaceWith(Object.assign(document.createElement(\'span\'),{className:\'icon-fallback\'}))"></div>';
 }
 
 /* ---------- rendu de la page ---------- */
@@ -167,12 +269,12 @@ function renderCarnet(){
   const craving = SETTINGS.moreAboutCraving || {};
 
   const nowEntries = [
-    { label:'Je lis', main: reading.title, sub: reading.author, stars: reading.rating },
-    { label:'Je joue', main: playing.title, sub: playing.platform },
-    { label:'Je regarde', main: watching.title, sub: watching.detail },
-    { label:"J'écoute", main: listening.song, sub: listening.artist },
-    { label:'Mon obsession du moment', main: obsession.title, sub: obsession.detail },
-    { label:"J'ai envie de", main: craving.title, sub: craving.detail }
+    { key:'reading', label:'Je lis', main: reading.title, sub: reading.author, stars: reading.rating },
+    { key:'gaming', label:'Je joue', main: playing.title, sub: playing.platform },
+    { key:'watching', label:'Je regarde', main: watching.title, sub: watching.detail },
+    { key:'listening', label:"J'écoute", main: listening.song, sub: listening.artist },
+    { key:'obsession', label:'Mon obsession du moment', main: obsession.title, sub: obsession.detail },
+    { key:'craving', label:"J'ai envie de", main: craving.title, sub: craving.detail }
   ].filter(function(e){ return e.main; });
 
   const fragments = postsInCategory('fragments-de-moi');
@@ -184,6 +286,7 @@ function renderCarnet(){
   html += '<a href="https://cordeliawnoble.fr/" class="carnet-back">↺ Retour au site d\'autrice</a>';
 
   html += '<header class="carnet-hero">';
+  html += '<div class="carnet-moon" aria-hidden="true"></div>';
   html += '<h1>Carnet</h1>';
   html += '<p class="carnet-hero-sub">Quelques morceaux de moi, entre deux histoires.</p>';
   html += '<p class="carnet-hero-text">' + (SETTINGS.carnetIntro ? richParagraphs(SETTINGS.carnetIntro) : "Ici se trouvent mes lectures du moment, mes jeux, mes découvertes, mes petites obsessions, et quelques fragments un peu plus personnels.") + '</p>';
@@ -195,6 +298,7 @@ function renderCarnet(){
   if(nowEntries.length){
     nowEntries.forEach(function(e){
       html += '<div class="carnet-now-card">';
+      html += nowIconHtml(e.key, e.label);
       html += '<div class="carnet-now-label">'+escapeHtml(e.label)+'</div>';
       html += '<div class="carnet-now-main">'+escapeHtml(e.main)+'</div>';
       if(e.sub) html += '<div class="carnet-now-sub">'+escapeHtml(e.sub)+'</div>';
@@ -228,10 +332,11 @@ function renderCarnet(){
     notes.forEach(function(p){
       const excerpt = richParagraphs(p.body).replace(/<[^>]+>/g,' ').trim().slice(0,140);
       html += '<div class="carnet-note" onclick="window.location.href=\'index.html#actualites/'+p.id+'\'">';
-      if(p.date) html += '<div class="carnet-note-date">'+formatDate(p.date)+'</div>';
+      html += '<div class="carnet-note-date">'+(p.date ? formatDateShort(p.date) : '')+'</div>';
+      html += '<div class="carnet-note-body">';
       html += '<div class="carnet-note-title">'+escapeHtml(p.title)+'</div>';
       html += '<div class="carnet-note-excerpt">'+excerpt+'…</div>';
-      html += '</div>';
+      html += '</div></div>';
     });
     html += '</div>';
     if(firstNotePost) html += '<a href="index.html#actualites/'+firstNotePost.id+'" class="carnet-more-link">Toutes les notes →</a>';
@@ -241,23 +346,17 @@ function renderCarnet(){
   html += '<section class="carnet-section">';
   html += '<div class="carnet-section-title"><h2>Mes petits terriers</h2></div>';
   html += '<div class="carnet-doors-grid">';
-  html += '<a href="bibliotheque.html" class="carnet-door">';
-  html += '<div class="carnet-door-icon">📚</div><div class="carnet-door-title">Bibliothèque</div>';
+  html += '<a href="bibliotheque.html" class="carnet-door carnet-door-library">';
+  html += '<div class="carnet-door-title">Ma bibliothèque</div>';
   html += '<div class="carnet-door-sub">Les livres qui sont restés.</div>';
   html += '<div class="carnet-door-cta">Entrer dans ma bibliothèque →</div></a>';
-  html += '<a href="ludotheque.html" class="carnet-door">';
-  html += '<div class="carnet-door-icon">🎮</div><div class="carnet-door-title">Ludothèque</div>';
+  html += '<a href="ludotheque.html" class="carnet-door carnet-door-gaming">';
+  html += '<div class="carnet-door-title">Ma ludothèque</div>';
   html += '<div class="carnet-door-sub">Les mondes dans lesquels j\'ai passé beaucoup trop de temps.</div>';
   html += '<div class="carnet-door-cta">Explorer ma ludothèque →</div></a>';
   html += '</div></section>';
 
   app.innerHTML = html;
-
-  if(SETTINGS.moreAboutBgImage){
-    document.body.style.backgroundImage = "url('" + SETTINGS.moreAboutBgImage.replace(/'/g,"\\'") + "')";
-    document.body.style.backgroundSize = 'cover';
-    document.body.style.backgroundAttachment = 'fixed';
-  }
 }
 
 /* ---------- chargement des données puis affichage ---------- */
