@@ -65,12 +65,12 @@
   .carnet-back:hover{color:var(--carnet-rose);}
 
   /* ---------- Hero ---------- */
-  .carnet-hero{
-    position:relative;z-index:1;text-align:center;padding:56px 24px 60px;margin:20px 0 10px;
-    border-radius:22px;overflow:hidden;
+  .carnet-hero{position:relative;z-index:1;margin:20px 0 40px;border-radius:22px;overflow:hidden;}
+  .carnet-hero-img{width:100%;display:block;border-radius:22px;}
+  .carnet-hero-fallback{
+    text-align:center;padding:56px 24px 60px;border-radius:22px;
     background:
       linear-gradient(180deg, rgba(38,21,31,.35), rgba(38,21,31,.75)),
-      url('assets/carnet/hero-carnet.webp') center/cover no-repeat,
       linear-gradient(160deg, #3F253E, #26151F 70%);
   }
   .carnet-moon{
@@ -78,12 +78,15 @@
     background:var(--carnet-cream);
     box-shadow:-15px -3px 0 2px var(--carnet-bg-alt2) inset, 0 0 24px var(--carnet-glow);
   }
-  .carnet-hero h1{
+  .carnet-hero-fallback h1{
     font-family:'Caveat',cursive;font-weight:600;font-size:3.4rem;color:var(--carnet-cream);
     margin:0 0 6px;line-height:1;
   }
-  .carnet-hero-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.25rem;color:var(--carnet-rose);margin:0 0 18px;}
-  .carnet-hero-text{font-family:'Lora',serif;color:var(--carnet-mauve);line-height:1.8;max-width:48ch;margin:0 auto;font-size:.95rem;}
+  .carnet-hero-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.25rem;color:var(--carnet-rose);margin:0;}
+  .carnet-hero-text{
+    font-family:'Lora',serif;color:var(--carnet-mauve);line-height:1.8;max-width:48ch;margin:0 auto 20px;
+    font-size:.95rem;text-align:center;position:relative;z-index:1;
+  }
 
   /* ---------- Sections génériques ---------- */
   .carnet-section{position:relative;z-index:1;margin-top:64px;}
@@ -286,11 +289,14 @@ function renderCarnet(){
   html += '<a href="https://cordeliawnoble.fr/" class="carnet-back">↺ Retour au site d\'autrice</a>';
 
   html += '<header class="carnet-hero">';
+  html += '<img src="assets/carnet/hero-carnet.webp" alt="Carnet — quelques morceaux de moi, entre deux histoires." class="carnet-hero-img" onerror="this.style.display=\'none\';document.getElementById(\'carnetHeroFallback\').style.display=\'block\';">';
+  html += '<div class="carnet-hero-fallback" id="carnetHeroFallback" style="display:none;">';
   html += '<div class="carnet-moon" aria-hidden="true"></div>';
-  html += '<h1>Carnet</h1>';
+  html += '<h1 style="font-family:\'Caveat\',cursive;font-weight:600;font-size:3.4rem;color:var(--carnet-cream);margin:0 0 6px;line-height:1;">Carnet</h1>';
   html += '<p class="carnet-hero-sub">Quelques morceaux de moi, entre deux histoires.</p>';
-  html += '<p class="carnet-hero-text">' + (SETTINGS.carnetIntro ? richParagraphs(SETTINGS.carnetIntro) : "Ici se trouvent mes lectures du moment, mes jeux, mes découvertes, mes petites obsessions, et quelques fragments un peu plus personnels.") + '</p>';
+  html += '</div>';
   html += '</header>';
+  html += '<p class="carnet-hero-text">' + (SETTINGS.carnetIntro ? richParagraphs(SETTINGS.carnetIntro) : "Ici se trouvent mes lectures du moment, mes jeux, mes découvertes, mes petites obsessions, et quelques fragments un peu plus personnels.") + '</p>';
 
   html += '<section class="carnet-section">';
   html += '<div class="carnet-section-title"><h2>En ce moment</h2></div>';
