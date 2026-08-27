@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ma bibliothèque — Cordélia W. Noble</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,500;1,400&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FBF3E4; --card:#fff; --ink:#2A2118; --muted:#8A7A64; --gold:#B8863E; --gold-soft:rgba(217,179,108,.18); --line:rgba(217,179,108,.3);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--bg);font-family:'Jost',sans-serif;color:var(--ink);}
+  a{color:inherit;}
+  .coll-wrap{max-width:1100px;margin:0 auto;padding:0 24px 100px;}
+  .coll-back{display:inline-block;margin:26px 0 0;font-family:'Jost',sans-serif;font-size:.78rem;color:var(--muted);text-decoration:none;}
+  .coll-back:hover{color:var(--gold);}
+  .coll-hero{text-align:center;padding:40px 0 44px;}
+  .coll-hero h1{font-family:'Playfair Display',serif;font-size:2.2rem;color:var(--ink);margin:0 0 8px;}
+  .coll-hero p{font-family:'Lora',serif;font-style:italic;color:var(--muted);}
+
+  .coll-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:22px;}
+  .coll-card{text-align:center;}
+  .coll-cover-wrap{aspect-ratio:2/3;border-radius:8px;overflow:hidden;box-shadow:0 14px 26px -16px rgba(36,26,10,.3);}
+  .coll-cover{width:100%;height:100%;object-fit:cover;display:block;}
+  .coll-cover-placeholder{
+    display:flex;align-items:center;justify-content:center;background:var(--gold-soft);
+    font-size:2rem;color:var(--gold);
+  }
+  .coll-title{font-family:'Lora',serif;font-size:.85rem;color:var(--ink);margin-top:10px;line-height:1.4;}
+  .coll-sub{font-family:'Jost',sans-serif;font-size:.72rem;color:var(--muted);margin-top:2px;}
+  .coll-stars{color:var(--gold);letter-spacing:1px;font-size:.8rem;margin-top:4px;}
+  .coll-empty{grid-column:1/-1;text-align:center;color:var(--muted);font-style:italic;font-family:'Lora',serif;padding:40px 0;}
+  .loading-msg{text-align:center;padding:100px 20px;color:var(--muted);font-family:'Jost',sans-serif;}
+
+  @media(max-width:480px){
+    .coll-grid{grid-template-columns:repeat(2,1fr);gap:16px;}
+  }
+</style>
+</head>
+<body>
+<div class="coll-wrap">
+  <a href="carnet.html" class="coll-back">↺ Retour au carnet</a>
+  <div class="coll-hero">
+    <h1>Ma bibliothèque</h1>
+    <p>Les livres qui sont restés.</p>
+  </div>
+  <div class="coll-grid" id="collGrid"><p class="loading-msg">Chargement…</p></div>
+</div>
+
+<script src="carnet-collections.js"></script>
+<script>
+(async function init(){
+  const grid = document.getElementById('collGrid');
+  const books = await loadCSV('bibliotheque.csv');
+  if(!books.length){
+    grid.innerHTML = '<p class="coll-empty">Aucun livre pour le moment.</p>';
+    return;
+  }
+  grid.innerHTML = books.map(bookCardHtml).join('');
+})();
+</script>
+</body>
+</html>
