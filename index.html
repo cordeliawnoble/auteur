@@ -2385,6 +2385,8 @@ const SEED_SETTINGS = {
   actualitesHeroImage: '',
   pageActive: {},
   moreAboutFriends: [],
+  carnetLibraryImage: '',
+  carnetLudothequeImage: '',
   copyrightText: '© 2026 {nom} — tous droits réservés'
 };
 
@@ -7854,6 +7856,21 @@ function renderAdmin(){
         </div>
 
         <div class="admin-form">
+          <h3>Mes petits terriers — images des portes</h3>
+          <div class="row2">
+            <div>
+              <label>Image « Ma bibliothèque » (facultatif)</label>
+              <input type="text" id="carnetLibraryImage" value="${escapeHtml(SETTINGS.carnetLibraryImage||'')}" placeholder="https://...">
+            </div>
+            <div>
+              <label>Image « Ma ludothèque » (facultatif)</label>
+              <input type="text" id="carnetLudothequeImage" value="${escapeHtml(SETTINGS.carnetLudothequeImage||'')}" placeholder="https://...">
+            </div>
+          </div>
+          <div class="hint" style="margin-top:6px;">Laissez vide pour garder un simple fond dégradé en attendant.</div>
+        </div>
+
+        <div class="admin-form">
           <h3>Mes copines</h3>
           <div id="mabFriendsList"></div>
           <span class="toggle-btn" onclick="addMabFriendRow()">+ Ajouter une copine</span>
@@ -8422,7 +8439,7 @@ function renderAdmin(){
   setTimeout(updateStorageModeBadge, 1200);
 
   // bouton d'envoi d'image sur les champs concernés
-  ['sHeroImage','sAuthorPhoto','sPressKitPhotoHD','mabBgImage','mabHeroImage','mabWritingIcon','mabReadingCover','mabReadingIcon','mabPlayingCover','mabPlayingIcon','mabWatchingIcon','mabListeningIcon','mabObsessionIcon','mabCravingIcon','apHoverImage','pcHeroImage','pcNewImage','pcNewHoverImage','actuHeroImage','hCover','hCoverDetail','hHoverImage','hCharHoverImage','uImageTile','uImageListBanner','uImageBanner','sgNewCoverVitrail','sgNewCoverBanner','sgNewCoverHero','ssCover','ssCoverHero','pImage','chImage','rcCover','sIndepHeroImage','sUniversHeroImage','sCollectionsHeroImage','sSiteBgImage','sQuickFactsBg','sChapterEndImage','ebCover','ebHoverImage','btnImgDefault','btnImgHover','btnImgActive','btnImgDisabled'].forEach(attachImageUploader);
+  ['sHeroImage','sAuthorPhoto','sPressKitPhotoHD','mabBgImage','mabHeroImage','carnetLibraryImage','carnetLudothequeImage','mabWritingIcon','mabReadingCover','mabReadingIcon','mabPlayingCover','mabPlayingIcon','mabWatchingIcon','mabListeningIcon','mabObsessionIcon','mabCravingIcon','apHoverImage','pcHeroImage','pcNewImage','pcNewHoverImage','actuHeroImage','hCover','hCoverDetail','hHoverImage','hCharHoverImage','uImageTile','uImageListBanner','uImageBanner','sgNewCoverVitrail','sgNewCoverBanner','sgNewCoverHero','ssCover','ssCoverHero','pImage','chImage','rcCover','sIndepHeroImage','sUniversHeroImage','sCollectionsHeroImage','sSiteBgImage','sQuickFactsBg','sChapterEndImage','ebCover','ebHoverImage','btnImgDefault','btnImgHover','btnImgActive','btnImgDisabled'].forEach(attachImageUploader);
   renderLinksFieldGroup('hLinks', []);
   renderLinksFieldGroup('ebLinks', []);
   renderLinksFieldGroup('rcLinks', []);
@@ -8916,6 +8933,8 @@ async function saveMoreAboutSettings(){
     icon: document.getElementById('mabCravingIcon').value.trim()
   };
   SETTINGS.moreAboutFriends = getMabFriendsFromEditor();
+  SETTINGS.carnetLibraryImage = document.getElementById('carnetLibraryImage').value.trim();
+  SETTINGS.carnetLudothequeImage = document.getElementById('carnetLudothequeImage').value.trim();
   SETTINGS.moreAboutBgImage = document.getElementById('mabBgImage').value.trim();
   const colorsEnabled = document.getElementById('mabColorsEnabled').checked;
   SETTINGS.moreAboutColors = colorsEnabled ? {
