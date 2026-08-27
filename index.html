@@ -2383,6 +2383,9 @@ const SEED_SETTINGS = {
   moreAboutReading: {},
   moreAboutListening: {},
   moreAboutPlaying: {},
+  moreAboutWatching: {},
+  moreAboutObsession: {},
+  moreAboutCraving: {},
   podcastHeroImage: '',
   podcastIntro: "Bonjour les étoiles… Ici, je partage simplement une réflexion, une idée, une expérience autour de l'écriture, de la créativité ou de ma vie d'autrice — comme un vocal envoyé à une copine. Pas de fréquence fixe, pas de durée stricte, juste une parenthèse.",
   podcastDiscordUrl: '',
@@ -7836,6 +7839,30 @@ function renderAdmin(){
             <div><label>Plateforme (facultatif)</label><input type="text" id="mabPlayingPlatform" value="${escapeHtml((SETTINGS.moreAboutPlaying||{}).platform||'')}" placeholder="Switch, PC..."></div>
           </div>
           <div><label>Jaquette (URL, facultatif)</label><input type="text" id="mabPlayingCover" value="${escapeHtml((SETTINGS.moreAboutPlaying||{}).cover||'')}"></div>
+
+          <div class="admin-msg" style="margin:18px 0 10px;">🎧 J'écoute</div>
+          <div class="row2">
+            <div><label>Titre du morceau</label><input type="text" id="mabListeningSong" value="${escapeHtml((SETTINGS.moreAboutListening||{}).song||'')}"></div>
+            <div><label>Artiste</label><input type="text" id="mabListeningArtist" value="${escapeHtml((SETTINGS.moreAboutListening||{}).artist||'')}"></div>
+          </div>
+
+          <div class="admin-msg" style="margin:18px 0 10px;">📺 Je regarde</div>
+          <div class="row2">
+            <div><label>Titre</label><input type="text" id="mabWatchingTitle" value="${escapeHtml((SETTINGS.moreAboutWatching||{}).title||'')}"></div>
+            <div><label>Détail (facultatif)</label><input type="text" id="mabWatchingDetail" value="${escapeHtml((SETTINGS.moreAboutWatching||{}).detail||'')}" placeholder="Saison 2, épisode 4"></div>
+          </div>
+
+          <div class="admin-msg" style="margin:18px 0 10px;">✦ Mon obsession du moment</div>
+          <div class="row2">
+            <div><label>Titre / sujet</label><input type="text" id="mabObsessionTitle" value="${escapeHtml((SETTINGS.moreAboutObsession||{}).title||'')}"></div>
+            <div><label>Détail (facultatif)</label><input type="text" id="mabObsessionDetail" value="${escapeHtml((SETTINGS.moreAboutObsession||{}).detail||'')}"></div>
+          </div>
+
+          <div class="admin-msg" style="margin:18px 0 10px;">♡ J'ai envie de</div>
+          <div class="row2">
+            <div><label>Titre / sujet</label><input type="text" id="mabCravingTitle" value="${escapeHtml((SETTINGS.moreAboutCraving||{}).title||'')}"></div>
+            <div><label>Détail (facultatif)</label><input type="text" id="mabCravingDetail" value="${escapeHtml((SETTINGS.moreAboutCraving||{}).detail||'')}"></div>
+          </div>
         </div>
 
         <div class="admin-form">
@@ -8945,6 +8972,22 @@ async function saveMoreAboutSettings(){
     title: document.getElementById('mabPlayingTitle').value.trim(),
     platform: document.getElementById('mabPlayingPlatform').value.trim(),
     cover: document.getElementById('mabPlayingCover').value.trim()
+  };
+  SETTINGS.moreAboutWatching = {
+    title: document.getElementById('mabWatchingTitle').value.trim(),
+    detail: document.getElementById('mabWatchingDetail').value.trim()
+  };
+  SETTINGS.moreAboutListening = {
+    song: document.getElementById('mabListeningSong').value.trim(),
+    artist: document.getElementById('mabListeningArtist').value.trim()
+  };
+  SETTINGS.moreAboutObsession = {
+    title: document.getElementById('mabObsessionTitle').value.trim(),
+    detail: document.getElementById('mabObsessionDetail').value.trim()
+  };
+  SETTINGS.moreAboutCraving = {
+    title: document.getElementById('mabCravingTitle').value.trim(),
+    detail: document.getElementById('mabCravingDetail').value.trim()
   };
   SETTINGS.moreAboutSpotify = document.getElementById('mabSpotify').value.trim();
   SETTINGS.moreAboutMood = document.getElementById('mabMood').value.trim();
