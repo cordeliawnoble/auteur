@@ -125,36 +125,43 @@
   .carnet-fragment-card:nth-child(3n+1){ transform:rotate(-1.1deg); }
   .carnet-fragment-card:nth-child(3n+2){ transform:rotate(.8deg); }
   .carnet-fragment-card:nth-child(3n+3){ transform:rotate(-.5deg); }
-  .carnet-fragment-card::before{
-    content:'';position:absolute;top:-9px;left:50%;transform:translateX(-50%) rotate(-3deg);
-    width:52px;height:18px;background:rgba(227,168,87,.5);border-radius:2px;
-  }
   .carnet-fragment-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:1.05rem;color:var(--carnet-purple);margin-bottom:8px;}
   .carnet-fragment-body{font-family:'Lora',serif;font-size:.86rem;line-height:1.6;}
   .carnet-fragment-body p{margin:0 0 .7em;}
 
-  /* ---------- Notes de marge (petits billets) ---------- */
-  .carnet-notes-list{display:flex;flex-direction:column;gap:14px;}
+  /* ---------- Notes de marge (carrousel 3 par 3) ---------- */
+  .carnet-notes-carousel{display:flex;align-items:center;gap:14px;}
+  .carnet-notes-list{display:flex;flex-direction:column;gap:14px;flex:1;min-width:0;}
   .carnet-note{
-    display:flex;gap:18px;background:var(--carnet-bg-alt);border:1px solid var(--carnet-line);
-    border-radius:12px;padding:18px 22px;cursor:pointer;transition:.2s;
+    display:flex;gap:18px;align-items:center;background:var(--carnet-bg-alt);border:1px solid var(--carnet-line);
+    border-radius:12px;padding:14px 20px;cursor:pointer;transition:.2s;
   }
   .carnet-note:hover{background:var(--carnet-bg-alt2);border-color:var(--carnet-rose);}
   .carnet-note-date{
-    flex-shrink:0;width:64px;font-family:'Jost',sans-serif;font-size:.66rem;letter-spacing:.05em;
-    text-transform:uppercase;color:var(--carnet-amber);border-right:1px solid var(--carnet-line);padding-right:16px;
+    flex-shrink:0;width:60px;font-family:'Jost',sans-serif;font-size:.64rem;letter-spacing:.05em;
+    text-transform:uppercase;color:var(--carnet-amber);border-right:1px solid var(--carnet-line);padding-right:14px;
     line-height:1.4;
   }
-  .carnet-note-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:1.15rem;color:var(--carnet-pink);margin-bottom:4px;}
-  .carnet-note-excerpt{font-family:'Lora',serif;font-size:.85rem;color:var(--carnet-mauve);line-height:1.6;}
-  .carnet-more-link{
-    display:block;text-align:center;margin-top:24px;font-family:'Jost',sans-serif;font-size:.82rem;
-    color:var(--carnet-amber);text-decoration:none;letter-spacing:.02em;
+  .carnet-note-body{flex:1;min-width:0;}
+  .carnet-note-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:1.08rem;color:var(--carnet-pink);margin-bottom:3px;}
+  .carnet-note-excerpt{font-family:'Lora',serif;font-size:.8rem;color:var(--carnet-mauve);line-height:1.5;}
+  .carnet-note-img-wrap{flex-shrink:0;width:84px;height:64px;border-radius:8px;overflow:hidden;}
+  .carnet-note-img{width:100%;height:100%;object-fit:cover;display:block;}
+  .carnet-notes-arrow{
+    flex-shrink:0;width:36px;height:36px;border-radius:50%;background:var(--carnet-bg-alt);
+    border:1px solid var(--carnet-line);color:var(--carnet-amber);display:flex;align-items:center;justify-content:center;
+    cursor:pointer;font-size:1rem;transition:.2s;
   }
-  .carnet-more-link:hover{text-decoration:underline;}
-  @media(max-width:520px){
-    .carnet-note{flex-direction:column;gap:6px;}
+  .carnet-notes-arrow:hover{background:var(--carnet-bg-alt2);border-color:var(--carnet-rose);}
+  .carnet-notes-arrow[disabled]{opacity:.3;cursor:default;pointer-events:none;}
+  .carnet-notes-dots{display:flex;justify-content:center;gap:6px;margin-top:14px;}
+  .carnet-notes-dot{width:6px;height:6px;border-radius:50%;background:var(--carnet-line);}
+  .carnet-notes-dot.active{background:var(--carnet-amber);}
+  @media(max-width:600px){
+    .carnet-note{flex-direction:column;align-items:stretch;gap:10px;}
     .carnet-note-date{border-right:none;border-bottom:1px solid var(--carnet-line);padding:0 0 8px;width:auto;}
+    .carnet-note-img-wrap{width:100%;height:120px;}
+    .carnet-notes-carousel{gap:8px;}
   }
 
   /* ---------- Mes petits terriers (portes) ---------- */
@@ -175,6 +182,26 @@
   .carnet-door-sub{font-family:'Lora',serif;font-style:italic;font-size:.85rem;color:var(--carnet-mauve);margin-bottom:14px;}
   .carnet-door-cta{font-family:'Jost',sans-serif;font-size:.8rem;color:var(--carnet-amber);}
   @media(max-width:640px){ .carnet-doors-grid{grid-template-columns:1fr;} }
+
+  /* ---------- Mes copines ---------- */
+  .carnet-friends-block{
+    background:var(--carnet-bg-alt);border:1px solid var(--carnet-line);border-radius:14px;padding:26px 24px;
+  }
+  .carnet-friends-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:14px 28px;}
+  .carnet-friend{
+    display:flex;flex-direction:column;align-items:center;gap:6px;width:96px;text-decoration:none;
+    text-align:center;transition:.2s;
+  }
+  .carnet-friend:hover{transform:translateY(-2px);}
+  .carnet-friend-avatar{
+    width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid var(--carnet-line);
+  }
+  .carnet-friend-avatar-fallback{
+    display:flex;align-items:center;justify-content:center;background:var(--carnet-bg-alt2);
+    color:var(--carnet-rose);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.2rem;
+  }
+  .carnet-friend-name{font-family:'Lora',serif;font-size:.8rem;color:var(--carnet-text);line-height:1.3;}
+  .carnet-friend-tag{font-family:'Jost',sans-serif;font-size:.66rem;color:var(--carnet-muted);}
 
   .loading-msg{text-align:center;padding:100px 20px;color:var(--carnet-muted);font-family:'Jost',sans-serif;position:relative;z-index:1;}
 </style>
@@ -254,8 +281,11 @@ function postsInCategory(cat){
 
 /* icônes "En ce moment" : emplacement prévu pour vos SVG (assets/carnet/icon-*.svg).
    Repli discret (petit point doré) tant que le fichier n'existe pas. */
-function nowIconHtml(key, label){
-  return '<div class="carnet-now-icon"><img src="assets/carnet/icon-'+key+'.svg" alt="" onerror="this.replaceWith(Object.assign(document.createElement(\'span\'),{className:\'icon-fallback\'}))"></div>';
+function nowIconHtml(iconUrl, label){
+  if(iconUrl){
+    return '<div class="carnet-now-icon"><img src="'+escapeHtml(iconUrl)+'" alt="" onerror="this.replaceWith(Object.assign(document.createElement(\'span\'),{className:\'icon-fallback\'}))"></div>';
+  }
+  return '<div class="carnet-now-icon"><span class="icon-fallback"></span></div>';
 }
 
 /* ---------- rendu de la page ---------- */
@@ -272,29 +302,33 @@ function renderCarnet(){
   const craving = SETTINGS.moreAboutCraving || {};
 
   const nowEntries = [
-    { key:'reading', label:'Je lis', main: reading.title, sub: reading.author, stars: reading.rating },
-    { key:'gaming', label:'Je joue', main: playing.title, sub: playing.platform },
-    { key:'watching', label:'Je regarde', main: watching.title, sub: watching.detail },
-    { key:'listening', label:"J'écoute", main: listening.song, sub: listening.artist },
-    { key:'obsession', label:'Mon obsession du moment', main: obsession.title, sub: obsession.detail },
-    { key:'craving', label:"J'ai envie de", main: craving.title, sub: craving.detail }
+    { label:'Je lis', icon: reading.icon, main: reading.title, sub: reading.author, stars: reading.rating },
+    { label:'Je joue', icon: playing.icon, main: playing.title, sub: playing.platform },
+    { label:'Je regarde', icon: watching.icon, main: watching.title, sub: watching.detail },
+    { label:"J'écoute", icon: listening.icon, main: listening.song, sub: listening.artist },
+    { label:'Mon obsession du moment', icon: obsession.icon, main: obsession.title, sub: obsession.detail },
+    { label:"J'ai envie de", icon: craving.icon, main: craving.title, sub: craving.detail }
   ].filter(function(e){ return e.main; });
+
+  const friends = SETTINGS.moreAboutFriends || [];
 
   const fragments = postsInCategory('fragments-de-moi');
   const allNotes = postsInCategory('notes-de-marge');
-  const notes = allNotes.slice(0,3);
-  const firstNotePost = allNotes[0];
+  window.CARNET_ALL_NOTES = allNotes; // pour le carrousel
 
   let html = '';
   html += '<a href="https://cordeliawnoble.fr/" class="carnet-back">↺ Retour au site d\'autrice</a>';
 
   html += '<header class="carnet-hero">';
-  html += '<img src="assets/carnet/hero-carnet.webp" alt="Carnet — quelques morceaux de moi, entre deux histoires." class="carnet-hero-img" onerror="this.style.display=\'none\';document.getElementById(\'carnetHeroFallback\').style.display=\'block\';">';
-  html += '<div class="carnet-hero-fallback" id="carnetHeroFallback" style="display:none;">';
-  html += '<div class="carnet-moon" aria-hidden="true"></div>';
-  html += '<h1 style="font-family:\'Caveat\',cursive;font-weight:600;font-size:3.4rem;color:var(--carnet-cream);margin:0 0 6px;line-height:1;">Carnet</h1>';
-  html += '<p class="carnet-hero-sub">Quelques morceaux de moi, entre deux histoires.</p>';
-  html += '</div>';
+  if(SETTINGS.moreAboutHeroImage){
+    html += '<img src="'+escapeHtml(SETTINGS.moreAboutHeroImage)+'" alt="Carnet — quelques morceaux de moi, entre deux histoires." class="carnet-hero-img">';
+  }else{
+    html += '<div class="carnet-hero-fallback">';
+    html += '<div class="carnet-moon" aria-hidden="true"></div>';
+    html += '<h1 style="font-family:\'Caveat\',cursive;font-weight:600;font-size:3.4rem;color:var(--carnet-cream);margin:0 0 6px;line-height:1;">Carnet</h1>';
+    html += '<p class="carnet-hero-sub">Quelques morceaux de moi, entre deux histoires.</p>';
+    html += '</div>';
+  }
   html += '</header>';
   html += '<p class="carnet-hero-text">' + (SETTINGS.carnetIntro ? richParagraphs(SETTINGS.carnetIntro) : "Ici se trouvent mes lectures du moment, mes jeux, mes découvertes, mes petites obsessions, et quelques fragments un peu plus personnels.") + '</p>';
 
@@ -304,8 +338,8 @@ function renderCarnet(){
   if(nowEntries.length){
     nowEntries.forEach(function(e){
       html += '<div class="carnet-now-card">';
-      html += nowIconHtml(e.key, e.label);
       html += '<div class="carnet-now-label">'+escapeHtml(e.label)+'</div>';
+      html += nowIconHtml(e.icon, e.label);
       html += '<div class="carnet-now-main">'+escapeHtml(e.main)+'</div>';
       if(e.sub) html += '<div class="carnet-now-sub">'+escapeHtml(e.sub)+'</div>';
       if(e.stars) html += '<div class="carnet-now-stars" role="img" aria-label="Note : '+e.stars+' sur 5">'+starsHtml(e.stars)+'</div>';
@@ -330,22 +364,11 @@ function renderCarnet(){
     html += '</div></section>';
   }
 
-  if(notes.length){
+  if(allNotes.length){
     html += '<section class="carnet-section">';
     html += '<div class="carnet-section-title"><h2>Notes de marge</h2></div>';
     html += '<p class="carnet-section-sub">Des pensées, des découvertes et des choses que j\'avais simplement envie de déposer ici.</p>';
-    html += '<div class="carnet-notes-list">';
-    notes.forEach(function(p){
-      const excerpt = richParagraphs(p.body).replace(/<[^>]+>/g,' ').trim().slice(0,140);
-      html += '<div class="carnet-note" onclick="window.location.href=\'index.html#actualites/'+p.id+'\'">';
-      html += '<div class="carnet-note-date">'+(p.date ? formatDateShort(p.date) : '')+'</div>';
-      html += '<div class="carnet-note-body">';
-      html += '<div class="carnet-note-title">'+escapeHtml(p.title)+'</div>';
-      html += '<div class="carnet-note-excerpt">'+excerpt+'…</div>';
-      html += '</div></div>';
-    });
-    html += '</div>';
-    if(firstNotePost) html += '<a href="index.html#actualites/'+firstNotePost.id+'" class="carnet-more-link">Toutes les notes →</a>';
+    html += '<div id="carnetNotesCarousel"></div>';
     html += '</section>';
   }
 
@@ -362,7 +385,67 @@ function renderCarnet(){
   html += '<div class="carnet-door-cta">Explorer ma ludothèque →</div></a>';
   html += '</div></section>';
 
+  if(friends.length){
+    html += '<section class="carnet-section">';
+    html += '<div class="carnet-section-title"><h2>Mes copines</h2></div>';
+    html += '<div class="carnet-friends-block">';
+    html += '<div class="carnet-friends-grid">';
+    friends.forEach(function(f){
+      html += '<a href="'+escapeHtml(f.url||'#')+'" target="_blank" rel="noopener" class="carnet-friend">';
+      if(f.avatar){
+        html += '<img src="'+escapeHtml(f.avatar)+'" alt="" class="carnet-friend-avatar">';
+      }else{
+        html += '<span class="carnet-friend-avatar carnet-friend-avatar-fallback">'+escapeHtml((f.name||'?').charAt(0))+'</span>';
+      }
+      html += '<span class="carnet-friend-name">'+escapeHtml(f.name)+'</span>';
+      if(f.tag) html += '<span class="carnet-friend-tag">'+escapeHtml(f.tag)+'</span>';
+      html += '</a>';
+    });
+    html += '</div></div></section>';
+  }
+
   app.innerHTML = html;
+  if(window.CARNET_ALL_NOTES && window.CARNET_ALL_NOTES.length) drawNotesCarousel(0);
+}
+
+let carnetNotesPage = 0;
+function drawNotesCarousel(page){
+  const el = document.getElementById('carnetNotesCarousel');
+  if(!el) return;
+  const allNotes = window.CARNET_ALL_NOTES || [];
+  const perPage = 3;
+  const pageCount = Math.ceil(allNotes.length / perPage);
+  carnetNotesPage = Math.max(0, Math.min(page, pageCount-1));
+  const pageNotes = allNotes.slice(carnetNotesPage*perPage, carnetNotesPage*perPage+perPage);
+
+  let html = '<div class="carnet-notes-carousel">';
+  html += '<span class="carnet-notes-arrow" onclick="drawNotesCarousel(carnetNotesPage-1)" '+(carnetNotesPage<=0?'disabled':'')+' aria-label="Notes précédentes">←</span>';
+  html += '<div class="carnet-notes-list">';
+  pageNotes.forEach(function(p){
+    const excerpt = richParagraphs(p.body).replace(/<[^>]+>/g,' ').trim().slice(0,90);
+    const img = (p.images && p.images[0]) ? p.images[0] : '';
+    html += '<div class="carnet-note" onclick="window.location.href=\'index.html#actualites/'+p.id+'\'">';
+    html += '<div class="carnet-note-date">'+(p.date ? formatDateShort(p.date) : '')+'</div>';
+    html += '<div class="carnet-note-body">';
+    html += '<div class="carnet-note-title">'+escapeHtml(p.title)+'</div>';
+    html += '<div class="carnet-note-excerpt">'+excerpt+'…</div>';
+    html += '</div>';
+    if(img) html += '<div class="carnet-note-img-wrap"><img src="'+escapeHtml(img)+'" alt="" class="carnet-note-img" loading="lazy"></div>';
+    html += '</div>';
+  });
+  html += '</div>';
+  html += '<span class="carnet-notes-arrow" onclick="drawNotesCarousel(carnetNotesPage+1)" '+(carnetNotesPage>=pageCount-1?'disabled':'')+' aria-label="Notes suivantes">→</span>';
+  html += '</div>';
+
+  if(pageCount > 1){
+    html += '<div class="carnet-notes-dots">';
+    for(let i=0;i<pageCount;i++){
+      html += '<span class="carnet-notes-dot'+(i===carnetNotesPage?' active':'')+'"></span>';
+    }
+    html += '</div>';
+  }
+
+  el.innerHTML = html;
 }
 
 /* ---------- chargement des données puis affichage ---------- */
