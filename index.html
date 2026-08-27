@@ -2369,12 +2369,9 @@ const SEED_SETTINGS = {
   pressKitEmail: '',
   pressKitDownloadUrl: '',
   moreAboutBio: '',
-  moreAboutBooks: [],
-  moreAboutSpotify: '',
-  moreAboutReadsCategory: '',
-  moreAboutGalleryImages: [],
   moreAboutColors: {},
   moreAboutBgImage: '',
+  moreAboutHeroImage: '',
   moreAboutWriting: {},
   moreAboutReading: {},
   moreAboutListening: {},
@@ -2387,8 +2384,6 @@ const SEED_SETTINGS = {
   podcastDiscordUrl: '',
   actualitesHeroImage: '',
   pageActive: {},
-  moreAboutMood: '',
-  moreAboutInspiration: '',
   moreAboutFriends: [],
   copyrightText: '© 2026 {nom} — tous droits réservés'
 };
@@ -7780,6 +7775,14 @@ function renderAdmin(){
         </div>
 
         <div class="admin-form">
+          <h3>Bannière</h3>
+          <div>
+            <label>Image de bannière (facultatif — pleine largeur, en haut de la page. Texte/titre à intégrer directement dans l'image)</label>
+            <input type="text" id="mabHeroImage" value="${escapeHtml(SETTINGS.moreAboutHeroImage||'')}" placeholder="https://...">
+          </div>
+        </div>
+
+        <div class="admin-form">
           <h3>Un peu plus sur moi</h3>
           <div>
             <label>Texte (facultatif — plus développé que votre bio d'accueil)</label>
@@ -7795,7 +7798,10 @@ function renderAdmin(){
             <div><label>Titre de l'histoire</label><input type="text" id="mabWritingTitle" value="${escapeHtml((SETTINGS.moreAboutWriting||{}).title||'')}"></div>
             <div><label>Détail (facultatif)</label><input type="text" id="mabWritingChapter" value="${escapeHtml((SETTINGS.moreAboutWriting||{}).chapterLabel||'')}" placeholder="Chapitre en cours : 12"></div>
           </div>
-          <div><label>Avancement en % (facultatif)</label><input type="number" id="mabWritingProgress" min="0" max="100" value="${(SETTINGS.moreAboutWriting||{}).progress||''}"></div>
+          <div class="row2">
+            <div><label>Avancement en % (facultatif)</label><input type="number" id="mabWritingProgress" min="0" max="100" value="${(SETTINGS.moreAboutWriting||{}).progress||''}"></div>
+            <div><label>Icône (URL, facultatif)</label><input type="text" id="mabWritingIcon" value="${escapeHtml((SETTINGS.moreAboutWriting||{}).icon||'')}"></div>
+          </div>
 
           <div class="admin-msg" style="margin:18px 0 10px;">📖 Je lis</div>
           <div class="row2">
@@ -7806,64 +7812,52 @@ function renderAdmin(){
             <div><label>Couverture (URL, facultatif)</label><input type="text" id="mabReadingCover" value="${escapeHtml((SETTINGS.moreAboutReading||{}).cover||'')}"></div>
             <div><label>Note sur 5 (facultatif)</label><input type="number" id="mabReadingRating" min="0" max="5" value="${(SETTINGS.moreAboutReading||{}).rating||''}"></div>
           </div>
+          <div><label>Icône (URL, facultatif)</label><input type="text" id="mabReadingIcon" value="${escapeHtml((SETTINGS.moreAboutReading||{}).icon||'')}"></div>
 
           <div class="admin-msg" style="margin:18px 0 10px;">🎮 Je joue</div>
           <div class="row2">
             <div><label>Titre du jeu</label><input type="text" id="mabPlayingTitle" value="${escapeHtml((SETTINGS.moreAboutPlaying||{}).title||'')}"></div>
             <div><label>Plateforme (facultatif)</label><input type="text" id="mabPlayingPlatform" value="${escapeHtml((SETTINGS.moreAboutPlaying||{}).platform||'')}" placeholder="Switch, PC..."></div>
           </div>
-          <div><label>Jaquette (URL, facultatif)</label><input type="text" id="mabPlayingCover" value="${escapeHtml((SETTINGS.moreAboutPlaying||{}).cover||'')}"></div>
+          <div class="row2">
+            <div><label>Jaquette (URL, facultatif)</label><input type="text" id="mabPlayingCover" value="${escapeHtml((SETTINGS.moreAboutPlaying||{}).cover||'')}"></div>
+            <div><label>Icône (URL, facultatif)</label><input type="text" id="mabPlayingIcon" value="${escapeHtml((SETTINGS.moreAboutPlaying||{}).icon||'')}"></div>
+          </div>
 
           <div class="admin-msg" style="margin:18px 0 10px;">🎧 J'écoute</div>
           <div class="row2">
             <div><label>Titre du morceau</label><input type="text" id="mabListeningSong" value="${escapeHtml((SETTINGS.moreAboutListening||{}).song||'')}"></div>
             <div><label>Artiste</label><input type="text" id="mabListeningArtist" value="${escapeHtml((SETTINGS.moreAboutListening||{}).artist||'')}"></div>
           </div>
+          <div><label>Icône (URL, facultatif)</label><input type="text" id="mabListeningIcon" value="${escapeHtml((SETTINGS.moreAboutListening||{}).icon||'')}"></div>
 
           <div class="admin-msg" style="margin:18px 0 10px;">📺 Je regarde</div>
           <div class="row2">
             <div><label>Titre</label><input type="text" id="mabWatchingTitle" value="${escapeHtml((SETTINGS.moreAboutWatching||{}).title||'')}"></div>
             <div><label>Détail (facultatif)</label><input type="text" id="mabWatchingDetail" value="${escapeHtml((SETTINGS.moreAboutWatching||{}).detail||'')}" placeholder="Saison 2, épisode 4"></div>
           </div>
+          <div><label>Icône (URL, facultatif)</label><input type="text" id="mabWatchingIcon" value="${escapeHtml((SETTINGS.moreAboutWatching||{}).icon||'')}"></div>
 
           <div class="admin-msg" style="margin:18px 0 10px;">✦ Mon obsession du moment</div>
           <div class="row2">
             <div><label>Titre / sujet</label><input type="text" id="mabObsessionTitle" value="${escapeHtml((SETTINGS.moreAboutObsession||{}).title||'')}"></div>
             <div><label>Détail (facultatif)</label><input type="text" id="mabObsessionDetail" value="${escapeHtml((SETTINGS.moreAboutObsession||{}).detail||'')}"></div>
           </div>
+          <div><label>Icône (URL, facultatif)</label><input type="text" id="mabObsessionIcon" value="${escapeHtml((SETTINGS.moreAboutObsession||{}).icon||'')}"></div>
 
           <div class="admin-msg" style="margin:18px 0 10px;">♡ J'ai envie de</div>
           <div class="row2">
             <div><label>Titre / sujet</label><input type="text" id="mabCravingTitle" value="${escapeHtml((SETTINGS.moreAboutCraving||{}).title||'')}"></div>
             <div><label>Détail (facultatif)</label><input type="text" id="mabCravingDetail" value="${escapeHtml((SETTINGS.moreAboutCraving||{}).detail||'')}"></div>
           </div>
+          <div><label>Icône (URL, facultatif)</label><input type="text" id="mabCravingIcon" value="${escapeHtml((SETTINGS.moreAboutCraving||{}).icon||'')}"></div>
         </div>
 
         <div class="admin-form">
-          <h3>Ma playlist (facultatif)</h3>
-          <label>Lien d'intégration Spotify</label>
-          <input type="text" id="mabSpotify" value="${escapeHtml(SETTINGS.moreAboutSpotify||'')}" placeholder="https://open.spotify.com/embed/playlist/...">
-          <div class="hint" style="margin-top:6px;">Dans Spotify : ouvrez votre playlist → ⋯ → Partager → Copier le code d'intégration, puis collez le lien "src" trouvé dedans ici. Affichée dans la colonne de droite du carnet.</div>
-        </div>
-
-        <div class="admin-form">
-          <h3>Mes lectures (facultatif)</h3>
-          <div class="hint" style="margin-bottom:10px;">Cochez « Favori » pour qu'un livre apparaisse aussi dans la section « Mes favoris ».</div>
-          <div id="mabBooksList"></div>
-          <span class="toggle-btn" onclick="addMabBookRow()">+ Ajouter un livre</span>
-        </div>
-
-        <div class="admin-form">
-          <h3>Colonne de droite (facultatif)</h3>
-          <div class="admin-msg" style="margin:4px 0 10px;">Actuellement</div>
-          <div class="row2">
-            <div><label>Humeur</label><input type="text" id="mabMood" value="${escapeHtml(SETTINGS.moreAboutMood||'')}" placeholder="Écrire sous plaid"></div>
-            <div><label>Inspiration</label><input type="text" id="mabInspiration" value="${escapeHtml(SETTINGS.moreAboutInspiration||'')}" placeholder="Nuits d'hiver, magie et vieux livres"></div>
-          </div>
-          <div class="admin-msg" style="margin:18px 0 10px;">Mes copines</div>
+          <h3>Mes copines</h3>
           <div id="mabFriendsList"></div>
           <span class="toggle-btn" onclick="addMabFriendRow()">+ Ajouter une copine</span>
-          <div class="hint" style="margin-top:10px;">Vos réseaux sociaux (Instagram, Pinterest...) sont déjà repris automatiquement depuis Apparence → Réseaux sociaux, pas besoin de les redonner ici.</div>
+          <div class="hint" style="margin-top:10px;">Affichées dans un petit bloc sur le carnet, sous les portes Bibliothèque/Ludothèque.</div>
         </div>
 
         <div class="admin-form">
@@ -8421,7 +8415,6 @@ function renderAdmin(){
   renderCategoriesManageList();
   renderEpisodesManageList();
   updateApCategorySuggestions();
-  renderMabBooksList();
   renderMabFriendsList();
   initNewsletterComposer();
   renderStats();
@@ -8429,7 +8422,7 @@ function renderAdmin(){
   setTimeout(updateStorageModeBadge, 1200);
 
   // bouton d'envoi d'image sur les champs concernés
-  ['sHeroImage','sAuthorPhoto','sPressKitPhotoHD','mabBgImage','mabPlayingCover','apHoverImage','pcHeroImage','pcNewImage','pcNewHoverImage','actuHeroImage','hCover','hCoverDetail','hHoverImage','hCharHoverImage','uImageTile','uImageListBanner','uImageBanner','sgNewCoverVitrail','sgNewCoverBanner','sgNewCoverHero','ssCover','ssCoverHero','pImage','chImage','rcCover','sIndepHeroImage','sUniversHeroImage','sCollectionsHeroImage','sSiteBgImage','sQuickFactsBg','sChapterEndImage','ebCover','ebHoverImage','btnImgDefault','btnImgHover','btnImgActive','btnImgDisabled'].forEach(attachImageUploader);
+  ['sHeroImage','sAuthorPhoto','sPressKitPhotoHD','mabBgImage','mabHeroImage','mabWritingIcon','mabReadingCover','mabReadingIcon','mabPlayingCover','mabPlayingIcon','mabWatchingIcon','mabListeningIcon','mabObsessionIcon','mabCravingIcon','apHoverImage','pcHeroImage','pcNewImage','pcNewHoverImage','actuHeroImage','hCover','hCoverDetail','hHoverImage','hCharHoverImage','uImageTile','uImageListBanner','uImageBanner','sgNewCoverVitrail','sgNewCoverBanner','sgNewCoverHero','ssCover','ssCoverHero','pImage','chImage','rcCover','sIndepHeroImage','sUniversHeroImage','sCollectionsHeroImage','sSiteBgImage','sQuickFactsBg','sChapterEndImage','ebCover','ebHoverImage','btnImgDefault','btnImgHover','btnImgActive','btnImgDisabled'].forEach(attachImageUploader);
   renderLinksFieldGroup('hLinks', []);
   renderLinksFieldGroup('ebLinks', []);
   renderLinksFieldGroup('rcLinks', []);
@@ -8841,51 +8834,6 @@ async function submitNewPost(){
 }
 
 /* ---------- gestion admin de la page "En savoir plus" ---------- */
-function mabBookRowHtml(i, book){
-  book = book || {title:'', author:'', cover:'', rating:'', review:'', favorite:false};
-  return `
-    <div id="mabBookRow-${i}" style="border:1px solid var(--line);border-radius:8px;padding:14px;margin-bottom:12px;">
-      <div class="row2">
-        <div><label>Titre</label><input type="text" class="mabBookTitle" value="${escapeHtml(book.title||'')}" placeholder="Titre du livre"></div>
-        <div><label>Auteur·ice (facultatif)</label><input type="text" class="mabBookAuthor" value="${escapeHtml(book.author||'')}"></div>
-      </div>
-      <div class="row2" style="margin-top:10px;">
-        <div><label>Couverture (URL, facultatif)</label><input type="text" id="mabBookCover-${i}" class="mabBookCover" value="${escapeHtml(book.cover||'')}" placeholder="https://..."></div>
-        <div><label>Note sur 5 (facultatif)</label><input type="number" class="mabBookRating" min="0" max="5" value="${book.rating||''}"></div>
-      </div>
-      <div style="margin-top:10px;"><label>Votre avis en une phrase (facultatif)</label><input type="text" class="mabBookReview" value="${escapeHtml(book.review||'')}" placeholder="Poétique et déchirant. Un coup de cœur."></div>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
-        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-family:'Jost',sans-serif;font-size:.82rem;">
-          <input type="checkbox" class="mabBookFavorite" ${book.favorite?'checked':''} style="width:auto;"> Favori
-        </label>
-        <span class="del-btn" onclick="document.getElementById('mabBookRow-${i}').remove()">Retirer</span>
-      </div>
-    </div>
-  `;
-}
-function addMabBookRow(book){
-  const list = document.getElementById('mabBooksList');
-  const i = list.children.length;
-  list.insertAdjacentHTML('beforeend', mabBookRowHtml(i, book));
-  attachImageUploader('mabBookCover-'+i);
-}
-function renderMabBooksList(){
-  const list = document.getElementById('mabBooksList');
-  if(!list) return;
-  list.innerHTML = '';
-  (SETTINGS.moreAboutBooks||[]).forEach(b=>addMabBookRow(b));
-}
-function getMabBooksFromEditor(){
-  return Array.from(document.querySelectorAll('#mabBooksList > div')).map(row=>({
-    title: row.querySelector('.mabBookTitle').value.trim(),
-    author: row.querySelector('.mabBookAuthor').value.trim(),
-    cover: row.querySelector('.mabBookCover').value.trim(),
-    rating: +row.querySelector('.mabBookRating').value || 0,
-    review: row.querySelector('.mabBookReview').value.trim(),
-    favorite: row.querySelector('.mabBookFavorite').checked
-  })).filter(b=>b.title);
-}
-
 function mabFriendRowHtml(i, friend){
   friend = friend || {name:'', tag:'', avatar:'', url:''};
   return `
@@ -8927,43 +8875,47 @@ function getMabFriendsFromEditor(){
 
 async function saveMoreAboutSettings(){
   SETTINGS.moreAboutBio = document.getElementById('mabBio').value.trim();
+  SETTINGS.moreAboutHeroImage = document.getElementById('mabHeroImage').value.trim();
   SETTINGS.moreAboutWriting = {
     title: document.getElementById('mabWritingTitle').value.trim(),
     chapterLabel: document.getElementById('mabWritingChapter').value.trim(),
-    progress: +document.getElementById('mabWritingProgress').value || 0
+    progress: +document.getElementById('mabWritingProgress').value || 0,
+    icon: document.getElementById('mabWritingIcon').value.trim()
   };
   SETTINGS.moreAboutReading = {
     title: document.getElementById('mabReadingTitle').value.trim(),
     author: document.getElementById('mabReadingAuthor').value.trim(),
     cover: document.getElementById('mabReadingCover').value.trim(),
-    rating: +document.getElementById('mabReadingRating').value || 0
+    rating: +document.getElementById('mabReadingRating').value || 0,
+    icon: document.getElementById('mabReadingIcon').value.trim()
   };
   SETTINGS.moreAboutPlaying = {
     title: document.getElementById('mabPlayingTitle').value.trim(),
     platform: document.getElementById('mabPlayingPlatform').value.trim(),
-    cover: document.getElementById('mabPlayingCover').value.trim()
+    cover: document.getElementById('mabPlayingCover').value.trim(),
+    icon: document.getElementById('mabPlayingIcon').value.trim()
   };
   SETTINGS.moreAboutWatching = {
     title: document.getElementById('mabWatchingTitle').value.trim(),
-    detail: document.getElementById('mabWatchingDetail').value.trim()
+    detail: document.getElementById('mabWatchingDetail').value.trim(),
+    icon: document.getElementById('mabWatchingIcon').value.trim()
   };
   SETTINGS.moreAboutListening = {
     song: document.getElementById('mabListeningSong').value.trim(),
-    artist: document.getElementById('mabListeningArtist').value.trim()
+    artist: document.getElementById('mabListeningArtist').value.trim(),
+    icon: document.getElementById('mabListeningIcon').value.trim()
   };
   SETTINGS.moreAboutObsession = {
     title: document.getElementById('mabObsessionTitle').value.trim(),
-    detail: document.getElementById('mabObsessionDetail').value.trim()
+    detail: document.getElementById('mabObsessionDetail').value.trim(),
+    icon: document.getElementById('mabObsessionIcon').value.trim()
   };
   SETTINGS.moreAboutCraving = {
     title: document.getElementById('mabCravingTitle').value.trim(),
-    detail: document.getElementById('mabCravingDetail').value.trim()
+    detail: document.getElementById('mabCravingDetail').value.trim(),
+    icon: document.getElementById('mabCravingIcon').value.trim()
   };
-  SETTINGS.moreAboutSpotify = document.getElementById('mabSpotify').value.trim();
-  SETTINGS.moreAboutMood = document.getElementById('mabMood').value.trim();
-  SETTINGS.moreAboutInspiration = document.getElementById('mabInspiration').value.trim();
   SETTINGS.moreAboutFriends = getMabFriendsFromEditor();
-  SETTINGS.moreAboutBooks = getMabBooksFromEditor();
   SETTINGS.moreAboutBgImage = document.getElementById('mabBgImage').value.trim();
   const colorsEnabled = document.getElementById('mabColorsEnabled').checked;
   SETTINGS.moreAboutColors = colorsEnabled ? {
