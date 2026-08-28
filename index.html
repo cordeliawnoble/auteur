@@ -1600,6 +1600,68 @@ footer{border-top:1px solid var(--line);padding:34px 24px;text-align:center;font
 .hist-cards-grid .hist-thumb{width:100%;height:140px;}
 .hist-cards-grid .hist-card-actions{margin-left:0;width:100%;justify-content:space-between;}
 
+/* ---------- cartes catégorie (Actualités) ---------- */
+.cat-cards-grid{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));}
+@media(min-width:900px){ .cat-cards-grid{grid-template-columns:repeat(3,1fr);} }
+@media(max-width:899px) and (min-width:600px){ .cat-cards-grid{grid-template-columns:repeat(2,1fr);} }
+@media(max-width:599px){ .cat-cards-grid{grid-template-columns:1fr;} }
+.cat-card-main{display:flex;gap:14px;align-items:flex-start;padding:16px 16px 12px;}
+.cat-avatar{width:48px;height:48px;border-radius:50%;object-fit:cover;flex-shrink:0;background:var(--bg-alt);}
+.cat-avatar-fallback{
+  display:flex;align-items:center;justify-content:center;background:var(--gold-soft);color:var(--wine);
+  font-family:'Playfair Display',serif;font-size:1.2rem;
+}
+.cat-card-info{min-width:0;flex:1;}
+.cat-card-title{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--ink);}
+.cat-card-desc{font-family:'Lora',serif;font-size:.8rem;color:var(--muted);margin-top:3px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.cat-card-meta{font-family:'Jost',sans-serif;font-size:.72rem;color:var(--muted);margin-top:6px;display:flex;align-items:center;gap:6px;}
+.cat-status-dot{width:7px;height:7px;border-radius:50%;background:#6E8B5E;flex-shrink:0;}
+.cat-status-dot.inactive{background:var(--line);}
+.cat-avatar-preview{
+  width:40px;height:40px;border-radius:50%;flex-shrink:0;background:var(--bg-alt);border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;color:var(--muted);font-family:'Jost',sans-serif;font-size:.7rem;
+  background-size:cover;background-position:center;
+}
+
+/* ---------- galerie d'articles (Actualités) ---------- */
+.actu-filters-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:18px;}
+.actu-filter-pills{display:flex;flex-wrap:wrap;gap:6px;}
+.actu-filter-pill{
+  font-family:'Jost',sans-serif;font-size:.78rem;color:var(--muted);cursor:pointer;padding:7px 14px;
+  border-radius:20px;border:1px solid var(--line);transition:.2s;white-space:nowrap;
+}
+.actu-filter-pill:hover{color:var(--wine);border-color:var(--gold);}
+.actu-filter-pill.active{background:var(--wine);color:#fff;border-color:var(--wine);}
+.actu-filters-bar select{width:auto;background:var(--bg-card);border:1px solid var(--line);color:var(--ink);padding:8px 10px;font-family:'Jost',sans-serif;font-size:.78rem;border-radius:6px;}
+.actu-filters-bar input[type="text"]{padding:8px 10px;font-size:.78rem;}
+
+.actu-gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;}
+@media(min-width:1100px){ .actu-gallery-grid{grid-template-columns:repeat(4,1fr);} }
+@media(max-width:1099px) and (min-width:820px){ .actu-gallery-grid{grid-template-columns:repeat(3,1fr);} }
+@media(max-width:819px) and (min-width:540px){ .actu-gallery-grid{grid-template-columns:repeat(2,1fr);} }
+@media(max-width:539px){ .actu-gallery-grid{grid-template-columns:1fr;} }
+.actu-gallery-card{background:var(--bg-card);border:1px solid var(--line);border-radius:10px;}
+.actu-gallery-thumb{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;background:var(--bg-alt);border-radius:10px 10px 0 0;}
+.actu-gallery-thumb-fallback{
+  width:100%;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;background:var(--gold-soft);
+  border-radius:10px 10px 0 0;
+}
+.actu-gallery-thumb-fallback img{width:44px;height:44px;border-radius:50%;object-fit:cover;}
+.actu-gallery-thumb-fallback .cat-avatar-fallback{width:44px;height:44px;font-size:1.3rem;}
+.actu-gallery-thumb-fallback.placeholder{background:var(--bg-alt);color:var(--line);font-size:1.6rem;}
+.actu-gallery-body{padding:12px 14px 14px;}
+.actu-gallery-title{
+  font-family:'Playfair Display',serif;font-size:.92rem;color:var(--ink);line-height:1.3;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;min-height:2.6em;
+}
+.actu-gallery-meta{font-family:'Jost',sans-serif;font-size:.68rem;color:var(--muted);margin-top:6px;line-height:1.4;}
+.actu-gallery-status{
+  display:inline-block;font-family:'Jost',sans-serif;font-size:.62rem;letter-spacing:.04em;text-transform:uppercase;
+  padding:2px 8px;border-radius:10px;margin-bottom:6px;
+}
+.actu-gallery-status.draft{background:rgba(199,143,73,.18);color:#C78F49;}
+.actu-gallery-actions{display:flex;justify-content:space-between;align-items:center;margin-top:10px;}
+
 /* ---------- vue hiérarchie ---------- */
 .hist-tree-group{margin-bottom:26px;}
 .hist-tree-label{
@@ -2569,6 +2631,13 @@ function activePostCategories(){
 }
 function allRegisteredCategories(){
   return [...new Set([...Object.keys(POST_CATEGORIES), ...postCategories()])];
+}
+/* ---------- statut d'un article : brouillon / publié / archivé ---------- */
+function postStatus(p){ return p.status || 'published'; }
+function visiblePosts(){ return POSTS.filter(p => postStatus(p) === 'published'); }
+function subcategoriesForCategory(cat){
+  if(!cat) return [...new Set(POSTS.map(p=>p.subcategory).filter(Boolean))];
+  return [...new Set(POSTS.filter(p=>p.category===cat).map(p=>p.subcategory).filter(Boolean))];
 }
 function isPageActive(key){
   return (SETTINGS.pageActive||{})[key] !== false;
@@ -4325,7 +4394,7 @@ function drawActuIconRow(){
   if(!el) return;
   // 6 icônes maximum : les catégories actives, triées par article le plus récent
   const active = activePostCategories().map(cat=>{
-    const latest = POSTS.filter(p=>p.category===cat).sort((a,b)=>(b.date||'').localeCompare(a.date||''))[0];
+    const latest = visiblePosts().filter(p=>p.category===cat).sort((a,b)=>(b.date||'').localeCompare(a.date||''))[0];
     return { cat, latestDate: latest ? latest.date||'' : '' };
   }).sort((a,b)=> b.latestDate.localeCompare(a.latestDate)).slice(0,6).map(x=>x.cat);
 
@@ -4354,7 +4423,7 @@ function drawActuAccordion(){
   if(!actuOpenCategory){ el.innerHTML = ''; return; }
   const cat = actuOpenCategory;
   const meta = catMeta(cat);
-  const postsInCat = POSTS.filter(p=>p.category===cat).sort((a,b)=> (b.date||'').localeCompare(a.date||''));
+  const postsInCat = visiblePosts().filter(p=>p.category===cat).sort((a,b)=> (b.date||'').localeCompare(a.date||''));
   el.innerHTML = `
     <div class="actu-cat-open-header">
       <h3>${escapeHtml(cat)}</h3>
@@ -4385,7 +4454,7 @@ function drawActuAccordion(){
 function toggleActuCategory(cat){
   actuOpenCategory = (actuOpenCategory === cat) ? null : cat;
   if(actuOpenCategory && !actuSelectedPost[actuOpenCategory]){
-    const postsInCat = POSTS.filter(p=>p.category===actuOpenCategory).sort((a,b)=> (b.date||'').localeCompare(a.date||''));
+    const postsInCat = visiblePosts().filter(p=>p.category===actuOpenCategory).sort((a,b)=> (b.date||'').localeCompare(a.date||''));
     if(postsInCat.length) actuSelectedPost[actuOpenCategory] = postsInCat[0].id;
   }
   drawActuIconRow();
@@ -4401,7 +4470,7 @@ function toggleActuCategory(cat){
 function selectActuPost(cat, postId){
   actuSelectedPost[cat] = postId;
   actuImageIndex[postId] = 0;
-  const postsInCat = POSTS.filter(p=>p.category===cat).sort((a,b)=> (b.date||'').localeCompare(a.date||''));
+  const postsInCat = visiblePosts().filter(p=>p.category===cat).sort((a,b)=> (b.date||'').localeCompare(a.date||''));
   document.querySelectorAll(`.actu-post-item`).forEach(elx=>elx.classList.remove('active'));
   drawActuAccordion();
   setTimeout(()=>{
@@ -4440,7 +4509,7 @@ function shiftActuImage(postId, count, dir){
   const post = findPost(postId);
   const cat = post ? post.category : null;
   if(!cat) return;
-  const postsInCat = POSTS.filter(p=>p.category===cat).sort((a,b)=> (b.date||'').localeCompare(a.date||''));
+  const postsInCat = visiblePosts().filter(p=>p.category===cat).sort((a,b)=> (b.date||'').localeCompare(a.date||''));
   const detailEl = document.getElementById('actuDetail-'+slugify(cat));
   if(detailEl) detailEl.innerHTML = renderActuPostDetail(postsInCat, cat);
 }
@@ -5422,7 +5491,7 @@ function renderStory(workId){
   const totalReadingLabel = trHours > 0 ? `${trHours} h${trMins>0?' '+trMins+' min':''}` : `${trMins} min`;
   const availabilityTropes = tropesByCategory(w.tropes, 'Disponibilité');
   const linkedPostCat = w.linkedPostCategory || w.title;
-  const linkedPosts = POSTS.filter(p=>p.category===linkedPostCat).sort((a,b)=> (b.date||'').localeCompare(a.date||''));
+  const linkedPosts = visiblePosts().filter(p=>p.category===linkedPostCat).sort((a,b)=> (b.date||'').localeCompare(a.date||''));
 
   // navigation entre tomes, si cette histoire appartient à une saga
   let sagaNavHTML = '';
@@ -7600,96 +7669,169 @@ function renderAdmin(){
         </div>
 
         <div class="wtab-content" data-wtab="actu-categories">
-          <h3>Nouvelle catégorie</h3>
-          <div class="admin-msg" style="margin-bottom:10px;">Une catégorie se crée aussi automatiquement dès que vous la tapez sur un article — ce formulaire sert à en préparer une à l'avance, avec son icône et sa description déjà prêtes.</div>
-          <div>
-            <label>Nom de la catégorie</label>
-            <input type="text" id="catNewName" list="apCategoryList" placeholder="Ex. Coulisses d'écriture, Spécial St-Valentin...">
+          <div class="create-form-toggle" onclick="toggleCreateForm('formNewCategory')">
+            <span id="toggleIcon-formNewCategory">▸</span> + Nouvelle catégorie
           </div>
-          <div>
-            <label>Icône (URL, facultatif — un petit rond affiché en haut de la page « Mes actualités »)</label>
-            <input type="text" id="catNewIcon" placeholder="https://...">
+          <div id="formNewCategory" style="display:none;padding:16px 18px 20px;background:var(--bg-card);border:1px solid var(--line);border-radius:8px;margin-bottom:24px;">
+            <div class="admin-msg" style="margin-bottom:10px;">Une catégorie se crée aussi automatiquement dès que vous la tapez sur un article — ce formulaire sert à en préparer une à l'avance, avec son icône et sa description déjà prêtes.</div>
+            <div>
+              <label>Nom de la catégorie</label>
+              <input type="text" id="catNewName" list="apCategoryEditList" placeholder="Ex. Coulisses d'écriture, Spécial St-Valentin...">
+            </div>
+            <div style="margin-top:10px;display:flex;gap:16px;align-items:flex-end;">
+              <div style="flex:1;">
+                <label>Icône (URL, facultatif — un petit rond affiché en haut de la page « Mes actualités »)</label>
+                <input type="text" id="catNewIcon" placeholder="https://..." oninput="updateCatAvatarPreview('catNewIcon','catNewAvatarPreview')">
+              </div>
+              <div class="cat-avatar-preview" id="catNewAvatarPreview">?</div>
+            </div>
+            <div style="margin-top:10px;">
+              <label>Description (facultatif — affichée sous le titre quand la catégorie est ouverte)</label>
+              <textarea id="catNewDescription" style="min-height:70px;"></textarea>
+            </div>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-top:10px;">
+              <input type="checkbox" id="catNewActive" checked style="width:auto;">
+              Catégorie active (visible sur le site)
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-top:8px;">
+              <input type="checkbox" id="catNewCarnetOnly" style="width:auto;">
+              Réservée au carnet (n'apparaît pas sur la page « Mes actualités » du site, seulement dans le carnet)
+            </label>
+            <div class="admin-msg" id="catNewMsg" style="margin-top:10px;"></div>
+            <button type="button" class="submit-btn" onclick="submitNewCategory()">Créer la catégorie</button>
           </div>
-          <div>
-            <label>Description (facultatif — affichée sous le titre quand la catégorie est ouverte)</label>
-            <textarea id="catNewDescription" style="min-height:70px;"></textarea>
-          </div>
-          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
-            <input type="checkbox" id="catNewActive" checked style="width:auto;">
-            Catégorie active (visible sur le site)
-          </label>
-          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-top:8px;">
-            <input type="checkbox" id="catNewCarnetOnly" style="width:auto;">
-            Réservée au carnet (n'apparaît pas sur la page « Mes actualités » du site, seulement dans le carnet)
-          </label>
-          <div class="admin-msg" id="catNewMsg" style="margin-top:10px;"></div>
-          <button type="button" class="submit-btn" onclick="submitNewCategory()">Créer la catégorie</button>
 
-          <div class="section-title" style="margin-top:40px;"><h2>Catégories existantes</h2><div class="rule"></div></div>
-          <div class="admin-msg" style="margin-bottom:14px;">
-            Configurez l'icône et la description, et désactivez une catégorie quand vous n'en parlez plus — seules les catégories actives s'affichent sur le site (6 maximum affichées).
+          <div id="catSiteSection">
+            <div class="section-title" style="margin-top:10px;"><h2>Catégories du site</h2><div class="rule"></div></div>
+            <div class="hist-cards-grid cat-cards-grid" id="catSiteGrid"></div>
           </div>
-          <div class="admin-list" id="categoriesManageList"></div>
+
+          <div id="catCarnetSection" style="margin-top:36px;">
+            <div class="section-title"><h2>Catégories réservées au carnet</h2><div class="rule"></div></div>
+            <div class="hist-cards-grid cat-cards-grid" id="catCarnetGrid"></div>
+          </div>
+
+          <div class="hist-collapsible" style="margin-top:36px;border:1px solid var(--line);border-radius:8px;background:var(--bg-card);">
+            <div class="hist-collapsible-header" onclick="toggleWorkSubBlock2('catArchived')">
+              Catégories archivées <span id="catArchivedCount"></span> <span id="catArchivedToggleIcon">▸</span>
+            </div>
+            <div id="catArchivedBlock" style="display:none;padding:0 18px 16px;">
+              <div class="hist-cards-grid cat-cards-grid" id="catArchivedGrid"></div>
+            </div>
+          </div>
         </div>
 
         <div class="wtab-content" data-wtab="actu-articles" style="display:none;">
-          <h3>Nouvel article</h3>
-          <div class="row2">
-            <div>
-              <label>Titre</label>
-              <input type="text" id="apTitle" placeholder="Un nouveau chapitre en préparation...">
-            </div>
-            <div>
-              <label>Date</label>
-              <input type="date" id="apDate" value="${todayISO()}">
-            </div>
-          </div>
+          <h3>Nouvelle actualité</h3>
           <div>
-            <label>Relier à (facultatif — permet de préremplir la catégorie ci-dessous)</label>
-            <div class="row2">
-              <select id="apLinkCollection" onchange="updateApLinkOptions()">
-                <option value="">— Collection —</option>
-                ${allUniverseNames().map(u=>`<option value="${escapeHtml(u)}">${escapeHtml(u)}</option>`).join('')}
-              </select>
-              <select id="apLinkSaga" onchange="updateApSousSagaOptions()">
-                <option value="">— Saga —</option>
-              </select>
-            </div>
-            <select id="apLinkSousSaga" onchange="updateApCategorySuggestions()" style="margin-top:10px;">
-              <option value="">— Sous-saga —</option>
-            </select>
+            <label>Titre</label>
+            <input type="text" id="apTitle" placeholder="Un nouveau chapitre en préparation...">
           </div>
-          <div>
-            <label>Catégorie (menu dépliant sous lequel il apparaîtra)</label>
-            <input type="text" id="apCategory" list="apCategoryList" placeholder="Ex. Coulisses d'écriture, Spécial St-Valentin...">
-            <datalist id="apCategoryList"></datalist>
-            <div class="hint" style="margin-top:6px;">Choisissez une collection/saga/sous-saga ci-dessus pour voir apparaître les tomes (parus ou à venir) suggérés — ou tapez librement n'importe quel nom de catégorie.</div>
-          </div>
-          <div>
-            <label>Sous-catégorie (facultatif — s'affiche comme une petite pastille sur l'article)</label>
-            <input type="text" id="apSubcategory" list="apSubcategoryList" placeholder="Ex. Écriture, Vie d'auteur...">
-            <datalist id="apSubcategoryList">${[...new Set(POSTS.map(p=>p.subcategory).filter(Boolean))].map(s=>`<option value="${escapeHtml(s)}">`).join('')}</datalist>
-            <div class="hint" style="margin-top:6px;">Une étiquette libre à vous, indépendante de la catégorie — tapez-en une nouvelle ou reprenez-en une déjà utilisée.</div>
-          </div>
-          <div>
-            <label>Texte de l'article</label>
-            ${formattingToolbar('apBody', '', "Texte de l'article")}
-            <textarea id="apBody" style="min-height:160px;"></textarea>
-          </div>
-          <div>
-            <label>Images (carrousel — une URL par ligne, facultatif)</label>
-            <textarea id="apImages" placeholder="https://...&#10;https://..." style="min-height:80px;font-family:'Jost',sans-serif;font-size:.85rem;"></textarea>
-            <div class="hint" style="margin-top:6px;">La première image sert aussi de vignette dans la liste des articles.</div>
-          </div>
-          <div>
-            <label>Image de survol (facultatif — remplace la vignette au survol dans la liste des articles)</label>
-            <input type="text" id="apHoverImage" placeholder="https://...">
-          </div>
-          <div class="admin-msg" id="apMsg"></div>
-          <button type="button" class="submit-btn" onclick="submitNewPost()">Publier l'article</button>
 
-          <div class="section-title" style="margin-top:40px;"><h2>Articles publiés</h2><div class="rule"></div></div>
-          <div class="admin-list" id="postsManageList"></div>
+          <div class="row2" style="margin-top:14px;">
+            <div>
+              <label>Catégorie</label>
+              <select id="apCategorySelect" onchange="onApCategoryChange()">
+                <option value="">— Choisir —</option>
+              </select>
+              <input type="text" id="apCategoryNew" placeholder="Nom de la nouvelle catégorie" style="display:none;margin-top:8px;">
+            </div>
+            <div>
+              <label>Sous-catégorie (facultatif — petite pastille sur l'article)</label>
+              <input type="text" id="apSubcategory" list="apSubcategoryList" placeholder="Ex. Écriture, Vie d'auteur...">
+              <datalist id="apSubcategoryList"></datalist>
+            </div>
+          </div>
+
+          <div style="margin-top:14px;">
+            <label>Texte de l'actualité</label>
+            ${formattingToolbar('apBody', '', "Texte de l'article")}
+            <textarea id="apBody" style="min-height:220px;"></textarea>
+          </div>
+
+          <div style="margin-top:14px;">
+            <label>Image (facultatif — sert aussi de vignette dans la galerie ci-dessous)</label>
+            <input type="text" id="apImagesFirst" placeholder="https://..." oninput="updateApImagePreview()">
+            <div id="apImagePreviewWrap" style="display:none;margin-top:8px;">
+              <img id="apImagePreview" style="width:110px;height:70px;object-fit:cover;border-radius:8px;border:1px solid var(--line);">
+            </div>
+            <div class="hint" style="margin-top:6px;">D'autres images (carrousel) et l'image de survol sont dans « Options avancées » ci-dessous.</div>
+          </div>
+
+          <div class="hist-collapsible" style="margin-top:20px;border:1px solid var(--line);border-radius:8px;">
+            <div class="hist-collapsible-header" onclick="toggleWorkSubBlock2('apLinkWork')">
+              Relier à une œuvre (facultatif) <span id="apLinkWorkToggleIcon">▸</span>
+            </div>
+            <div id="apLinkWorkBlock" style="display:none;padding:0 18px 16px;">
+              <div class="row2">
+                <select id="apLinkCollection" onchange="updateApLinkOptions()">
+                  <option value="">— Collection —</option>
+                  ${allUniverseNames().map(u=>`<option value="${escapeHtml(u)}">${escapeHtml(u)}</option>`).join('')}
+                </select>
+                <select id="apLinkSaga" onchange="updateApSousSagaOptions()">
+                  <option value="">— Saga —</option>
+                </select>
+              </div>
+              <select id="apLinkSousSaga" onchange="updateApCategorySuggestions()" style="margin-top:10px;">
+                <option value="">— Sous-saga —</option>
+              </select>
+              <div class="hint" style="margin-top:6px;">Choisir ici propose automatiquement les tomes (parus ou à venir) comme catégorie ci-dessus.</div>
+            </div>
+          </div>
+
+          <div class="hist-collapsible" style="margin-top:14px;border:1px solid var(--line);border-radius:8px;">
+            <div class="hist-collapsible-header" onclick="toggleWorkSubBlock2('apAdvanced')">
+              Options avancées <span id="apAdvancedToggleIcon">▸</span>
+            </div>
+            <div id="apAdvancedBlock" style="display:none;padding:0 18px 16px;">
+              <div>
+                <label>Publication</label>
+                <input type="date" id="apDate" value="${todayISO()}">
+              </div>
+              <div style="margin-top:10px;">
+                <label>Autres images (carrousel — une URL par ligne, en plus de la première)</label>
+                <textarea id="apImagesRest" placeholder="https://...&#10;https://..." style="min-height:70px;font-family:'Jost',sans-serif;font-size:.85rem;"></textarea>
+              </div>
+              <div style="margin-top:10px;">
+                <label>Image de survol (facultatif — remplace la vignette au survol)</label>
+                <input type="text" id="apHoverImage" placeholder="https://...">
+              </div>
+            </div>
+          </div>
+
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-top:20px;">
+            <input type="checkbox" id="apPublishNow" checked style="width:auto;">
+            Publier maintenant (décochez pour enregistrer comme brouillon)
+          </label>
+          <div class="admin-msg" id="apMsg" style="margin-top:8px;"></div>
+          <button type="button" class="submit-btn" onclick="submitNewPost()">Enregistrer l'actualité</button>
+
+          <div class="section-title" style="margin-top:44px;"><h2>Articles</h2><div class="rule"></div></div>
+          <div class="actu-filters-bar" id="actuFiltersBar">
+            <div class="actu-filter-pills" id="actuFilterPills">
+              <span class="actu-filter-pill" data-filter="actualites" onclick="setActuFilter('actualites')">Actualités</span>
+              <span class="actu-filter-pill" data-filter="carnet" onclick="setActuFilter('carnet')">Carnet</span>
+              <span class="actu-filter-pill" data-filter="brouillons" onclick="setActuFilter('brouillons')">Brouillons</span>
+              <span class="actu-filter-pill" data-filter="tous" onclick="setActuFilter('tous')">Tous</span>
+            </div>
+            <select id="actuFilterCategory" onchange="drawArticlesGallery()">
+              <option value="">Catégorie ▾</option>
+            </select>
+            <select id="actuFilterSubcategory" onchange="drawArticlesGallery()">
+              <option value="">Sous-catégorie ▾</option>
+            </select>
+            <input type="text" id="actuSearch" placeholder="🔎 Rechercher un titre..." oninput="drawArticlesGallery()" style="max-width:220px;">
+          </div>
+          <div class="actu-gallery-grid" id="postsManageList"></div>
+
+          <div class="hist-collapsible" style="margin-top:30px;border:1px solid var(--line);border-radius:8px;background:var(--bg-card);">
+            <div class="hist-collapsible-header" onclick="toggleWorkSubBlock2('postsArchived')">
+              Articles archivés <span id="postsArchivedCount"></span> <span id="postsArchivedToggleIcon">▸</span>
+            </div>
+            <div id="postsArchivedBlock" style="display:none;padding:0 18px 16px;">
+              <div class="actu-gallery-grid" id="postsArchivedGrid"></div>
+            </div>
+          </div>
         </div>
         </div>
       </div>
@@ -8785,8 +8927,8 @@ function updateApCategorySuggestions(){
   const collection = document.getElementById('apLinkCollection').value;
   const saga = document.getElementById('apLinkSaga').value;
   const sousSaga = document.getElementById('apLinkSousSaga').value;
-  const listEl = document.getElementById('apCategoryList');
-  if(!listEl) return;
+  const sel = document.getElementById('apCategorySelect');
+  if(!sel) return;
 
   let suggestions = [];
   if(sousSaga){
@@ -8801,29 +8943,40 @@ function updateApCategorySuggestions(){
     if(group) suggestions.push(...group.works.map(w=>w.title));
   }else if(collection){
     suggestions = WORKS.filter(w=>w.universe===collection).map(w=>w.title);
-  }else{
-    suggestions = allRegisteredCategories();
   }
   suggestions = [...new Set(suggestions.filter(Boolean))];
-  listEl.innerHTML = suggestions.map(s=>`<option value="${escapeHtml(s)}">`).join('');
+  if(!suggestions.length) return;
+
+  // priorité au premier suggéré qui correspond déjà à une catégorie existante ; sinon on propose de créer la première suggestion
+  const existingMatch = suggestions.find(s => [...sel.options].some(o=>o.value===s));
+  if(existingMatch){
+    sel.value = existingMatch;
+  }else{
+    sel.value = '__new__';
+    document.getElementById('apCategoryNew').value = suggestions[0];
+  }
+  onApCategoryChange();
 }
 
 async function submitNewPost(){
   const msgEl = document.getElementById('apMsg');
   const title = document.getElementById('apTitle').value.trim();
-  const date = document.getElementById('apDate').value;
-  const category = document.getElementById('apCategory').value.trim();
+  const category = currentApCategoryValue();
   const subcategory = document.getElementById('apSubcategory').value.trim();
   const bodyTextarea = document.getElementById('apBody');
   const body = bodyTextarea.value.trim();
-  const images = document.getElementById('apImages').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  const firstImage = document.getElementById('apImagesFirst').value.trim();
+  const restImages = document.getElementById('apImagesRest').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  const images = [firstImage, ...restImages].filter(Boolean);
   const hoverImage = document.getElementById('apHoverImage').value.trim();
+  const date = document.getElementById('apDate').value || todayISO();
+  const status = document.getElementById('apPublishNow').checked ? 'published' : 'draft';
 
   if(!title || !category || !body){ msgEl.textContent = "Merci de renseigner au moins le titre, la catégorie et le texte."; return; }
 
   POSTS.push({
     id: 'post_' + Date.now() + '_' + Math.random().toString(36).slice(2,7),
-    title, date, category, subcategory, body, images, hoverImage,
+    title, date, category, subcategory, body, images, hoverImage, status,
     linkedCollection: document.getElementById('apLinkCollection').value,
     linkedSaga: document.getElementById('apLinkSaga').value,
     linkedSousSaga: document.getElementById('apLinkSousSaga').value
@@ -8833,19 +8986,24 @@ async function submitNewPost(){
   await savePostCategoriesMeta();
 
   document.getElementById('apTitle').value = '';
-  document.getElementById('apCategory').value = '';
+  document.getElementById('apCategorySelect').value = '';
+  document.getElementById('apCategoryNew').value = '';
+  document.getElementById('apCategoryNew').style.display = 'none';
   document.getElementById('apSubcategory').value = '';
-  document.getElementById('apImages').value = '';
+  document.getElementById('apImagesFirst').value = '';
+  document.getElementById('apImagesRest').value = '';
   document.getElementById('apHoverImage').value = '';
   document.getElementById('apLinkCollection').value = '';
   document.getElementById('apLinkSaga').innerHTML = '<option value="">— Saga —</option>';
   document.getElementById('apLinkSousSaga').innerHTML = '<option value="">— Sous-saga —</option>';
-  updateApCategorySuggestions();
+  document.getElementById('apPublishNow').checked = true;
+  document.getElementById('apDate').value = todayISO();
+  updateApImagePreview();
   bodyTextarea.value = '';
   const richEl = document.getElementById('rich-apBody');
   if(richEl) richEl.innerHTML = '';
-  msgEl.textContent = 'Article publié ✓';
-  toast('Article publié.');
+  msgEl.textContent = status === 'draft' ? 'Brouillon enregistré ✓' : 'Article publié ✓';
+  toast(status === 'draft' ? 'Brouillon enregistré.' : 'Article publié.');
   renderCategoriesManageList();
   renderPostsManageList();
 }
@@ -8950,37 +9108,39 @@ async function saveMoreAboutSettings(){
   toast('Page "En savoir plus" mise à jour.');
 }
 
-function renderCategoriesManageList(){
-  const el = document.getElementById('categoriesManageList');
-  if(!el) return;
-  const names = allRegisteredCategories();
-  if(!names.length){
-    el.innerHTML = '<p style="color:var(--muted);font-style:italic;">Aucune catégorie pour le moment — créez-en une ci-dessus, ou elle apparaîtra ici dès que vous en utiliserez une sur un article.</p>';
-    return;
-  }
-  el.innerHTML = names.map(name=>{
-    const meta = catMeta(name);
-    const slug = slugify(name);
-    const postCount = POSTS.filter(p=>p.category===name).length;
-    return `
-    <div class="admin-item" style="flex-direction:column;align-items:stretch;">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
-        <div class="info">
-          <div class="t">${escapeHtml(name)}</div>
-          <div class="s">${meta.active !== false ? 'Active' : 'Désactivée'}${meta.carnetOnly ? ' · Carnet uniquement' : ''} · ${postCount} article${postCount>1?'s':''}</div>
+function catCardHtml(name){
+  const meta = catMeta(name);
+  const slug = slugify(name);
+  const postCount = POSTS.filter(p=>p.category===name).length;
+  return `
+    <div class="hist-card cat-card">
+      <div class="cat-card-main">
+        ${meta.icon ? `<img class="cat-avatar" src="${escapeHtml(meta.icon)}" alt="">` : `<div class="cat-avatar cat-avatar-fallback">${escapeHtml(name.charAt(0).toUpperCase())}</div>`}
+        <div class="cat-card-info">
+          <div class="cat-card-title">${escapeHtml(name)}</div>
+          ${meta.description ? `<div class="cat-card-desc">${escapeHtml(meta.description)}</div>` : ''}
+          <div class="cat-card-meta">
+            <span class="cat-status-dot${meta.active !== false ? '' : ' inactive'}"></span>
+            ${meta.active !== false ? 'Active' : 'Désactivée'} · ${postCount} article${postCount>1?'s':''}
+          </div>
         </div>
-        <span class="toggle-btn" onclick="toggleCategoryEdit('${slug}')">Modifier</span>
       </div>
-      <div id="catEditBlock-${slug}" class="wm-edit" style="display:none;margin-top:14px;">
-        <div>
-          <label>Icône (URL, facultatif — un petit rond en haut de la page)</label>
-          <input type="text" id="catIcon-${slug}" value="${escapeHtml(meta.icon||'')}" placeholder="https://...">
+      <div class="hist-card-actions" style="padding:0 16px 16px;">
+        <span class="hist-action-btn" onclick="toggleCategoryEdit('${slug}')">Modifier</span>
+      </div>
+      <div id="catEditBlock-${slug}" class="wm-edit" style="display:none;">
+        <div style="display:flex;gap:16px;align-items:flex-end;">
+          <div style="flex:1;">
+            <label>Icône (URL, facultatif — un petit rond en haut de la page)</label>
+            <input type="text" id="catIcon-${slug}" value="${escapeHtml(meta.icon||'')}" placeholder="https://..." oninput="updateCatAvatarPreview('catIcon-${slug}','catPreview-${slug}')">
+          </div>
+          <div class="cat-avatar-preview" id="catPreview-${slug}" style="${meta.icon?`background-image:url('${escapeHtml(meta.icon)}');`:''}">${meta.icon?'':'?'}</div>
         </div>
-        <div>
+        <div style="margin-top:10px;">
           <label>Description (facultatif — affichée sous le titre quand la catégorie est ouverte)</label>
           <textarea id="catDescription-${slug}" style="min-height:70px;">${escapeHtml(meta.description||'')}</textarea>
         </div>
-        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-top:10px;">
           <input type="checkbox" id="catActive-${slug}" ${meta.active !== false ? 'checked' : ''} style="width:auto;">
           Catégorie active (visible sur le site)
         </label>
@@ -8994,7 +9154,37 @@ function renderCategoriesManageList(){
         </div>
       </div>
     </div>
-  `;}).join('');
+  `;
+}
+function updateCatAvatarPreview(inputId, previewId){
+  const val = document.getElementById(inputId).value.trim();
+  const preview = document.getElementById(previewId);
+  if(!preview) return;
+  if(val){ preview.style.backgroundImage = `url('${val.replace(/'/g,"\\'")}')`; preview.textContent = ''; }
+  else{ preview.style.backgroundImage = ''; preview.textContent = '?'; }
+}
+function renderCategoriesManageList(){
+  const names = allRegisteredCategories();
+  const siteEl = document.getElementById('catSiteGrid');
+  const carnetEl = document.getElementById('catCarnetGrid');
+  const archivedEl = document.getElementById('catArchivedGrid');
+  const archivedCountEl = document.getElementById('catArchivedCount');
+  if(!siteEl) return;
+
+  const siteNames = names.filter(n => catMeta(n).active !== false && !catMeta(n).carnetOnly);
+  const carnetNames = names.filter(n => catMeta(n).active !== false && catMeta(n).carnetOnly);
+  const archivedNames = names.filter(n => catMeta(n).active === false);
+
+  siteEl.innerHTML = siteNames.length
+    ? siteNames.map(catCardHtml).join('')
+    : '<p style="color:var(--muted);font-style:italic;grid-column:1/-1;">Aucune catégorie pour le moment — créez-en une ci-dessus, ou elle apparaîtra ici dès que vous en utiliserez une sur un article.</p>';
+
+  document.getElementById('catCarnetSection').style.display = carnetNames.length ? '' : 'none';
+  carnetEl.innerHTML = carnetNames.map(catCardHtml).join('');
+
+  archivedCountEl.textContent = `(${archivedNames.length})`;
+  archivedEl.innerHTML = archivedNames.map(catCardHtml).join('');
+
   names.forEach(name=>attachImageUploader('catIcon-'+slugify(name)));
 }
 function toggleCategoryEdit(slug){
@@ -9015,34 +9205,101 @@ async function saveCategoryEdit(slug, name){
   toast('Catégorie mise à jour.');
 }
 
-function renderPostsManageList(){
-  const el = document.getElementById('postsManageList');
-  if(!el) return;
-  if(!POSTS.length){
-    el.innerHTML = '<p style="color:var(--muted);font-style:italic;">Aucun article pour le moment.</p>';
-    return;
-  }
-  const sorted = POSTS.slice().sort((a,b)=> (b.date||'').localeCompare(a.date||''));
-  el.innerHTML = sorted.map(p=>`
-    <div class="admin-item" style="flex-direction:column;align-items:stretch;">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
-        <div class="info">
-          <div class="t">${escapeHtml(p.title)}</div>
-          <div class="s">${escapeHtml(p.category)} · ${p.date ? formatDate(p.date) : 'sans date'}</div>
+/* ---------- galerie d'articles (Actualités) ---------- */
+let actuActiveFilter = 'actualites';
+
+function populateApCategorySelect(){
+  const sel = document.getElementById('apCategorySelect');
+  if(!sel) return;
+  const current = sel.value;
+  const siteNames = postCategories().filter(n => !catMeta(n).carnetOnly);
+  const carnetNames = postCategories().filter(n => catMeta(n).carnetOnly);
+  let html = '<option value="">— Choisir —</option>';
+  if(siteNames.length) html += '<optgroup label="Site">' + siteNames.map(n=>`<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('') + '</optgroup>';
+  if(carnetNames.length) html += '<optgroup label="Carnet">' + carnetNames.map(n=>`<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('') + '</optgroup>';
+  html += '<option value="__new__">✎ Nouvelle catégorie…</option>';
+  sel.innerHTML = html;
+  if([...sel.options].some(o=>o.value===current)) sel.value = current;
+  onApCategoryChange();
+}
+function onApCategoryChange(){
+  const sel = document.getElementById('apCategorySelect');
+  const newInput = document.getElementById('apCategoryNew');
+  if(!sel || !newInput) return;
+  newInput.style.display = sel.value === '__new__' ? '' : 'none';
+  updateApSubcategoryList(sel.value === '__new__' ? '' : sel.value);
+}
+function updateApSubcategoryList(category){
+  const listEl = document.getElementById('apSubcategoryList');
+  if(!listEl) return;
+  listEl.innerHTML = subcategoriesForCategory(category).map(s=>`<option value="${escapeHtml(s)}">`).join('');
+}
+function currentApCategoryValue(){
+  const sel = document.getElementById('apCategorySelect');
+  if(!sel) return '';
+  return sel.value === '__new__' ? document.getElementById('apCategoryNew').value.trim() : sel.value;
+}
+function updateApImagePreview(){
+  const val = document.getElementById('apImagesFirst').value.trim();
+  const wrap = document.getElementById('apImagePreviewWrap');
+  const img = document.getElementById('apImagePreview');
+  if(!wrap || !img) return;
+  if(val){ img.src = val; wrap.style.display = ''; }
+  else{ wrap.style.display = 'none'; }
+}
+
+function populateActuFilterOptions(){
+  const catSel = document.getElementById('actuFilterCategory');
+  const subSel = document.getElementById('actuFilterSubcategory');
+  if(!catSel) return;
+  const names = allRegisteredCategories();
+  catSel.innerHTML = '<option value="">Catégorie ▾</option>' + names.map(n=>`<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
+  const subs = [...new Set(POSTS.map(p=>p.subcategory).filter(Boolean))];
+  subSel.innerHTML = '<option value="">Sous-catégorie ▾</option>' + subs.map(s=>`<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
+}
+function setActuFilter(key){
+  actuActiveFilter = key;
+  drawArticlesGallery();
+}
+
+function articleThumbHtml(p){
+  const img = p.images && p.images[0];
+  if(img) return `<img src="${escapeHtml(img)}" alt="" class="actu-gallery-thumb">`;
+  const meta = catMeta(p.category);
+  if(meta.icon) return `<div class="actu-gallery-thumb-fallback"><img src="${escapeHtml(meta.icon)}" alt=""></div>`;
+  if(p.category) return `<div class="actu-gallery-thumb-fallback"><div class="cat-avatar-fallback">${escapeHtml(p.category.charAt(0).toUpperCase())}</div></div>`;
+  return `<div class="actu-gallery-thumb-fallback placeholder">✎</div>`;
+}
+function articleCardHtml(p){
+  const isDraft = postStatus(p) === 'draft';
+  return `
+    <div class="actu-gallery-card">
+      ${articleThumbHtml(p)}
+      <div class="actu-gallery-body">
+        ${isDraft ? `<span class="actu-gallery-status draft">Brouillon</span>` : ''}
+        <div class="actu-gallery-title">${escapeHtml(p.title)}</div>
+        <div class="actu-gallery-meta">${escapeHtml(p.category||'')}${p.subcategory?' · '+escapeHtml(p.subcategory):''}${p.date?' · '+formatDate(p.date):''}</div>
+        <div class="actu-gallery-actions">
+          <span class="hist-action-btn" onclick="togglePostEdit('${p.id}')">Modifier</span>
+          <div class="hist-menu-wrap">
+            <span class="hist-menu-btn" onclick="event.stopPropagation();toggleHistMenu('post-${p.id}')" aria-label="Plus d'actions">⋯</span>
+            <div class="hist-menu-dropdown" id="histMenu-post-${p.id}" style="display:none;">
+              <div onclick="togglePostEdit('${p.id}')">Modifier</div>
+              <div onclick="toggleArticleDraft('${p.id}')">${isDraft ? 'Publier' : 'Repasser en brouillon'}</div>
+              <div onclick="toggleArticleArchive('${p.id}')">${postStatus(p)==='archived' ? 'Désarchiver' : 'Archiver'}</div>
+              <div class="danger" onclick="deletePost('${p.id}')">Supprimer</div>
+            </div>
+          </div>
         </div>
-        <span style="display:flex;gap:14px;align-items:center;flex-shrink:0;">
-          <span class="toggle-btn" onclick="togglePostEdit('${p.id}')">Modifier</span>
-          <span class="del-btn" onclick="deletePost('${p.id}')">Supprimer</span>
-        </span>
       </div>
-      <div id="postEditBlock-${p.id}" class="wm-edit" style="display:none;margin-top:14px;">
+      <div id="postEditBlock-${p.id}" class="wm-edit" style="display:none;">
         <div class="row2">
           <div><label>Titre</label><input type="text" id="peTitle-${p.id}" value="${escapeHtml(p.title)}"></div>
           <div><label>Date</label><input type="date" id="peDate-${p.id}" value="${escapeHtml(p.date||'')}"></div>
         </div>
         <div>
           <label>Catégorie</label>
-          <input type="text" id="peCategory-${p.id}" value="${escapeHtml(p.category)}" list="apCategoryList">
+          <input type="text" id="peCategory-${p.id}" value="${escapeHtml(p.category)}" list="apCategoryEditList">
         </div>
         <div>
           <label>Sous-catégorie (facultatif)</label>
@@ -9067,7 +9324,57 @@ function renderPostsManageList(){
         </div>
       </div>
     </div>
-  `).join('');
+  `;
+}
+
+function drawArticlesGallery(){
+  const el = document.getElementById('postsManageList');
+  if(!el) return;
+
+  document.querySelectorAll('.actu-filter-pill').forEach(p=>p.classList.toggle('active', p.dataset.filter===actuActiveFilter));
+
+  const catFilter = document.getElementById('actuFilterCategory')?.value || '';
+  const subFilter = document.getElementById('actuFilterSubcategory')?.value || '';
+  const search = (document.getElementById('actuSearch')?.value || '').trim().toLowerCase();
+
+  let list = POSTS.filter(p => postStatus(p) !== 'archived');
+  if(actuActiveFilter === 'actualites') list = list.filter(p => !catMeta(p.category).carnetOnly && postStatus(p) !== 'draft');
+  else if(actuActiveFilter === 'carnet') list = list.filter(p => catMeta(p.category).carnetOnly);
+  else if(actuActiveFilter === 'brouillons') list = list.filter(p => postStatus(p) === 'draft');
+  // 'tous' : pas de filtre supplémentaire
+
+  if(catFilter) list = list.filter(p => p.category === catFilter);
+  if(subFilter) list = list.filter(p => p.subcategory === subFilter);
+  if(search) list = list.filter(p =>
+    (p.title||'').toLowerCase().includes(search) ||
+    (p.category||'').toLowerCase().includes(search) ||
+    (p.subcategory||'').toLowerCase().includes(search)
+  );
+
+  list = list.sort((a,b)=> (b.date||'').localeCompare(a.date||''));
+
+  el.innerHTML = list.length
+    ? list.map(articleCardHtml).join('')
+    : '<p style="color:var(--muted);font-style:italic;grid-column:1/-1;">Aucun article ne correspond.</p>';
+
+  const archived = POSTS.filter(p => postStatus(p) === 'archived').sort((a,b)=> (b.date||'').localeCompare(a.date||''));
+  const archivedGrid = document.getElementById('postsArchivedGrid');
+  const archivedCount = document.getElementById('postsArchivedCount');
+  if(archivedGrid){ archivedGrid.innerHTML = archived.map(articleCardHtml).join(''); }
+  if(archivedCount){ archivedCount.textContent = `(${archived.length})`; }
+}
+
+function renderPostsManageList(){
+  populateApCategorySelect();
+  populateActuFilterOptions();
+  const editListEl = document.getElementById('apCategoryEditList');
+  if(!editListEl){
+    const dl = document.createElement('datalist');
+    dl.id = 'apCategoryEditList';
+    document.body.appendChild(dl);
+  }
+  document.getElementById('apCategoryEditList').innerHTML = allRegisteredCategories().map(n=>`<option value="${escapeHtml(n)}">`).join('');
+  drawArticlesGallery();
 }
 
 function toggleHistoireType(){
@@ -9105,6 +9412,7 @@ function toggleWorkSubBlock2(blockId){
 }
 
 function togglePostEdit(postId){
+  document.querySelectorAll('.hist-menu-dropdown').forEach(d=>d.style.display='none');
   const block = document.getElementById('postEditBlock-'+postId);
   if(block) block.style.display = block.style.display==='none' ? 'block' : 'none';
 }
@@ -9129,8 +9437,25 @@ async function savePostEdit(postId){
   toast('Article mis à jour.');
 }
 
+async function toggleArticleDraft(postId){
+  const p = findPost(postId);
+  if(!p) return;
+  p.status = postStatus(p) === 'draft' ? 'published' : 'draft';
+  await savePosts();
+  renderPostsManageList();
+  toast(p.status === 'draft' ? 'Article repassé en brouillon.' : 'Article publié.');
+}
+async function toggleArticleArchive(postId){
+  const p = findPost(postId);
+  if(!p) return;
+  p.status = postStatus(p) === 'archived' ? 'published' : 'archived';
+  await savePosts();
+  renderPostsManageList();
+  toast(p.status === 'archived' ? 'Article archivé.' : 'Article désarchivé.');
+}
+
 async function deletePost(postId){
-  if(!confirm('Supprimer cet article ?')) return;
+  if(!confirm('Supprimer cet article ? Cette action est irréversible.')) return;
   POSTS = POSTS.filter(p=>p.id!==postId);
   await savePosts();
   renderPostsManageList();
@@ -10336,6 +10661,8 @@ async function submitNewCategory(){
   document.getElementById('catNewDescription').value = '';
   document.getElementById('catNewActive').checked = true;
   document.getElementById('catNewCarnetOnly').checked = false;
+  updateCatAvatarPreview('catNewIcon','catNewAvatarPreview');
+  toggleCreateForm('formNewCategory');
   msgEl.textContent = 'Catégorie créée ✓';
   toast('Catégorie créée.');
   renderCategoriesManageList();
@@ -10880,7 +11207,7 @@ function histCardHeaderHtml(w, isDetailPage){
         </div>
         <div>
           <label>Catégorie d'actualités liée (facultatif)</label>
-          <input type="text" id="wmLinkedPostCategory-${w.id}" value="${escapeHtml(w.linkedPostCategory||'')}" placeholder="${escapeHtml(w.title)}" list="apCategoryList">
+          <input type="text" id="wmLinkedPostCategory-${w.id}" value="${escapeHtml(w.linkedPostCategory||'')}" placeholder="${escapeHtml(w.title)}" list="apCategoryEditList">
           <div class="hint" style="margin-top:6px;">Par défaut, on recherche les articles dont la catégorie porte exactement le titre de cette histoire. Remplissez ce champ seulement si la catégorie utilisée diffère du titre.</div>
         </div>
         </div>
