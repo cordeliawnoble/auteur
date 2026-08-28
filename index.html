@@ -16,7 +16,7 @@
 </script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cordélia w Noble</title>
+<title>Nom de plume — Histoires</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 28S3 19 3 10.5C3 5.3 7 2 11.5 2c2.6 0 4.9 1.4 4.5 4-.4-2.6 1.9-4 4.5-4C25 2 29 5.3 29 10.5 29 19 16 28 16 28z' fill='%231B3A6B'/%3E%3C/svg%3E">
 
 <!-- PWA : permet d'ajouter le site à l'écran d'accueil, comme une application -->
@@ -2471,6 +2471,7 @@ const SEED_SETTINGS = {
   podcastIntro: "Bonjour les étoiles… Ici, je partage simplement une réflexion, une idée, une expérience autour de l'écriture, de la créativité ou de ma vie d'autrice — comme un vocal envoyé à une copine. Pas de fréquence fixe, pas de durée stricte, juste une parenthèse.",
   podcastDiscordUrl: '',
   actualitesHeroImage: '',
+  actuAllCategoryIcon: '',
   pageActive: {},
   moreAboutFriends: [],
   carnetLibraryImage: '',
@@ -4399,14 +4400,7 @@ function renderActualitesPage(directPostId){
     actuReadingPostId = directPostId;
   }else{
     actuReadingPostId = null;
-    if(!actuOpenCategory){
-      const cats = activePostCategories();
-      const withDate = cats.map(cat=>{
-        const latest = visiblePosts().filter(p=>p.category===cat).sort((a,b)=>(b.date||'').localeCompare(a.date||''))[0];
-        return { cat, latestDate: latest ? latest.date||'' : '' };
-      }).sort((a,b)=> b.latestDate.localeCompare(a.latestDate));
-      actuOpenCategory = withDate.length ? withDate[0].cat : '__all__';
-    }
+    actuOpenCategory = '__all__';
     actuActiveSubcat = '';
     actuVisibleCount = ACTU_BATCH;
     actuSearchQuery = '';
@@ -4452,7 +4446,7 @@ function renderActuGridView(){
   });
   html += `
     <div class="actu-medallion${actuOpenCategory==='__all__'?' active':''}" onclick="selectActuCategory('__all__')">
-      <div class="actu-medallion-avatar"><span>✦</span></div>
+      <div class="actu-medallion-avatar">${SETTINGS.actuAllCategoryIcon ? `<img src="${escapeHtml(SETTINGS.actuAllCategoryIcon)}" alt="">` : `<span>✦</span>`}</div>
       <div class="actu-medallion-name">Toutes les actualités</div>
       <div class="actu-medallion-desc">Retrouvez l'ensemble des brèves, classées par date.</div>
     </div>
@@ -4479,7 +4473,7 @@ function renderActuGridView(){
     </div>
   `;
 
-  let list = isAll ? visiblePosts() : visiblePosts().filter(p=>p.category===actuOpenCategory);
+  let list = isAll ? visiblePosts().filter(p=>!catMeta(p.category).carnetOnly) : visiblePosts().filter(p=>p.category===actuOpenCategory);
   if(actuActiveSubcat) list = list.filter(p=>p.subcategory===actuActiveSubcat);
   if(actuSearchQuery){
     const q = actuSearchQuery.toLowerCase();
@@ -7752,9 +7746,14 @@ function renderAdmin(){
           <label>Image de bannière de la page (facultatif)</label>
           <input type="text" id="actuHeroImage" value="${escapeHtml(SETTINGS.actualitesHeroImage||'')}" placeholder="https://...">
           <div class="hint" style="margin-top:6px;">Affichée tout en haut de la page « Mes actualités », comme sur les autres grandes pages du site.</div>
-          <button type="button" class="submit-btn" style="margin-top:10px;padding:9px 20px;font-size:.8rem;" onclick="saveActualitesHero()">Enregistrer</button>
-          <span class="admin-msg" id="actuHeroMsg" style="margin-left:12px;"></span>
         </div>
+        <div style="margin-top:14px;">
+          <label>Icône du médaillon « Toutes les actualités » (facultatif)</label>
+          <input type="text" id="actuAllIcon" value="${escapeHtml(SETTINGS.actuAllCategoryIcon||'')}" placeholder="https://...">
+          <div class="hint" style="margin-top:6px;">Laissez vide pour garder le petit symbole ✦ par défaut.</div>
+        </div>
+        <button type="button" class="submit-btn" style="margin-top:10px;padding:9px 20px;font-size:.8rem;" onclick="saveActualitesHero()">Enregistrer</button>
+        <span class="admin-msg" id="actuHeroMsg" style="margin-left:12px;"></span>
         <div class="wtabs-bar" style="margin:24px -24px 20px;padding:14px 24px;">
           <div class="wtabs-nav">
             <span class="wtab-btn active" data-tab="actu-categories" onclick="switchActualitesTab('actu-categories')">Catégories</span>
@@ -8675,7 +8674,7 @@ function renderAdmin(){
   setTimeout(updateStorageModeBadge, 1200);
 
   // bouton d'envoi d'image sur les champs concernés
-  ['sHeroImage','sAuthorPhoto','sPressKitPhotoHD','mabBgImage','mabHeroImage','carnetLibraryImage','carnetLudothequeImage','mabWritingIcon','mabReadingCover','mabReadingIcon','mabPlayingCover','mabPlayingIcon','mabWatchingIcon','mabListeningIcon','mabObsessionIcon','mabCravingIcon','apHoverImage','pcHeroImage','pcNewImage','pcNewHoverImage','actuHeroImage','hCover','hCoverDetail','hHoverImage','hCharHoverImage','uImageTile','uImageListBanner','uImageBanner','sgNewCoverVitrail','sgNewCoverBanner','sgNewCoverHero','ssCover','ssCoverHero','pImage','chImage','rcCover','sIndepHeroImage','sUniversHeroImage','sCollectionsHeroImage','sSiteBgImage','sQuickFactsBg','sChapterEndImage','ebCover','ebHoverImage','btnImgDefault','btnImgHover','btnImgActive','btnImgDisabled'].forEach(attachImageUploader);
+  ['sHeroImage','sAuthorPhoto','sPressKitPhotoHD','mabBgImage','mabHeroImage','carnetLibraryImage','carnetLudothequeImage','mabWritingIcon','mabReadingCover','mabReadingIcon','mabPlayingCover','mabPlayingIcon','mabWatchingIcon','mabListeningIcon','mabObsessionIcon','mabCravingIcon','apHoverImage','pcHeroImage','pcNewImage','pcNewHoverImage','actuHeroImage','actuAllIcon','hCover','hCoverDetail','hHoverImage','hCharHoverImage','uImageTile','uImageListBanner','uImageBanner','sgNewCoverVitrail','sgNewCoverBanner','sgNewCoverHero','ssCover','ssCoverHero','pImage','chImage','rcCover','sIndepHeroImage','sUniversHeroImage','sCollectionsHeroImage','sSiteBgImage','sQuickFactsBg','sChapterEndImage','ebCover','ebHoverImage','btnImgDefault','btnImgHover','btnImgActive','btnImgDisabled'].forEach(attachImageUploader);
   renderLinksFieldGroup('hLinks', []);
   renderLinksFieldGroup('ebLinks', []);
   renderLinksFieldGroup('rcLinks', []);
@@ -10628,6 +10627,7 @@ function closeWorkDetail(){
 /* ---------- gestion admin du podcast ---------- */
 async function saveActualitesHero(){
   SETTINGS.actualitesHeroImage = document.getElementById('actuHeroImage').value.trim();
+  SETTINGS.actuAllCategoryIcon = document.getElementById('actuAllIcon').value.trim();
   await saveSettings();
   document.getElementById('actuHeroMsg').textContent = 'Enregistré ✓';
   toast('Bannière mise à jour.');
