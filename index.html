@@ -16,7 +16,7 @@
 </script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Nom de plume — Histoires</title>
+<title>Cordélia w Noble</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 28S3 19 3 10.5C3 5.3 7 2 11.5 2c2.6 0 4.9 1.4 4.5 4-.4-2.6 1.9-4 4.5-4C25 2 29 5.3 29 10.5 29 19 16 28 16 28z' fill='%231B3A6B'/%3E%3C/svg%3E">
 
 <!-- PWA : permet d'ajouter le site à l'écran d'accueil, comme une application -->
@@ -1842,7 +1842,8 @@ footer{border-top:1px solid var(--line);padding:34px 24px;text-align:center;font
 }
 .editor-modal-overlay.open{display:flex;}
 .editor-modal{
-  background:var(--bg-card);border-radius:10px;width:100%;max-width:920px;max-height:92vh;
+  background:var(--bg-card);border-radius:10px;width:100%;max-width:1000px;
+  max-height:92vh;max-height:92dvh;
   display:flex;flex-direction:column;box-shadow:0 40px 80px -30px rgba(19,33,58,.6);overflow:hidden;
   box-sizing:border-box;min-width:0;
 }
@@ -1870,8 +1871,9 @@ footer{border-top:1px solid var(--line);padding:34px 24px;text-align:center;font
   -webkit-user-select:text !important;-moz-user-select:text !important;user-select:text !important;
 }
 @media(max-width:640px){
-  .editor-modal{max-height:94vh;}
-  .editor-modal-body{margin:14px;min-height:300px;}
+  .editor-modal-overlay{padding:0;}
+  .editor-modal{max-width:none;width:100%;height:100vh;height:100dvh;max-height:100vh;max-height:100dvh;border-radius:0;}
+  .editor-modal-body{margin:14px;min-height:200px;}
 }
 .admin-form .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .admin-form .hint{font-size:.72rem;color:var(--muted);font-family:'Jost',sans-serif;}
@@ -3081,6 +3083,7 @@ function openEditorModal(textareaId, label){
   modalBody.innerHTML = sourceEditor.innerHTML;
   document.getElementById('editorModalTitle').textContent = label || 'Modifier le texte';
   document.getElementById('editorModalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
   modalFontSizeIndex = 3;
   modalBody.style.fontSize = MODAL_FONT_SIZES[modalFontSizeIndex] + 'rem';
   updateModalWordCount();
@@ -3097,6 +3100,7 @@ function closeEditorModal(save){
     }
   }
   document.getElementById('editorModalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
   editorModalTargetId = null;
 }
 function applyModalFormat(cmd){
