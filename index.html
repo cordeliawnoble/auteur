@@ -1248,61 +1248,87 @@ body.dark .reader-warning{background:#2B2418;color:#E0B98A;}
 
 
 /* ---------- page actualités ---------- */
-.actu-icon-row{display:flex;flex-wrap:wrap;justify-content:center;gap:26px;}
-.actu-icon{display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;width:110px;}
-.actu-icon-avatar{
-  width:92px;height:92px;border-radius:50%;overflow:hidden;background:var(--bg-alt);
+.actu-explore-title{text-align:center;font-family:'Jost',sans-serif;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin:0 0 20px;}
+.actu-medallion-row{display:flex;flex-wrap:wrap;justify-content:center;gap:22px;}
+.actu-medallion{display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;width:170px;text-align:center;}
+.actu-medallion-avatar{
+  width:80px;height:80px;border-radius:50%;overflow:hidden;background:var(--bg-alt);
   border:2px solid var(--line);display:flex;align-items:center;justify-content:center;transition:.2s;
-  font-family:'Playfair Display',serif;font-size:1.9rem;color:var(--muted);
+  font-family:'Playfair Display',serif;font-size:1.7rem;color:var(--muted);
 }
-.actu-icon-avatar img{width:100%;height:100%;object-fit:cover;}
-.actu-icon:hover .actu-icon-avatar{border-color:var(--gold);transform:translateY(-2px);}
-.actu-icon.active .actu-icon-avatar{border-color:var(--wine);box-shadow:0 0 0 3px var(--gold-soft);}
-.actu-icon-label{font-family:'Jost',sans-serif;font-size:.8rem;color:var(--muted);text-align:center;line-height:1.3;}
-.actu-icon.active .actu-icon-label{color:var(--wine);}
+.actu-medallion-avatar img{width:100%;height:100%;object-fit:cover;}
+.actu-medallion:hover .actu-medallion-avatar{border-color:var(--gold);transform:translateY(-2px);}
+.actu-medallion.active .actu-medallion-avatar{border-color:var(--wine);box-shadow:0 0 0 3px var(--gold-soft);}
+.actu-medallion-name{font-family:'Playfair Display',serif;font-size:.95rem;color:var(--ink);}
+.actu-medallion.active .actu-medallion-name{color:var(--wine);}
+.actu-medallion-desc{font-family:'Lora',serif;font-style:italic;font-size:.74rem;color:var(--muted);line-height:1.5;}
 
-.actu-accordion{margin-top:34px;}
-.actu-cat-open-header{text-align:center;margin-bottom:26px;}
-.actu-cat-open-header h3{font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--ink);margin:0 0 8px;}
-.actu-cat-open-header p{font-family:'Lora',serif;font-style:italic;color:var(--muted);max-width:56ch;margin:0 auto;line-height:1.7;}
+.actu-cat-open-header{text-align:center;margin:50px 0 22px;}
+.actu-cat-open-header h3{font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--ink);margin:0 0 8px;}
+.actu-cat-open-header p{font-family:'Lora',serif;font-style:italic;color:var(--muted);max-width:56ch;margin:0 auto;line-height:1.7;font-size:.92rem;}
 
-.actu-cat-body{border:1px solid var(--line);border-radius:12px;background:var(--bg-card);overflow:hidden;display:grid;grid-template-columns:280px 1fr;}
-.actu-post-list{border-right:1px solid var(--line);max-height:560px;overflow-y:auto;}
-.actu-post-item{display:flex;gap:12px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);cursor:pointer;transition:.15s;}
-.actu-post-item:last-child{border-bottom:none;}
-.actu-post-item:hover{background:var(--bg-alt);}
-.actu-post-item.active{background:var(--gold-soft);border-left:3px solid var(--wine);}
-.actu-post-thumb-wrap{position:relative;width:52px;height:52px;border-radius:8px;overflow:hidden;flex-shrink:0;}
-.actu-post-thumb{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;}
-.actu-post-thumb.placeholder{display:flex;align-items:center;justify-content:center;background:var(--gold-soft);color:var(--gold);position:static;}
-.actu-post-thumb.hover{opacity:0;transition:opacity .3s;}
-.actu-post-thumb-wrap:hover .actu-post-thumb.hover{opacity:1;}
-.actu-post-info{min-width:0;}
-.actu-post-title{font-family:'Lora',serif;font-size:.88rem;color:var(--ink);line-height:1.35;}
-.actu-post-date{font-family:'Jost',sans-serif;font-size:.66rem;color:var(--muted);margin-bottom:4px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
-.actu-post-detail{padding:26px 28px;}
-.actu-detail-title{font-family:'Playfair Display',serif;font-size:1.35rem;color:var(--ink);margin:8px 0 4px;}
-.actu-detail-date{font-family:'Jost',sans-serif;font-size:.75rem;color:var(--muted);margin-bottom:18px;}
-.actu-detail-body{color:var(--ink);line-height:1.85;text-align:justify;text-justify:inter-word;}
-.actu-detail-body p{margin:0 0 1em;}
-.actu-carousel{position:relative;margin-bottom:20px;border-radius:10px;overflow:hidden;background:var(--bg-alt);}
-.actu-carousel-img{width:100%;max-height:420px;object-fit:cover;display:block;}
-.actu-carousel-arrow{
-  position:absolute;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:50%;
+.actu-subcat-pills{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:22px;}
+.actu-subcat-pill{
+  font-family:'Jost',sans-serif;font-size:.75rem;color:var(--muted);cursor:pointer;padding:6px 14px;
+  border-radius:20px;border:1px solid var(--line);transition:.2s;background:var(--bg-card);
+}
+.actu-subcat-pill:hover{color:var(--wine);border-color:var(--gold);}
+.actu-subcat-pill.active{background:var(--wine);color:#fff;border-color:var(--wine);}
+
+.actu-search-row{display:flex;justify-content:center;margin-bottom:30px;}
+.actu-search-row input{max-width:320px;padding:9px 14px;font-size:.85rem;}
+
+.actu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:22px;}
+@media(min-width:1300px){ .actu-grid{grid-template-columns:repeat(4,1fr);} }
+@media(max-width:1299px) and (min-width:900px){ .actu-grid{grid-template-columns:repeat(3,1fr);} }
+@media(max-width:899px) and (min-width:600px){ .actu-grid{grid-template-columns:repeat(2,1fr);} }
+@media(max-width:599px){ .actu-grid{grid-template-columns:1fr;} }
+.actu-card{background:var(--bg-card);border:1px solid var(--line);border-radius:12px;transition:.2s;}
+.actu-card:hover{transform:translateY(-3px);box-shadow:0 16px 30px -18px rgba(36,51,82,.3);}
+.actu-card-img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;border-radius:12px 12px 0 0;}
+.actu-card-img-fallback{
+  width:100%;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;background:var(--gold-soft);
+  border-radius:12px 12px 0 0;
+}
+.actu-card-img-fallback img{width:52px;height:52px;border-radius:50%;object-fit:cover;}
+.actu-card-img-fallback.placeholder{background:var(--bg-alt);color:var(--line);font-size:1.8rem;}
+.actu-card-body{padding:16px 18px 18px;}
+.actu-card-title{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--ink);line-height:1.35;margin:8px 0 6px;}
+.actu-card-date{font-family:'Jost',sans-serif;font-size:.7rem;color:var(--muted);}
+.actu-card-excerpt{font-family:'Lora',serif;font-size:.85rem;color:var(--muted);line-height:1.6;margin-top:8px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.actu-card-link{display:inline-block;margin-top:12px;font-family:'Jost',sans-serif;font-size:.78rem;color:var(--wine);cursor:pointer;}
+.actu-card-link:hover{color:var(--gold);}
+
+.actu-more-wrap{text-align:center;margin-top:36px;}
+
+/* ---------- mode lecture d'une brève ---------- */
+.actu-reading{max-width:900px;margin:0 auto;}
+.actu-reading-back{font-family:'Jost',sans-serif;font-size:.8rem;color:var(--muted);cursor:pointer;display:inline-block;margin-bottom:24px;}
+.actu-reading-back:hover{color:var(--wine);}
+.actu-reading-header{display:grid;grid-template-columns:38% 1fr;gap:32px;align-items:start;margin-bottom:40px;}
+.actu-reading-imgwrap{position:relative;border-radius:12px;overflow:hidden;}
+.actu-reading-img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;}
+.actu-reading-carousel-arrow{
+  position:absolute;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:50%;
   background:rgba(19,33,58,.55);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;
 }
-.actu-carousel-arrow.left{left:10px;}
-.actu-carousel-arrow.right{right:10px;}
-.actu-carousel-dots{position:absolute;bottom:10px;left:0;right:0;display:flex;justify-content:center;gap:6px;}
-.actu-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.5);}
-.actu-dot.active{background:#fff;}
+.actu-reading-carousel-arrow.left{left:10px;}
+.actu-reading-carousel-arrow.right{right:10px;}
+.actu-reading-carousel-dots{position:absolute;bottom:10px;left:0;right:0;display:flex;justify-content:center;gap:6px;}
+.actu-reading-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.5);}
+.actu-reading-dot.active{background:#fff;}
+.actu-reading-meta-title h1{font-family:'Playfair Display',serif;font-size:1.7rem;color:var(--ink);line-height:1.3;margin:6px 0 10px;}
+.actu-reading-date{font-family:'Jost',sans-serif;font-size:.78rem;color:var(--muted);}
+.actu-reading-body{max-width:760px;margin:0 auto;color:var(--ink);line-height:1.9;text-align:justify;text-justify:inter-word;font-size:.98rem;}
+.actu-reading-body p{margin:0 0 1.1em;}
+@media(max-width:760px){
+  .actu-reading-header{grid-template-columns:1fr;}
+  .actu-reading-img{aspect-ratio:16/9;}
+}
+
 @media(max-width:860px){
-  .actu-cat-body{grid-template-columns:1fr;}
-  .actu-post-list{border-right:none;border-bottom:1px solid var(--line);max-height:280px;}
-  .actu-post-detail{padding:22px 18px;}
-  .actu-icon-row{gap:16px;}
-  .actu-icon{width:88px;}
-  .actu-icon-avatar{width:72px;height:72px;}
+  .actu-medallion{width:130px;}
+  .actu-medallion-avatar{width:64px;height:64px;}
 }
 .linked-posts-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;}
 .linked-post-card{background:var(--bg-card);border:1px solid var(--line);border-radius:10px;overflow:hidden;cursor:pointer;transition:.2s;}
@@ -4361,157 +4387,225 @@ function renderIndependentCards(container, works){
 }
 
 let actuOpenCategory = null;
-let actuSelectedPost = {};
+let actuActiveSubcat = '';
+let actuVisibleCount = 9;
+let actuSearchQuery = '';
+let actuReadingPostId = null;
 let actuImageIndex = {};
+const ACTU_BATCH = 9;
 
 function renderActualitesPage(directPostId){
   if(directPostId){
-    const post = findPost(directPostId);
-    if(post){
-      actuOpenCategory = post.category;
-      actuSelectedPost[post.category] = post.id;
+    actuReadingPostId = directPostId;
+  }else{
+    actuReadingPostId = null;
+    if(!actuOpenCategory){
+      const cats = activePostCategories();
+      const withDate = cats.map(cat=>{
+        const latest = visiblePosts().filter(p=>p.category===cat).sort((a,b)=>(b.date||'').localeCompare(a.date||''))[0];
+        return { cat, latestDate: latest ? latest.date||'' : '' };
+      }).sort((a,b)=> b.latestDate.localeCompare(a.latestDate));
+      actuOpenCategory = withDate.length ? withDate[0].cat : '__all__';
     }
+    actuActiveSubcat = '';
+    actuVisibleCount = ACTU_BATCH;
+    actuSearchQuery = '';
   }
+
   app.innerHTML = `
     ${SETTINGS.actualitesHeroImage ? `<img class="home-hero-banner" src="${escapeHtml(SETTINGS.actualitesHeroImage)}" alt="">` : ''}
-    <div class="section-title" style="margin-top:56px;justify-content:center;text-align:center;"><h2 style="width:100%;">Mes actualités</h2><div class="rule"></div></div>
-    <p class="univers-intro">Coulisses, annonces et petits mots au fil de l'écriture.</p>
-    <div class="actu-icon-row" id="actuIconRow" style="margin-top:30px;"></div>
-    <div class="actu-accordion" id="actuAccordion"></div>
+    <div id="actuPageBody" style="margin-top:56px;"></div>
   `;
-  drawActuIconRow();
-  drawActuAccordion();
-  if(directPostId){
-    setTimeout(()=>{
-      const el = document.getElementById('actuAccordion');
-      if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
-    }, 80);
+  drawActuPageBody();
+  window.scrollTo({top: document.getElementById('actuPageBody').offsetTop - 90, behavior: directPostId ? 'smooth' : 'auto'});
+}
+
+function drawActuPageBody(){
+  const el = document.getElementById('actuPageBody');
+  if(!el) return;
+  if(actuReadingPostId){
+    el.innerHTML = renderActuReadingView(actuReadingPostId);
+  }else{
+    el.innerHTML = renderActuGridView();
   }
 }
 
-function drawActuIconRow(){
-  const el = document.getElementById('actuIconRow');
-  if(!el) return;
-  // 6 icônes maximum : les catégories actives, triées par article le plus récent
-  const active = activePostCategories().map(cat=>{
+function renderActuGridView(){
+  if(!postCategories().length){
+    return `<p style="text-align:center;color:var(--muted);font-style:italic;">Aucun article publié pour le moment.</p>`;
+  }
+  let html = '<div class="actu-explore-title">Explorer les actualités</div>';
+  html += '<div class="actu-medallion-row">';
+  const cats = activePostCategories().map(cat=>{
     const latest = visiblePosts().filter(p=>p.category===cat).sort((a,b)=>(b.date||'').localeCompare(a.date||''))[0];
     return { cat, latestDate: latest ? latest.date||'' : '' };
   }).sort((a,b)=> b.latestDate.localeCompare(a.latestDate)).slice(0,6).map(x=>x.cat);
-
-  if(!active.length){ el.innerHTML = ''; return; }
-  el.innerHTML = active.map(cat=>{
+  cats.forEach(cat=>{
     const meta = catMeta(cat);
-    const isOpen = actuOpenCategory === cat;
-    return `
-      <div class="actu-icon${isOpen?' active':''}" onclick="toggleActuCategory('${cat.replace(/'/g,"\\'")}')">
-        <div class="actu-icon-avatar">
-          ${meta.icon ? `<img src="${escapeHtml(meta.icon)}" alt="${escapeHtml(cat)}">` : `<span>${escapeHtml(cat.charAt(0).toUpperCase())}</span>`}
-        </div>
-        <span class="actu-icon-label">${escapeHtml(cat)}</span>
+    html += `
+      <div class="actu-medallion${actuOpenCategory===cat?' active':''}" onclick="selectActuCategory('${cat.replace(/'/g,"\'")}')">
+        <div class="actu-medallion-avatar">${meta.icon ? `<img src="${escapeHtml(meta.icon)}" alt="">` : `<span>${escapeHtml(cat.charAt(0).toUpperCase())}</span>`}</div>
+        <div class="actu-medallion-name">${escapeHtml(cat)}</div>
+        ${meta.description ? `<div class="actu-medallion-desc">${escapeHtml(meta.description)}</div>` : ''}
       </div>
     `;
-  }).join('');
+  });
+  html += `
+    <div class="actu-medallion${actuOpenCategory==='__all__'?' active':''}" onclick="selectActuCategory('__all__')">
+      <div class="actu-medallion-avatar"><span>✦</span></div>
+      <div class="actu-medallion-name">Toutes les actualités</div>
+      <div class="actu-medallion-desc">Retrouvez l'ensemble des brèves, classées par date.</div>
+    </div>
+  `;
+  html += '</div>';
+
+  const isAll = actuOpenCategory === '__all__';
+  const catMetaCur = isAll ? null : catMeta(actuOpenCategory);
+  html += `<div class="actu-cat-open-header"><h3>${isAll ? 'Toutes les actualités' : escapeHtml(actuOpenCategory)}</h3>${catMetaCur && catMetaCur.description ? `<p>${escapeHtml(catMetaCur.description)}</p>` : ''}</div>`;
+
+  const subcats = isAll ? [] : subcategoriesForCategory(actuOpenCategory);
+  if(subcats.length){
+    html += '<div class="actu-subcat-pills">';
+    html += `<span class="actu-subcat-pill${!actuActiveSubcat?' active':''}" onclick="selectActuSubcat('')">Toutes</span>`;
+    subcats.forEach(s=>{
+      html += `<span class="actu-subcat-pill${actuActiveSubcat===s?' active':''}" onclick="selectActuSubcat('${s.replace(/'/g,"\'")}')">${escapeHtml(s)}</span>`;
+    });
+    html += '</div>';
+  }
+
+  html += `
+    <div class="actu-search-row">
+      <input type="text" id="actuSearchInput" placeholder="🔎 Rechercher un article..." value="${escapeHtml(actuSearchQuery)}" oninput="onActuSearchInput(this.value)">
+    </div>
+  `;
+
+  let list = isAll ? visiblePosts() : visiblePosts().filter(p=>p.category===actuOpenCategory);
+  if(actuActiveSubcat) list = list.filter(p=>p.subcategory===actuActiveSubcat);
+  if(actuSearchQuery){
+    const q = actuSearchQuery.toLowerCase();
+    list = list.filter(p => (p.title||'').toLowerCase().includes(q) || (p.category||'').toLowerCase().includes(q) || (p.subcategory||'').toLowerCase().includes(q));
+  }
+  list = list.sort((a,b)=> (b.date||'').localeCompare(a.date||''));
+
+  if(!list.length){
+    html += `<p style="text-align:center;color:var(--muted);font-style:italic;">Aucun article ne correspond.</p>`;
+    return html;
+  }
+
+  const visible = list.slice(0, actuVisibleCount);
+  html += '<div class="actu-grid">';
+  visible.forEach(p=>{ html += actuCardHtml(p); });
+  html += '</div>';
+
+  if(list.length > actuVisibleCount){
+    html += `<div class="actu-more-wrap"><span class="cta-secondary" style="cursor:pointer;" onclick="loadMoreActu()">Voir plus d'actualités ↓</span></div>`;
+  }
+
+  return html;
 }
 
-function drawActuAccordion(){
-  const el = document.getElementById('actuAccordion');
-  if(!el) return;
-  if(!postCategories().length){
-    el.innerHTML = `<p style="text-align:center;color:var(--muted);font-style:italic;margin-top:20px;">Aucun article publié pour le moment.</p>`;
-    return;
-  }
-  if(!actuOpenCategory){ el.innerHTML = ''; return; }
-  const cat = actuOpenCategory;
-  const meta = catMeta(cat);
-  const postsInCat = visiblePosts().filter(p=>p.category===cat).sort((a,b)=> (b.date||'').localeCompare(a.date||''));
-  el.innerHTML = `
-    <div class="actu-cat-open-header">
-      <h3>${escapeHtml(cat)}</h3>
-      ${meta.description ? `<p>${escapeHtml(meta.description)}</p>` : ''}
-    </div>
-    <div class="actu-cat-body">
-      <div class="actu-post-list">
-        ${postsInCat.map(p=>`
-          <div class="actu-post-item${actuSelectedPost[cat]===p.id?' active':''}" onclick="selectActuPost('${cat.replace(/'/g,"\\'")}','${p.id}')">
-            <div class="actu-post-thumb-wrap">
-              ${(p.images&&p.images[0]) ? `<img src="${escapeHtml(p.images[0])}" alt="" class="actu-post-thumb base">` : `<div class="actu-post-thumb placeholder">✎</div>`}
-              ${p.hoverImage ? `<img src="${escapeHtml(p.hoverImage)}" alt="" class="actu-post-thumb hover">` : ''}
-            </div>
-            <div class="actu-post-info">
-              <div class="actu-post-date">${p.date ? formatDate(p.date) : ''}${p.subcategory ? `<span class="actu-subcat-badge">${escapeHtml(p.subcategory)}</span>` : ''}</div>
-              <div class="actu-post-title">${escapeHtml(p.title)}</div>
-            </div>
-          </div>
-        `).join('')}
-      </div>
-      <div class="actu-post-detail" id="actuDetail-${slugify(cat)}">
-        ${renderActuPostDetail(postsInCat, cat)}
+function actuCardHtml(p){
+  const img = p.images && p.images[0];
+  const meta = catMeta(p.category);
+  let imgHtml;
+  if(img) imgHtml = `<img src="${escapeHtml(img)}" alt="" class="actu-card-img" loading="lazy">`;
+  else if(meta.icon) imgHtml = `<div class="actu-card-img-fallback"><img src="${escapeHtml(meta.icon)}" alt=""></div>`;
+  else imgHtml = `<div class="actu-card-img-fallback placeholder">✎</div>`;
+  const excerpt = richParagraphs(p.body).replace(/<[^>]+>/g,' ').trim().slice(0,130);
+  return `
+    <div class="actu-card">
+      ${imgHtml}
+      <div class="actu-card-body">
+        ${p.subcategory ? `<span class="actu-subcat-badge">${escapeHtml(p.subcategory)}</span>` : ''}
+        <div class="actu-card-title">${escapeHtml(p.title)}</div>
+        <div class="actu-card-date">${p.date ? formatDate(p.date) : ''}</div>
+        <div class="actu-card-excerpt">${excerpt}…</div>
+        <span class="actu-card-link" onclick="openActuReading('${p.id}')">Lire la brève →</span>
       </div>
     </div>
   `;
 }
 
-function toggleActuCategory(cat){
-  actuOpenCategory = (actuOpenCategory === cat) ? null : cat;
-  if(actuOpenCategory && !actuSelectedPost[actuOpenCategory]){
-    const postsInCat = visiblePosts().filter(p=>p.category===actuOpenCategory).sort((a,b)=> (b.date||'').localeCompare(a.date||''));
-    if(postsInCat.length) actuSelectedPost[actuOpenCategory] = postsInCat[0].id;
-  }
-  drawActuIconRow();
-  drawActuAccordion();
-  if(actuOpenCategory){
-    setTimeout(()=>{
-      const el = document.getElementById('actuAccordion');
-      if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
-    }, 60);
-  }
+function selectActuCategory(cat){
+  actuOpenCategory = cat;
+  actuActiveSubcat = '';
+  actuVisibleCount = ACTU_BATCH;
+  drawActuPageBody();
 }
-
-function selectActuPost(cat, postId){
-  actuSelectedPost[cat] = postId;
-  actuImageIndex[postId] = 0;
-  const postsInCat = visiblePosts().filter(p=>p.category===cat).sort((a,b)=> (b.date||'').localeCompare(a.date||''));
-  document.querySelectorAll(`.actu-post-item`).forEach(elx=>elx.classList.remove('active'));
-  drawActuAccordion();
+function selectActuSubcat(sub){
+  actuActiveSubcat = sub;
+  actuVisibleCount = ACTU_BATCH;
+  drawActuPageBody();
+}
+function onActuSearchInput(val){
+  actuSearchQuery = val;
+  actuVisibleCount = ACTU_BATCH;
+  drawActuPageBody();
   setTimeout(()=>{
-    const detail = document.getElementById('actuDetail-'+slugify(cat));
-    if(detail && window.innerWidth < 860) detail.scrollIntoView({behavior:'smooth', block:'start'});
-  }, 60);
+    const input = document.getElementById('actuSearchInput');
+    if(input){ input.focus(); input.setSelectionRange(input.value.length, input.value.length); }
+  }, 0);
+}
+function loadMoreActu(){
+  actuVisibleCount += ACTU_BATCH;
+  drawActuPageBody();
 }
 
-function renderActuPostDetail(postsInCat, cat){
-  const postId = actuSelectedPost[cat];
-  const post = postsInCat.find(p=>p.id===postId) || postsInCat[0];
-  if(!post) return `<p style="color:var(--muted);font-style:italic;">Sélectionnez un article dans la liste.</p>`;
+function openActuReading(postId){
+  actuReadingPostId = postId;
+  actuImageIndex[postId] = 0;
+  drawActuPageBody();
+  window.scrollTo({top: document.getElementById('actuPageBody').offsetTop - 90, behavior:'smooth'});
+}
+function closeActuReading(){
+  actuReadingPostId = null;
+  drawActuPageBody();
+}
+
+function renderActuReadingView(postId){
+  const post = findPost(postId);
+  if(!post) return `<p style="text-align:center;color:var(--muted);font-style:italic;">Cet article n'existe plus.</p><a class="actu-reading-back" onclick="closeActuReading()">← Retour aux actualités</a>`;
   const images = post.images || [];
   const idx = actuImageIndex[post.id] || 0;
-  return `
-    ${post.subcategory ? `<span class="actu-subcat-badge">${escapeHtml(post.subcategory)}</span>` : ''}
-    <h3 class="actu-detail-title">${escapeHtml(post.title)}</h3>
-    <div class="actu-detail-date">${post.date ? formatDate(post.date) : ''}</div>
-    ${images.length ? `
-      <div class="actu-carousel">
-        <img src="${escapeHtml(images[idx])}" alt="${escapeHtml(post.title)}" class="actu-carousel-img">
+  const meta = catMeta(post.category);
+  let imgHtml;
+  if(images.length){
+    imgHtml = `
+      <div class="actu-reading-imgwrap">
+        <img src="${escapeHtml(images[idx])}" alt="${escapeHtml(post.title)}" class="actu-reading-img">
         ${images.length>1 ? `
-          <span class="actu-carousel-arrow left" onclick="shiftActuImage('${post.id}',${images.length},-1)">←</span>
-          <span class="actu-carousel-arrow right" onclick="shiftActuImage('${post.id}',${images.length},1)">→</span>
-          <div class="actu-carousel-dots">${images.map((_,i)=>`<span class="actu-dot${i===idx?' active':''}"></span>`).join('')}</div>
+          <span class="actu-reading-carousel-arrow left" onclick="shiftActuImage('${post.id}',${images.length},-1)">←</span>
+          <span class="actu-reading-carousel-arrow right" onclick="shiftActuImage('${post.id}',${images.length},1)">→</span>
+          <div class="actu-reading-carousel-dots">${images.map((_,i)=>`<span class="actu-reading-dot${i===idx?' active':''}"></span>`).join('')}</div>
         ` : ''}
       </div>
-    ` : ''}
-    <div class="actu-detail-body">${richParagraphs(post.body)}</div>
+    `;
+  }else if(meta.icon){
+    imgHtml = `<div class="actu-reading-imgwrap actu-card-img-fallback"><img src="${escapeHtml(meta.icon)}" alt="" style="width:80px;height:80px;"></div>`;
+  }else{
+    imgHtml = `<div class="actu-reading-imgwrap actu-card-img-fallback placeholder" style="aspect-ratio:4/3;">✎</div>`;
+  }
+
+  return `
+    <div class="actu-reading">
+      <a class="actu-reading-back" onclick="closeActuReading()">← Retour aux actualités</a>
+      <div class="actu-reading-header">
+        ${imgHtml}
+        <div class="actu-reading-meta-title">
+          ${post.subcategory ? `<span class="actu-subcat-badge">${escapeHtml(post.subcategory)}</span>` : `<span class="actu-subcat-badge">${escapeHtml(post.category)}</span>`}
+          <h1>${escapeHtml(post.title)}</h1>
+          <div class="actu-reading-date">${post.date ? formatDate(post.date) : ''}</div>
+        </div>
+      </div>
+      <div class="actu-reading-body">${richParagraphs(post.body)}</div>
+    </div>
   `;
 }
 
 function shiftActuImage(postId, count, dir){
   const cur = actuImageIndex[postId] || 0;
   actuImageIndex[postId] = (cur + dir + count) % count;
-  const post = findPost(postId);
-  const cat = post ? post.category : null;
-  if(!cat) return;
-  const postsInCat = visiblePosts().filter(p=>p.category===cat).sort((a,b)=> (b.date||'').localeCompare(a.date||''));
-  const detailEl = document.getElementById('actuDetail-'+slugify(cat));
-  if(detailEl) detailEl.innerHTML = renderActuPostDetail(postsInCat, cat);
+  drawActuPageBody();
 }
 
 function renderPressKitPage(){
