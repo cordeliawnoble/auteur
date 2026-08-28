@@ -98,16 +98,15 @@
   .carnet-now-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
   .carnet-now-card{
     background:var(--carnet-bg-alt);border:1px solid var(--carnet-line);border-radius:14px;
-    padding:22px 16px;transition:.25s;text-align:center;
+    padding:24px 16px 20px;transition:.25s;text-align:center;
   }
   .carnet-now-card:hover{background:var(--carnet-bg-alt2);border-color:var(--carnet-purple);}
   .carnet-now-icon{
-    width:92px;height:92px;margin:0 auto 14px;opacity:.95;
+    width:130px;height:130px;margin:0 auto 10px;opacity:.95;
     display:flex;align-items:center;justify-content:center;
   }
   .carnet-now-icon img{width:100%;height:100%;object-fit:contain;}
-  .carnet-now-icon .icon-fallback{width:14px;height:14px;border-radius:50%;background:var(--carnet-amber);}
-  .carnet-now-label{font-family:'Jost',sans-serif;font-size:.63rem;letter-spacing:.09em;text-transform:uppercase;color:var(--carnet-amber);margin-bottom:6px;}
+  .carnet-now-icon .icon-fallback{width:16px;height:16px;border-radius:50%;background:var(--carnet-amber);}
   .carnet-now-main{font-family:'Lora',serif;font-size:.9rem;color:var(--carnet-text);line-height:1.35;}
   .carnet-now-sub{font-family:'Jost',sans-serif;font-size:.72rem;color:var(--carnet-muted);margin-top:3px;}
   .carnet-now-stars{color:var(--carnet-amber);letter-spacing:1px;font-size:.8rem;margin-top:5px;}
@@ -301,9 +300,9 @@ function postsInCategory(cat){
    Repli discret (petit point doré) tant que le fichier n'existe pas. */
 function nowIconHtml(iconUrl, label){
   if(iconUrl){
-    return '<div class="carnet-now-icon"><img src="'+escapeHtml(iconUrl)+'" alt="" onerror="this.replaceWith(Object.assign(document.createElement(\'span\'),{className:\'icon-fallback\'}))"></div>';
+    return '<div class="carnet-now-icon"><img src="'+escapeHtml(iconUrl)+'" alt="'+escapeHtml(label)+'" onerror="this.replaceWith(Object.assign(document.createElement(\'span\'),{className:\'icon-fallback\'}))"></div>';
   }
-  return '<div class="carnet-now-icon"><span class="icon-fallback"></span></div>';
+  return '<div class="carnet-now-icon" role="img" aria-label="'+escapeHtml(label)+'"><span class="icon-fallback"></span></div>';
 }
 
 /* ---------- rendu de la page ---------- */
@@ -348,7 +347,7 @@ function renderCarnet(){
     html += '</div>';
   }
   html += '</header>';
-  html += '<p class="carnet-hero-text">' + (SETTINGS.carnetIntro ? richParagraphs(SETTINGS.carnetIntro) : "") + '</p>';
+  html += '<p class="carnet-hero-text">' + (SETTINGS.carnetIntro ? richParagraphs(SETTINGS.carnetIntro) : "Ici se trouvent mes lectures du moment, mes jeux, mes découvertes, mes petites obsessions, et quelques fragments un peu plus personnels.") + '</p>';
 
   html += '<section class="carnet-section">';
   html += '<div class="carnet-section-title"><h2>En ce moment</h2></div>';
@@ -356,7 +355,6 @@ function renderCarnet(){
   if(nowEntries.length){
     nowEntries.forEach(function(e){
       html += '<div class="carnet-now-card">';
-      html += '<div class="carnet-now-label">'+escapeHtml(e.label)+'</div>';
       html += nowIconHtml(e.icon, e.label);
       html += '<div class="carnet-now-main">'+escapeHtml(e.main)+'</div>';
       if(e.sub) html += '<div class="carnet-now-sub">'+escapeHtml(e.sub)+'</div>';
