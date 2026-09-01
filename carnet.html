@@ -152,7 +152,7 @@
   .carnet-notes-list{display:flex;flex-direction:column;gap:14px;flex:1;min-width:0;}
   .carnet-note{
     display:flex;gap:18px;align-items:center;background:var(--carnet-bg-alt);border:1px solid var(--carnet-line);
-    border-radius:12px;padding:14px 20px;cursor:pointer;transition:.2s;
+    border-radius:12px;padding:14px 20px;transition:.2s;
   }
   .carnet-note:hover{background:var(--carnet-bg-alt2);border-color:var(--carnet-rose);}
   .carnet-note-date{
@@ -163,6 +163,11 @@
   .carnet-note-body{flex:1;min-width:0;}
   .carnet-note-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:1.08rem;color:var(--carnet-pink);margin-bottom:3px;}
   .carnet-note-excerpt{font-family:'Lora',serif;font-size:.8rem;color:var(--carnet-mauve);line-height:1.5;}
+  .carnet-note-more{
+    display:inline-block;font-family:'Jost',sans-serif;font-size:.72rem;color:var(--carnet-amber);
+    cursor:pointer;margin-top:6px;
+  }
+  .carnet-note-more:hover{text-decoration:underline;}
   .carnet-note-img-wrap{flex-shrink:0;width:84px;height:64px;border-radius:8px;overflow:hidden;}
   .carnet-note-img{width:100%;height:100%;object-fit:cover;display:block;}
   .carnet-notes-arrow{
@@ -292,8 +297,9 @@ function starsHtml(rating){
 /* ---------- catégories d'actualités ---------- */
 let POST_CATEGORIES = {};
 function catMeta(name){ return POST_CATEGORIES[name] || { icon:'', description:'', active:true }; }
+function postStatus(p){ return p.status || 'published'; }
 function postsInCategory(cat){
-  return POSTS.filter(function(p){ return p.category===cat; }).sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
+  return POSTS.filter(function(p){ return p.category===cat && postStatus(p)==='published'; }).sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
 }
 
 /* icônes "En ce moment" : emplacement prévu pour vos SVG (assets/carnet/icon-*.svg).
@@ -454,14 +460,22 @@ function drawNotesCarousel(page){
   let html = '<div class="carnet-notes-carousel">';
   html += '<span class="carnet-notes-arrow" onclick="drawNotesCarousel(carnetNotesPage-1)" '+(carnetNotesPage<=0?'disabled':'')+' aria-label="Notes précédentes">←</span>';
   html += '<div class="carnet-notes-list">';
+  const NOTE_TRUNCATE = 220;
+  window.CARNET_NOTE_FULLTEXT = window.CARNET_NOTE_FULLTEXT || {};
   pageNotes.forEach(function(p){
-    const excerpt = richParagraphs(p.body).replace(/<[^>]+>/g,' ').trim().slice(0,90);
+    const full = richParagraphs(p.body).replace(/<[^>]+>/g,' ').trim();
+    const isLong = full.length > NOTE_TRUNCATE;
+    const short = isLong ? full.slice(0, NOTE_TRUNCATE).trim() + '…' : full;
+    window.CARNET_NOTE_FULLTEXT[p.id] = full;
     const img = (p.images && p.images[0]) ? p.images[0] : '';
-    html += '<div class="carnet-note" onclick="window.location.href=\'index.html#actualites/'+p.id+'\'">';
+    html += '<div class="carnet-note">';
     html += '<div class="carnet-note-date">'+(p.date ? formatDateShort(p.date) : '')+'</div>';
     html += '<div class="carnet-note-body">';
     html += '<div class="carnet-note-title">'+escapeHtml(p.title)+'</div>';
-    html += '<div class="carnet-note-excerpt">'+excerpt+'…</div>';
+    html += '<div class="carnet-note-excerpt" id="noteExcerpt-'+p.id+'">'+escapeHtml(short)+'</div>';
+    if(isLong){
+      html += '<span class="carnet-note-more" id="noteToggle-'+p.id+'" onclick="event.stopPropagation();toggleNoteExpand(\''+p.id+'\')">Lire la suite +</span>';
+    }
     html += '</div>';
     if(img) html += '<div class="carnet-note-img-wrap"><img src="'+escapeHtml(img)+'" alt="" class="carnet-note-img" loading="lazy"></div>';
     html += '</div>';
@@ -479,6 +493,23 @@ function drawNotesCarousel(page){
   }
 
   el.innerHTML = html;
+}
+
+function toggleNoteExpand(postId){
+  const excerptEl = document.getElementById('noteExcerpt-'+postId);
+  const toggleEl = document.getElementById('noteToggle-'+postId);
+  if(!excerptEl || !toggleEl) return;
+  const full = (window.CARNET_NOTE_FULLTEXT || {})[postId] || '';
+  const isExpanded = toggleEl.dataset.expanded === '1';
+  if(isExpanded){
+    excerptEl.textContent = full.slice(0, 220).trim() + '…';
+    toggleEl.textContent = 'Lire la suite +';
+    toggleEl.dataset.expanded = '0';
+  }else{
+    excerptEl.textContent = full;
+    toggleEl.textContent = 'Réduire −';
+    toggleEl.dataset.expanded = '1';
+  }
 }
 
 /* ---------- chargement des données puis affichage ---------- */
