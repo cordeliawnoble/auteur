@@ -74,7 +74,7 @@ function starsBlock(noteStr){
   return `<div class="coll-stars" role="img" aria-label="Note : ${clamped} sur 5">${stars}</div>`;
 }
 
-/** Une carte de livre : couverture (avec repli propre si l'image manque ou casse), titre, auteur, note. */
+/** Une carte de livre : couverture (avec repli propre si l'image manque ou casse), titre, auteur, note, et une petite carte au survol/tap. */
 function bookCardHtml(item){
   const title = item.titre || 'Sans titre';
   const cover = item.image_url
@@ -82,7 +82,10 @@ function bookCardHtml(item){
     : collPlaceholderHtml(title);
   return `
     <div class="coll-card">
-      <div class="coll-cover-wrap">${cover}</div>
+      <div class="coll-cover-wrap">
+        ${cover}
+        ${collInfoOverlayHtml(title, item.auteur, item.note, item.ressenti)}
+      </div>
       <div class="coll-title">${escapeHtml(title)}</div>
       ${item.auteur ? `<div class="coll-sub">${escapeHtml(item.auteur)}</div>` : ''}
       ${starsBlock(item.note)}
@@ -90,7 +93,7 @@ function bookCardHtml(item){
   `;
 }
 
-/** Une carte de jeu : jaquette, titre, plateforme (facultative), note. */
+/** Une carte de jeu : jaquette, titre, plateforme (facultative), note, et une petite carte au survol/tap. */
 function gameCardHtml(item){
   const title = item.titre || 'Sans titre';
   const cover = item.image_url
@@ -98,10 +101,30 @@ function gameCardHtml(item){
     : collPlaceholderHtml(title);
   return `
     <div class="coll-card">
-      <div class="coll-cover-wrap">${cover}</div>
+      <div class="coll-cover-wrap">
+        ${cover}
+        ${collInfoOverlayHtml(title, item.plateforme, item.note, item.ressenti)}
+      </div>
       <div class="coll-title">${escapeHtml(title)}</div>
       ${item.plateforme ? `<div class="coll-sub">${escapeHtml(item.plateforme)}</div>` : ''}
       ${starsBlock(item.note)}
+    </div>
+  `;
+}
+
+/**
+ * La petite carte qui apparaît au survol (ordinateur) ou au tap (mobile/tablette) sur une couverture.
+ * Reste contenue dans le cadre de la couverture (jamais de débordement sur les couvertures voisines).
+ * N'affiche que ce qui existe réellement — aucune zone vide si `ressenti` (ou le sous-titre) est absent.
+ */
+function collInfoOverlayHtml(title, subtitle, noteStr, ressenti){
+  const stars = starsBlock(noteStr);
+  return `
+    <div class="coll-info-overlay">
+      <div class="coll-info-title">${escapeHtml(title)}</div>
+      ${subtitle ? `<div class="coll-info-sub">${escapeHtml(subtitle)}</div>` : ''}
+      ${stars ? `<div class="coll-info-stars">${stars}</div>` : ''}
+      ${ressenti ? `<div class="coll-info-ressenti">« ${escapeHtml(ressenti)} »</div>` : ''}
     </div>
   `;
 }
@@ -119,3 +142,18 @@ function collPlaceholder(title){
   div.textContent = title;
   return div;
 }
+
+/**
+ * Sur ordinateur/souris, la petite carte apparaît au survol (géré en pur CSS, voir .coll-card:hover).
+ * Sur tactile (pas de vrai survol), un tap l'ouvre, un tap ailleurs la referme, une seule ouverte à la fois.
+ * Délégation d'événement sur le document : fonctionne même si la grille est (re)générée dynamiquement.
+ */
+(function(){
+  const isTouch = window.matchMedia && window.matchMedia('(hover: none)').matches;
+  if(!isTouch) return;
+  document.addEventListener('click', function(e){
+    const card = e.target.closest('.coll-card');
+    document.querySelectorAll('.coll-card.open').forEach(c=>{ if(c!==card) c.classList.remove('open'); });
+    if(card) card.classList.toggle('open');
+  });
+})();
