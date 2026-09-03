@@ -16,7 +16,7 @@
 </script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cordélia w Noble</title>
+<title>Cordelia w Noble</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 28S3 19 3 10.5C3 5.3 7 2 11.5 2c2.6 0 4.9 1.4 4.5 4-.4-2.6 1.9-4 4.5-4C25 2 29 5.3 29 10.5 29 19 16 28 16 28z' fill='%231B3A6B'/%3E%3C/svg%3E">
 
 <!-- PWA : permet d'ajouter le site à l'écran d'accueil, comme une application -->
@@ -7337,6 +7337,7 @@ function renderAdmin(){
             <div class="admin-sidebar-group-title">Bêta-lecture</div>
             <div class="admin-tab admin-nav-link" data-tab="beta-invites">Invitées</div>
             <div class="admin-tab admin-nav-link" data-tab="beta-works">Œuvres</div>
+            <div class="admin-tab admin-nav-link" data-tab="beta-comments">Commentaires</div>
           </div>
           <div class="admin-sidebar-group">
             <div class="admin-sidebar-group-title">Communauté</div>
@@ -8029,6 +8030,16 @@ Julien Roy | | Son meilleur ami d'enfance"></textarea>
           </div>
           <div class="admin-msg" id="betaMediaMsg"></div>
         </div>
+      </div>
+
+      <div class="admin-section" data-section="beta-comments">
+        <div class="admin-form" style="margin-bottom:18px;">
+          <label>Filtrer par œuvre</label>
+          <select id="betaCommentsWorkFilter" onchange="renderBetaCommentsAdminList()">
+            <option value="">Toutes les œuvres</option>
+          </select>
+        </div>
+        <div class="admin-list" id="betaCommentsAdminList"><p style="color:var(--muted);">Chargement…</p></div>
       </div>
 
 
@@ -9587,6 +9598,7 @@ const ADMIN_TOPBAR_META = {
   'beta-invites': { title: 'Bêta-lecture', desc: "Gérez qui a accès à l'espace bêta-lecture (accès sur invitation, par lien magique)." },
   'beta-works': { title: 'Œuvres en bêta-lecture', desc: "Gérez les œuvres et chapitres visibles dans l'espace bêta-lecture." },
   'beta-work-edit': { title: 'Œuvre en bêta-lecture', desc: "Modifiez le titre, le synopsis et les chapitres." },
+  'beta-comments': { title: 'Commentaires bêta-lecture', desc: "Tous les commentaires déposés par les bêta-lectrices, tous chapitres confondus." },
   abonnees: { title: 'Abonnés', desc: 'Liste de vos inscrits à la newsletter.' },
   apparence: { title: 'Apparence', desc: 'Personnalisez les textes et images du site.' },
   couleurs: { title: 'Couleurs', desc: 'Ajustez les couleurs des pastilles et boutons du site.' },
@@ -9613,6 +9625,7 @@ function applyAdminTab(){
   if(adminTab === 'beta-invites') renderBetaInvitesList();
   if(adminTab === 'beta-works') renderBetaWorksManageList();
   if(adminTab === 'beta-work-edit') renderBetaWorkEditForm();
+  if(adminTab === 'beta-comments') renderBetaCommentsAdminList();
   const contentArea = document.querySelector('.admin-content-area');
   if(contentArea) contentArea.scrollTo({top:0});
 }
@@ -11031,6 +11044,72 @@ async function deleteBetaCharacter(workId, charId){
   toast('Personnage supprimé.');
   resetBetaCharacterForm();
   renderBetaCharactersManageList(w);
+}
+
+/* ---------- vue admin de tous les commentaires bêta-lecture ---------- */
+async function renderBetaCommentsAdminList(){
+  const listEl = document.getElementById('betaCommentsAdminList');
+  const filterEl = document.getElementById('betaCommentsWorkFilter');
+  if(!listEl) return;
+  listEl.innerHTML = '<p style="color:var(--muted);">Chargement…</p>';
+  const [works, comments] = await Promise.all([loadBetaWorks(), loadBetaComments()]);
+  window._betaAllComments = comments;
+
+  if(filterEl && !filterEl._filled){
+    filterEl._filled = true;
+    filterEl.innerHTML = '<option value="">Toutes les œuvres</option>' +
+      works.map(w => `<option value="${w.id}">${escapeHtml(w.title)}</option>`).join('');
+  }
+  const filterWorkId = filterEl ? filterEl.value : '';
+
+  if(!comments.length){
+    listEl.innerHTML = '<p style="color:var(--muted);">Aucun commentaire pour le moment.</p>';
+    return;
+  }
+
+  // regroupement par œuvre puis chapitre, du plus récent au plus ancien
+  const sorted = comments.slice().sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||''));
+  const filtered = filterWorkId ? sorted.filter(cm => cm.workId === filterWorkId) : sorted;
+  if(!filtered.length){
+    listEl.innerHTML = '<p style="color:var(--muted);">Aucun commentaire pour cette œuvre.</p>';
+    return;
+  }
+
+  listEl.innerHTML = filtered.map(cm => {
+    const w = findBetaWork(works, cm.workId);
+    const ch = w ? w.chapters.find(c => c.id === cm.chapterId) : null;
+    const paraPreview = (() => {
+      if(!ch) return '';
+      const paras = (ch.text||'').split(/\n\s*\n/).map(p=>p.trim()).filter(Boolean);
+      const p = paras[cm.paraIndex] || '';
+      return p.length > 100 ? p.slice(0,100) + '…' : p;
+    })();
+    return `
+      <div class="admin-item" style="align-items:flex-start;">
+        <div class="info">
+          <div class="t">${escapeHtml(cm.email)} ${cm.parentId ? '<span style="color:var(--muted);font-weight:400;">(réponse)</span>' : ''}</div>
+          <div class="s" style="margin-bottom:4px;">
+            ${w ? escapeHtml(w.title) : 'Œuvre supprimée'}${ch ? ' — ' + escapeHtml(ch.title) : ''} · ${formatDate((cm.createdAt||'').slice(0,10))}
+          </div>
+          ${paraPreview ? `<div class="s" style="font-style:italic;opacity:.7;margin-bottom:6px;">« ${escapeHtml(paraPreview)} »</div>` : ''}
+          ${cm.emoji ? `<div style="font-size:1.3rem;">${cm.emoji}</div>` : ''}
+          ${cm.text ? `<div style="font-size:.9rem;line-height:1.5;white-space:pre-wrap;">${escapeHtml(cm.text)}</div>` : ''}
+          ${cm.gifUrl ? `<img src="${escapeHtml(cm.gifUrl)}" style="max-width:160px;border-radius:8px;margin-top:6px;display:block;">` : ''}
+        </div>
+        <div class="del-btn" onclick="deleteBetaCommentFromAdmin('${cm.id}')">Supprimer</div>
+      </div>
+    `;
+  }).join('');
+}
+
+async function deleteBetaCommentFromAdmin(commentId){
+  if(!confirm('Supprimer définitivement ce commentaire (et ses réponses éventuelles) ?')) return;
+  let comments = await loadBetaComments();
+  comments = comments.filter(cm => cm.id !== commentId && cm.parentId !== commentId);
+  await saveBetaComments(comments);
+  window._betaAllComments = comments;
+  toast('Commentaire supprimé.');
+  renderBetaCommentsAdminList();
 }
 
 /* ---------- désinscription en libre-service (lien présent dans les emails) ---------- */
