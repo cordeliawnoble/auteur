@@ -16,7 +16,7 @@
 </script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cordélia w Noble</title>
+<title>Cordelia w Noble</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 28S3 19 3 10.5C3 5.3 7 2 11.5 2c2.6 0 4.9 1.4 4.5 4-.4-2.6 1.9-4 4.5-4C25 2 29 5.3 29 10.5 29 19 16 28 16 28z' fill='%231B3A6B'/%3E%3C/svg%3E">
 
 <!-- PWA : permet d'ajouter le site à l'écran d'accueil, comme une application -->
@@ -7624,6 +7624,26 @@ function renderAdmin(){
 
         <div class="admin-form" id="betaTabChapitres" data-bsection="chapitres" style="display:none;">
           <div class="admin-list" id="betaWorkChaptersList" style="margin-bottom:26px;"></div>
+
+          <div class="hist-collapsible" style="margin-bottom:28px;">
+            <div class="hist-collapsible-header" onclick="toggleWorkSubBlock2('betaImport')">
+              ⬆ Importer des chapitres (.docx) <span id="betaImportToggleIcon">▾</span>
+            </div>
+            <div id="betaImportBlock">
+              <div class="admin-msg" style="margin-bottom:4px;">
+                Chaque fichier .docx sélectionné devient un chapitre : son nom de fichier sert de titre (modifiable ensuite). Un seul fichier ou plusieurs à la fois — pratique pour une grosse mise à jour d'un coup. Les fichiers Google Docs doivent d'abord être exportés en Word (Fichier → Télécharger → Microsoft Word).
+              </div>
+              <label>Date du premier chapitre importé</label>
+              <input type="date" id="betaImpStartDate" value="${todayISO()}">
+              <div class="hint" style="margin:6px 0 14px;">Les chapitres suivants seront datés un jour après l'autre. Vous pourrez ajuster chaque date ensuite.</div>
+              <label>Fichiers Word (.docx) — plusieurs à la fois possible</label>
+              <input type="file" id="betaImpFiles" accept=".docx" multiple>
+              <div class="admin-msg" id="betaImpMsg"></div>
+              <div class="admin-list" id="betaImpPreviewList" style="margin-top:16px;"></div>
+              <button type="button" class="submit-btn" id="betaSubmitImport" style="margin-top:14px;">Importer ces fichiers comme chapitres</button>
+            </div>
+          </div>
+
           <h3 id="betaChapterFormTitle">Ajouter un chapitre</h3>
           <input type="hidden" id="betaChapterEditId">
           <div class="row2">
@@ -7654,6 +7674,34 @@ function renderAdmin(){
 
         <div class="admin-form" id="betaTabPersonnages" data-bsection="personnages" style="display:none;">
           <div class="admin-list" id="betaWorkCharactersList" style="margin-bottom:26px;"></div>
+
+          <div class="hist-collapsible" style="margin-bottom:20px;">
+            <div class="hist-collapsible-header" onclick="toggleWorkSubBlock2('betaDupChars')">
+              ⧉ Copier les personnages d'une autre œuvre <span id="betaDupCharsToggleIcon">▾</span>
+            </div>
+            <div id="betaDupCharsBlock">
+              <div class="admin-msg" style="margin-bottom:4px;">
+                Pratique pour un tome 2 : les personnages de l'œuvre choisie sont dupliqués ici (l'originale n'est pas modifiée).
+              </div>
+              <select id="betaDupCharsSource"></select>
+              <button type="button" class="submit-btn" id="betaDupCharsBtn" style="margin-top:12px;">Copier ces personnages ici</button>
+              <div class="admin-msg" id="betaDupCharsMsg"></div>
+            </div>
+          </div>
+
+          <div class="hist-collapsible" style="margin-bottom:28px;">
+            <div class="hist-collapsible-header" onclick="toggleWorkSubBlock2('betaBulkChars')">
+              ⬆ Import en masse par copier-coller <span id="betaBulkCharsToggleIcon">▾</span>
+            </div>
+            <div id="betaBulkCharsBlock">
+              <div class="admin-msg" style="margin-bottom:4px;">Une ligne par personnage, au format : Nom | Image (facultatif) | Description (facultatif)</div>
+              <textarea id="betaBulkChars" rows="6" placeholder="Emma Dubois | https://... | L'héroïne, libraire à Lyon
+Julien Roy | | Son meilleur ami d'enfance"></textarea>
+              <div class="admin-msg" id="betaBulkCharsMsg"></div>
+              <button type="button" class="submit-btn" id="betaSubmitBulkChars" style="margin-top:12px;">Importer ces personnages</button>
+            </div>
+          </div>
+
           <h3 id="betaCharFormTitle">Ajouter un personnage</h3>
           <input type="hidden" id="betaCharEditId">
           <div class="row2">
@@ -10208,14 +10256,26 @@ async function renderBetaWorksManageList(){
     listEl.innerHTML = '<p style="color:var(--muted);">Aucune œuvre en bêta-lecture pour le moment.</p>';
     return;
   }
-  listEl.innerHTML = works.map(w => `
-    <div class="admin-item" style="cursor:pointer;" onclick="openEditBetaWork('${w.id}')">
-      <div class="info">
-        <div class="t">${escapeHtml(w.title)}</div>
-        <div class="s">${w.chapters.length} chapitre${w.chapters.length>1?'s':''}</div>
+  listEl.innerHTML = `<div class="hist-cards-grid">` + works.map(w => `
+    <div class="hist-card">
+      <div class="hist-card-main" style="cursor:pointer;" onclick="openEditBetaWork('${w.id}')">
+        <div class="hist-thumb" style="${betaCoverStyle(w)}"></div>
+        <div class="hist-card-info">
+          <div class="hist-card-title">${escapeHtml(w.title)}</div>
+          <div class="hist-card-meta">
+            ${w.genre ? `<span>${escapeHtml(w.genre)}</span>` : ''}
+          </div>
+          <div class="hist-card-stats">
+            <span>${w.chapters.length} chapitre${w.chapters.length>1?'s':''}</span>
+            <span>${(w.characters||[]).length} personnage${(w.characters||[]).length>1?'s':''}</span>
+          </div>
+        </div>
+        <div class="hist-card-actions">
+          <span class="hist-action-btn" onclick="event.stopPropagation();openEditBetaWork('${w.id}')">Gérer le contenu</span>
+        </div>
       </div>
     </div>
-  `).join('');
+  `).join('') + `</div>`;
 }
 
 function openNewBetaWork(){
@@ -10376,6 +10436,152 @@ async function renderBetaWorkEditForm(){
     toast('Médias enregistrés.');
     renderBetaWorksManageList();
   };
+
+  wireBetaChapterImport();
+  wireBetaCharacterBulkImport();
+  await wireBetaCharacterDuplication(works, w);
+}
+
+/* ---------- import en masse de chapitres bêta (.docx) ---------- */
+let betaImportedChapters = [];
+function wireBetaChapterImport(){
+  const filesInput = document.getElementById('betaImpFiles');
+  if(!filesInput || filesInput._wired) return;
+  filesInput._wired = true;
+  filesInput.addEventListener('change', async ()=>{
+    const files = Array.from(filesInput.files || []);
+    const previewEl = document.getElementById('betaImpPreviewList');
+    const msgEl = document.getElementById('betaImpMsg');
+    betaImportedChapters = [];
+    if(!files.length){ previewEl.innerHTML = ''; return; }
+    if(typeof mammoth === 'undefined'){
+      msgEl.style.color = '#A23B4A';
+      msgEl.textContent = "La lecture des fichiers Word n'a pas pu se charger (vérifiez votre connexion) — réessayez.";
+      return;
+    }
+    previewEl.innerHTML = '<p style="color:var(--muted);">Lecture des fichiers…</p>';
+    msgEl.textContent = '';
+    for(const file of files){
+      try{
+        const arrayBuffer = await file.arrayBuffer();
+        const result = await mammoth.convertToHtml({ arrayBuffer });
+        const title = file.name.replace(/\.docx$/i, '').replace(/[_-]+/g, ' ').trim();
+        betaImportedChapters.push({ title, text: docxHtmlToChapterText(result.value).trim(), fileName: file.name });
+      }catch(e){
+        betaImportedChapters.push({ title: file.name, text: '', fileName: file.name, error: true });
+      }
+    }
+    previewEl.innerHTML = betaImportedChapters.map(c => `
+      <div class="admin-item">
+        <div class="info">
+          <div class="t">${escapeHtml(c.title)}${c.error ? ' — erreur de lecture' : ''}</div>
+          <div class="s">${c.error ? 'Ce fichier n\'a pas pu être lu (est-ce bien un .docx ?)' : (c.text.split(/\s+/).filter(Boolean).length + ' mots environ')}</div>
+        </div>
+      </div>
+    `).join('');
+  });
+
+  const submitBtn = document.getElementById('betaSubmitImport');
+  if(submitBtn && !submitBtn._wired){
+    submitBtn._wired = true;
+    submitBtn.addEventListener('click', async ()=>{
+      const msgEl = document.getElementById('betaImpMsg');
+      if(!betaEditingWorkId){ msgEl.style.color = '#A23B4A'; msgEl.textContent = "Enregistrez d'abord l'œuvre."; return; }
+      const validChapters = betaImportedChapters.filter(c => !c.error && c.text);
+      if(!validChapters.length){ msgEl.style.color = '#A23B4A'; msgEl.textContent = "Aucun fichier valide à importer."; return; }
+      submitBtn.disabled = true; submitBtn.textContent = 'Import en cours...';
+      const startDate = document.getElementById('betaImpStartDate').value || todayISO();
+      const dates = [];
+      const start = new Date(startDate + 'T00:00:00');
+      for(let i=0;i<validChapters.length;i++){
+        const d = new Date(start);
+        d.setDate(d.getDate() + i);
+        dates.push(toLocalISODate(d));
+      }
+      const list = await loadBetaWorks();
+      const target = findBetaWork(list, betaEditingWorkId);
+      validChapters.forEach((c,i)=>{
+        target.chapters.push({ id: makeId(slugify(c.title) || ('chapitre-'+Date.now()+'-'+i)), title: c.title, text: c.text, date: dates[i], image: '' });
+      });
+      await saveBetaWorks(list);
+      msgEl.style.color = 'var(--gold)';
+      msgEl.textContent = `${validChapters.length} chapitre${validChapters.length>1?'s importés':' importé'}. Vérifiez les titres et dates ci-dessus.`;
+      toast('Import terminé !');
+      betaImportedChapters = [];
+      document.getElementById('betaImpPreviewList').innerHTML = '';
+      filesInput.value = '';
+      submitBtn.disabled = false; submitBtn.textContent = 'Importer ces fichiers comme chapitres';
+      renderBetaChaptersManageList(target);
+      renderBetaWorksManageList();
+    });
+  }
+}
+
+/* ---------- import en masse de personnages bêta (copier-coller) ---------- */
+function wireBetaCharacterBulkImport(){
+  const btn = document.getElementById('betaSubmitBulkChars');
+  if(!btn || btn._wired) return;
+  btn._wired = true;
+  btn.addEventListener('click', async ()=>{
+    const msgEl = document.getElementById('betaBulkCharsMsg');
+    if(!betaEditingWorkId){ msgEl.style.color = '#A23B4A'; msgEl.textContent = "Enregistrez d'abord l'œuvre."; return; }
+    const textarea = document.getElementById('betaBulkChars');
+    const lines = textarea.value.split('\n').map(l=>l.trim()).filter(Boolean);
+    if(!lines.length){ msgEl.textContent = 'Collez au moins une ligne au format Nom | Image | Description.'; return; }
+    const list = await loadBetaWorks();
+    const target = findBetaWork(list, betaEditingWorkId);
+    if(!target) return;
+    if(!target.characters) target.characters = [];
+    lines.forEach(line=>{
+      const parts = line.split('|');
+      const name = (parts[0]||'').trim();
+      if(!name) return;
+      const image = (parts[1]||'').trim();
+      const desc = parts.slice(2).join('|').trim();
+      target.characters.push({ id: 'perso-' + Date.now() + '-' + Math.random().toString(36).slice(2,6), name, image, desc });
+    });
+    await saveBetaWorks(list);
+    textarea.value = '';
+    msgEl.style.color = 'var(--gold)';
+    msgEl.textContent = `${lines.length} personnage(s) importé(s) ✓`;
+    toast('Personnages importés.');
+    renderBetaCharactersManageList(target);
+  });
+}
+
+/* ---------- duplication de personnages depuis une autre œuvre bêta ---------- */
+async function wireBetaCharacterDuplication(allWorks, currentWork){
+  const select = document.getElementById('betaDupCharsSource');
+  if(!select) return;
+  const others = allWorks.filter(x => x.id !== betaEditingWorkId && (x.characters||[]).length);
+  select.innerHTML = others.length
+    ? others.map(x => `<option value="${x.id}">${escapeHtml(x.title)} (${x.characters.length} personnage${x.characters.length>1?'s':''})</option>`).join('')
+    : '<option value="">Aucune autre œuvre avec des personnages</option>';
+
+  const btn = document.getElementById('betaDupCharsBtn');
+  if(!btn || btn._wired) return;
+  btn._wired = true;
+  btn.addEventListener('click', async ()=>{
+    const msgEl = document.getElementById('betaDupCharsMsg');
+    if(!betaEditingWorkId){ msgEl.style.color = '#A23B4A'; msgEl.textContent = "Enregistrez d'abord l'œuvre."; return; }
+    const sourceId = document.getElementById('betaDupCharsSource').value;
+    if(!sourceId){ msgEl.textContent = "Aucune œuvre source disponible."; return; }
+    const list = await loadBetaWorks();
+    const source = findBetaWork(list, sourceId);
+    const target = findBetaWork(list, betaEditingWorkId);
+    if(!source || !target) return;
+    if(!target.characters) target.characters = [];
+    const copies = (source.characters||[]).map(c => ({
+      id: 'perso-' + Date.now() + '-' + Math.random().toString(36).slice(2,6),
+      name: c.name, image: c.image, desc: c.desc
+    }));
+    target.characters.push(...copies);
+    await saveBetaWorks(list);
+    msgEl.style.color = 'var(--gold)';
+    msgEl.textContent = `${copies.length} personnage(s) copié(s) depuis « ${source.title} ».`;
+    toast('Personnages copiés.');
+    renderBetaCharactersManageList(target);
+  });
 }
 
 function resetBetaChapterForm(){
@@ -11167,7 +11373,7 @@ function renderUniversManageList(){
     el.innerHTML = '<p style="color:var(--muted);">Aucune collection ne correspond à cette recherche.</p>';
     return;
   }
-  el.innerHTML = names.map(name=>{
+  el.innerHTML = `<div class="hist-cards-grid">` + names.map(name=>{
     const slug = universeSlug(name);
     const m = umeta(name);
     const count = WORKS.filter(w=>w.universe===name).length;
@@ -11231,7 +11437,7 @@ function renderUniversManageList(){
         </div>
       </div>
     </div>
-  `}).join('');
+  `}).join('') + `</div>`;
   names.forEach(name=>{
     const slug = universeSlug(name);
     attachImageUploader('uImageTile-'+slug);
@@ -11829,6 +12035,24 @@ async function submitBulkCharacters(workId){
   toast(`${lines.length} personnages ajoutés à "${w.title}".`);
 }
 
+async function duplicateCharactersFromWork(workId){
+  const w = findWork(workId);
+  if(!w) return;
+  const msgEl = document.getElementById('dupPersMsg-'+workId);
+  const sourceId = document.getElementById('dupPersSource-'+workId).value;
+  if(!sourceId){ msgEl.textContent = "Aucune histoire source disponible."; return; }
+  const source = findWork(sourceId);
+  if(!source) return;
+  if(!w.characters) w.characters = [];
+  const copies = (source.characters||[]).map(c => ({ name: c.name, image: c.image, desc: c.desc }));
+  w.characters.push(...copies);
+  await saveWorks();
+  msgEl.style.color = 'var(--gold)';
+  msgEl.textContent = `${copies.length} personnage(s) copié(s) depuis « ${source.title} ».`;
+  toast('Personnages copiés.');
+  refreshCharactersList(workId);
+}
+
 function toggleWorkSubBlock(workId, type){
   const block = document.getElementById((type==='chapters'?'chaptersBlock-':'charactersBlock-')+workId);
   const icon = document.getElementById((type==='chapters'?'chaptersToggleIcon-':'charactersToggleIcon-')+workId);
@@ -12189,6 +12413,18 @@ function histCardHeaderHtml(w, isDetailPage){
         <div class="admin-msg" id="bulkPersMsg-${w.id}"></div>
         <button type="button" class="submit-btn" onclick="submitBulkCharacters('${w.id}')">Importer ces personnages</button>
       </div>
+      <div class="create-form-toggle" onclick="toggleCreateForm('dupPersForm-${w.id}')">
+        <span id="toggleIcon-dupPersForm-${w.id}">▸</span> + Copier les personnages d'une autre histoire
+      </div>
+      <div class="admin-form" id="dupPersForm-${w.id}" style="display:none;">
+        <div class="hint">Pratique pour un tome 2 : les personnages de l'histoire choisie sont dupliqués ici (l'originale n'est pas modifiée).</div>
+        <select id="dupPersSource-${w.id}">
+          ${WORKS.filter(x=>x.id!==w.id && (x.characters||[]).length).map(x=>`<option value="${x.id}">${escapeHtml(x.title)} (${x.characters.length} personnage${x.characters.length>1?'s':''})</option>`).join('') || '<option value="">Aucune autre histoire avec des personnages</option>'}
+        </select>
+        <div class="admin-msg" id="dupPersMsg-${w.id}"></div>
+        <button type="button" class="submit-btn" onclick="duplicateCharactersFromWork('${w.id}')">Copier ces personnages ici</button>
+      </div>
+
       <div class="hist-collapsible">
         <div class="hist-collapsible-header" onclick="toggleWorkSubBlock('${w.id}','characters')">
           👤 Personnages (${(w.characters||[]).length}) <span id="charactersToggleIcon-${w.id}">▾</span>
