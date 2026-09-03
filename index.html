@@ -16,7 +16,7 @@
 </script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cordélia w Noble</title>
+<title>Cordelia w Noble</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 28S3 19 3 10.5C3 5.3 7 2 11.5 2c2.6 0 4.9 1.4 4.5 4-.4-2.6 1.9-4 4.5-4C25 2 29 5.3 29 10.5 29 19 16 28 16 28z' fill='%231B3A6B'/%3E%3C/svg%3E">
 
 <!-- PWA : permet d'ajouter le site à l'écran d'accueil, comme une application -->
@@ -7910,6 +7910,7 @@ function renderAdmin(){
           </div>
           <div style="display:flex;gap:10px;margin-top:24px;">
             <div class="submit-btn" style="margin:0;" id="betaWorkSaveBtn">Enregistrer</div>
+            <div class="submit-btn" style="margin:0;background:var(--gold);display:none;" id="betaWorkPublishBtn">✓ Publier sur le site</div>
             <div class="del-btn" id="betaWorkDeleteBtn" style="display:none;">Supprimer l'œuvre</div>
           </div>
           <div class="admin-msg" id="betaWorkMsg"></div>
@@ -10643,6 +10644,7 @@ async function renderBetaWorkEditForm(){
   document.getElementById('betaWorkCover').value = w ? (w.cover||'') : '';
   document.getElementById('betaWorkHoverImage').value = w ? (w.hoverImage||'') : '';
   document.getElementById('betaWorkDeleteBtn').style.display = w ? 'block' : 'none';
+  document.getElementById('betaWorkPublishBtn').style.display = w ? 'inline-block' : 'none';
   document.getElementById('betaWorkMsg').textContent = '';
   attachImageUploader('betaWorkCover');
   attachImageUploader('betaWorkHoverImage');
@@ -10682,6 +10684,12 @@ async function renderBetaWorkEditForm(){
     toast('Œuvre supprimée.');
     adminTab = 'beta-works';
     applyAdminTab();
+  };
+
+  document.getElementById('betaWorkPublishBtn').onclick = async ()=>{
+    if(!w) return;
+    if(!confirm(`Publier « ${w.title} » sur le site public ?\n\nCela va créer une nouvelle histoire publique avec ses chapitres et personnages actuels, supprimer tous les commentaires de bêta-lecture qui y sont liés, et retirer cette œuvre de l'espace bêta-lecture.\n\nVous pourrez ensuite compléter les informations manquantes (univers, statut, tropes...) directement sur la fiche publique. Continuer ?`)) return;
+    await publishBetaWorkToSite(w);
   };
 
   if(w){ renderBetaChaptersManageList(w); renderBetaCharactersManageList(w); }
@@ -11110,6 +11118,52 @@ async function deleteBetaCommentFromAdmin(commentId){
   window._betaAllComments = comments;
   toast('Commentaire supprimé.');
   renderBetaCommentsAdminList();
+}
+
+/* ---------- bascule d'une œuvre bêta vers le site public ---------- */
+async function publishBetaWorkToSite(betaWork){
+  let id = slugify(betaWork.title) || ('histoire-' + Date.now());
+  let uniqueId = id, n = 2;
+  while(findWork(uniqueId)){ uniqueId = id + '-' + n; n++; }
+
+  const newWork = {
+    id: uniqueId,
+    title: betaWork.title,
+    genre: betaWork.genre || '',
+    status: 'En cours',
+    universe: '',
+    shelf: 'plateforme',
+    tropes: [],
+    releaseDate: todayISO(),
+    coverGradient: 'linear-gradient(160deg, var(--wine), var(--gold))',
+    cover: betaWork.cover || '',
+    hoverImage: betaWork.hoverImage || '',
+    synopsis: betaWork.synopsis || '',
+    characters: (betaWork.characters||[]).map(c => ({ name: c.name, image: c.image||'', desc: c.desc||'' })),
+    externalLinks: [],
+    chapters: (betaWork.chapters||[]).map(c => ({
+      id: 'ch-' + Date.now() + '-' + Math.random().toString(36).slice(2,6),
+      title: c.title, date: c.date || todayISO(), text: c.text || '', image: c.image || ''
+    }))
+  };
+  WORKS.push(newWork);
+  await saveWorks();
+
+  // purge des commentaires de bêta-lecture liés à cette œuvre
+  let comments = await loadBetaComments();
+  comments = comments.filter(cm => cm.workId !== betaWork.id);
+  await saveBetaComments(comments);
+
+  // retrait de l'espace bêta-lecture
+  let betaList = await loadBetaWorks();
+  betaList = betaList.filter(w => w.id !== betaWork.id);
+  await saveBetaWorks(betaList);
+
+  toast(`« ${betaWork.title} » a été publiée sur le site !`);
+  betaEditingWorkId = null;
+  adminTab = 'gerer';
+  applyAdminTab();
+  openWorkDetail(uniqueId);
 }
 
 /* ---------- désinscription en libre-service (lien présent dans les emails) ---------- */
