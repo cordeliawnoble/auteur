@@ -1367,6 +1367,45 @@ body.dark .reader-warning{background:#2B2418;color:#E0B98A;}
 .reaction-count{font-family:'Jost',sans-serif;font-size:.75rem;color:var(--muted);}
 .chapter-illustration{width:100%;border-radius:6px;margin-top:34px;display:block;box-shadow:0 20px 40px -24px rgba(36,51,82,.4);}
 .chapter-text p{margin:0 0 1.4em;}
+
+/* ---------- commentaires par paragraphe (bêta-lecture) ---------- */
+.beta-paragraph{cursor:pointer;position:relative;border-radius:4px;transition:background .15s ease;padding:2px 8px;margin-left:-8px;margin-right:-8px;}
+.beta-paragraph:hover{background:rgba(140,106,168,.08);}
+.beta-paragraph.has-comments{background:rgba(227,168,87,.08);}
+.beta-para-badge{display:inline-flex;align-items:center;gap:3px;position:absolute;right:-6px;top:2px;transform:translateX(100%);background:var(--wine);color:#fff;font-family:'Jost',sans-serif;font-size:.68rem;padding:2px 7px;border-radius:20px;white-space:nowrap;}
+@media(max-width:900px){.beta-para-badge{position:static;transform:none;display:inline-flex;margin-left:8px;}}
+.beta-panel-overlay{position:fixed;inset:0;background:rgba(20,15,25,.35);z-index:200;opacity:0;pointer-events:none;transition:opacity .2s ease;}
+.beta-panel-overlay.open{opacity:1;pointer-events:auto;}
+.beta-panel{position:fixed;top:0;right:0;height:100%;width:400px;max-width:92vw;background:var(--bg,#FAF6EE);box-shadow:-14px 0 40px -20px rgba(0,0,0,.4);z-index:201;transform:translateX(100%);transition:transform .25s ease;display:flex;flex-direction:column;}
+.beta-panel.open{transform:translateX(0);}
+.beta-panel-head{padding:20px 22px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+.beta-panel-head-text{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.92rem;color:var(--muted);line-height:1.5;}
+.beta-panel-close{cursor:pointer;font-size:1.3rem;line-height:1;color:var(--muted);flex-shrink:0;}
+.beta-panel-close:hover{color:var(--wine);}
+.beta-panel-thread{flex:1;overflow-y:auto;padding:16px 22px;}
+.beta-comment{margin-bottom:18px;}
+.beta-comment.is-reply{margin-left:20px;padding-left:12px;border-left:2px solid var(--line);}
+.beta-comment-head{display:flex;align-items:center;gap:8px;font-family:'Jost',sans-serif;font-size:.75rem;color:var(--muted);margin-bottom:4px;}
+.beta-comment-author{font-weight:600;color:var(--ink);}
+.beta-comment-text{font-size:.92rem;line-height:1.6;white-space:pre-wrap;}
+.beta-comment-emoji{font-size:1.4rem;}
+.beta-comment-gif{max-width:220px;border-radius:8px;margin-top:6px;display:block;}
+.beta-comment-actions{display:flex;gap:14px;margin-top:5px;}
+.beta-comment-actions span{font-family:'Jost',sans-serif;font-size:.72rem;color:var(--muted);cursor:pointer;}
+.beta-comment-actions span:hover{color:var(--wine);}
+.beta-panel-composer{border-top:1px solid var(--line);padding:14px 22px 20px;}
+.beta-reply-tag{display:flex;justify-content:space-between;align-items:center;background:var(--bg-alt);padding:6px 10px;border-radius:6px;font-family:'Jost',sans-serif;font-size:.75rem;margin-bottom:8px;}
+.beta-reply-tag span:last-child{cursor:pointer;color:var(--wine);}
+.beta-emoji-row{display:flex;gap:6px;margin:8px 0;flex-wrap:wrap;}
+.beta-emoji-btn{font-size:1.2rem;background:var(--bg-alt);border:1px solid var(--line);border-radius:8px;padding:4px 9px;cursor:pointer;}
+.beta-emoji-btn.selected{background:var(--wine);}
+.beta-gif-btn{font-family:'Jost',sans-serif;font-size:.75rem;background:var(--bg-alt);border:1px solid var(--line);border-radius:8px;padding:5px 10px;cursor:pointer;}
+.beta-gif-search{margin-top:8px;}
+.beta-gif-results{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-height:180px;overflow-y:auto;margin-top:8px;}
+.beta-gif-results img{width:100%;border-radius:6px;cursor:pointer;display:block;}
+.beta-gif-selected{position:relative;display:inline-block;margin-top:8px;}
+.beta-gif-selected img{max-width:140px;border-radius:8px;display:block;}
+.beta-gif-selected .remove-gif{position:absolute;top:-8px;right:-8px;background:var(--wine);color:#fff;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.75rem;}
 .chapter-nav{display:flex;justify-content:space-between;margin:50px 0 10px;font-family:'Jost',sans-serif;font-size:.85rem;}
 .chapter-nav a{color:var(--muted);cursor:pointer;}
 .chapter-nav a:hover{color:var(--gold);}
@@ -2237,6 +2276,19 @@ async function saveBetaWorks(list){
   window._betaWorksCacheForDup = list;
 }
 function findBetaWork(list, id){ return list.find(w => w.id === id) || null; }
+
+/* Commentaires par paragraphe (bêta-lecture) : un seul flux, filtré côté client par
+   œuvre/chapitre. Visible entre toutes les bêta-lectrices, pas de modération a priori. */
+const BETA_COMMENTS_KEY = 'beta:comments';
+async function loadBetaComments(){
+  try{
+    const res = await window.storage.get(BETA_COMMENTS_KEY, true);
+    return res && res.value ? JSON.parse(res.value) : [];
+  }catch(e){ return []; }
+}
+async function saveBetaComments(list){
+  try{ await window.storage.set(BETA_COMMENTS_KEY, JSON.stringify(list), true); }catch(e){}
+}
 
 /* ---------- envoi d'images directement depuis l'admin (Supabase Storage) ---------- */
 const IMAGE_BUCKET = 'site-images';
@@ -6886,15 +6938,22 @@ async function renderBetaWorkFiche(session, workId){
   app.innerHTML = `
     <div class="wrap" style="padding:60px 24px 100px;max-width:900px;margin:0 auto;">
       ${betaHeaderHtml(session, 'beta', 'Bêta-lecture')}
-      <div style="display:flex;gap:26px;flex-wrap:wrap;margin-bottom:30px;">
-        <div class="cover" style="${betaCoverStyle(w)}width:180px;min-width:180px;aspect-ratio:2/3;border-radius:6px;"></div>
-        <div style="flex:1;min-width:220px;">
-          <h1 style="margin:0 0 8px;">${escapeHtml(w.title)}</h1>
-          ${w.genre ? `<div class="hint" style="margin-bottom:14px;">${escapeHtml(w.genre)}</div>` : ''}
-          ${w.synopsis ? `<div style="line-height:1.75;">${richParagraphs(w.synopsis)}</div>` : ''}
+      <div class="story-hero-frame">
+        <div class="story-hero-cols">
+          <div class="story-hero-cover">
+            ${w.cover
+              ? `<img src="${escapeHtml(w.cover)}" alt="${escapeHtml(w.title)}">`
+              : `<div class="story-hero-cover-fallback" style="background:linear-gradient(135deg, var(--wine), var(--gold));"></div>`}
+          </div>
+          <div class="story-hero-text">
+            <div class="story-eyebrow">Bêta-lecture ♡</div>
+            <h1>${escapeHtml(w.title)}</h1>
+            ${w.genre ? `<div class="hint" style="margin:4px 0 14px;">${escapeHtml(w.genre)}</div>` : ''}
+            ${w.synopsis ? `<div class="saga-desc" style="max-width:none;">${richParagraphs(w.synopsis)}</div>` : ''}
+          </div>
         </div>
       </div>
-      <div class="section-title"><h2>Chapitres</h2><div class="rule"></div></div>
+      <div class="section-title" style="margin-top:44px;"><h2>Chapitres</h2><div class="rule"></div></div>
       <div class="admin-list" id="betaChaptersList" style="margin-top:18px;"></div>
       ${chars.length ? `
       <div class="section-title" style="margin-top:50px;"><h2>Personnages</h2><div class="rule"></div></div>
@@ -6932,18 +6991,243 @@ async function renderBetaChapterReading(session, workId, chapterId){
     return;
   }
   document.title = c.title + " — " + w.title + " — Bêta-lecture";
+  window._betaReaderCtx = { session, workId, chapterId };
+  window._betaAllComments = await loadBetaComments();
+  const countsByPara = {};
+  window._betaAllComments.filter(cm => cm.workId===workId && cm.chapterId===chapterId).forEach(cm=>{
+    countsByPara[cm.paraIndex] = (countsByPara[cm.paraIndex]||0) + 1;
+  });
   const paragraphs = (c.text||'').split(/\n\s*\n/).map(p=>p.trim()).filter(Boolean)
-    .map((p,i) => `<p class="beta-paragraph" data-para-index="${i}">${formatRichText(p).replace(/\n/g,'<br>')}</p>`)
+    .map((p,i) => {
+      const count = countsByPara[i] || 0;
+      return `<p class="beta-paragraph${count?' has-comments':''}" data-para-index="${i}" onclick="openBetaCommentPanel(${i})">${formatRichText(p).replace(/\n/g,'<br>')}${count ? `<span class="beta-para-badge">💬 ${count}</span>` : ''}</p>`;
+    })
     .join('');
   app.innerHTML = `
     <div class="wrap" style="padding:60px 24px 100px;max-width:760px;margin:0 auto;">
       ${betaHeaderHtml(session, 'beta/'+w.id, w.title)}
       <div class="eyebrow">${escapeHtml(w.title)} · bêta-lecture</div>
-      <h1 style="margin:8px 0 30px;">${escapeHtml(c.title)}</h1>
+      <h1 style="margin:8px 0 8px;">${escapeHtml(c.title)}</h1>
+      <p class="hint" style="margin:0 0 30px;">Cliquez sur un paragraphe pour le commenter.</p>
       ${c.image ? `<img src="${escapeHtml(c.image)}" alt="${escapeHtml(c.title)}" class="chapter-illustration">` : ''}
       <div class="chapter-text" oncopy="return false" oncontextmenu="return false" ondragstart="return false">${paragraphs || '<p style="color:var(--muted);">Ce chapitre est vide pour le moment.</p>'}</div>
     </div>
+    <div class="beta-panel-overlay" id="betaPanelOverlay" onclick="closeBetaCommentPanel()"></div>
+    <div class="beta-panel" id="betaPanel">
+      <div class="beta-panel-head">
+        <div class="beta-panel-head-text" id="betaPanelParaPreview"></div>
+        <span class="beta-panel-close" onclick="closeBetaCommentPanel()">✕</span>
+      </div>
+      <div class="beta-panel-thread" id="betaPanelThread"></div>
+      <div class="beta-panel-composer" id="betaPanelComposer"></div>
+    </div>
   `;
+}
+
+let betaCurrentParaIndex = null;
+let betaReplyToId = null;
+let betaSelectedEmoji = null;
+let betaSelectedGif = null;
+
+function openBetaCommentPanel(paraIndex){
+  betaCurrentParaIndex = paraIndex;
+  betaReplyToId = null;
+  betaSelectedEmoji = null;
+  betaSelectedGif = null;
+  document.getElementById('betaPanelOverlay').classList.add('open');
+  document.getElementById('betaPanel').classList.add('open');
+  const paraEl = document.querySelector(`.beta-paragraph[data-para-index="${paraIndex}"]`);
+  const preview = paraEl ? paraEl.textContent.replace(/💬.*$/,'').trim() : '';
+  document.getElementById('betaPanelParaPreview').textContent = preview.length > 140 ? preview.slice(0,140) + '…' : preview;
+  renderBetaCommentThread();
+  renderBetaComposer();
+}
+function closeBetaCommentPanel(){
+  document.getElementById('betaPanelOverlay').classList.remove('open');
+  document.getElementById('betaPanel').classList.remove('open');
+}
+
+function betaCommentsForCurrentPara(){
+  const { workId, chapterId } = window._betaReaderCtx;
+  return window._betaAllComments
+    .filter(cm => cm.workId===workId && cm.chapterId===chapterId && cm.paraIndex===betaCurrentParaIndex)
+    .sort((a,b)=>(a.createdAt||'').localeCompare(b.createdAt||''));
+}
+
+function betaCanDelete(cm){
+  const { session } = window._betaReaderCtx;
+  return cm.email === session.email || !!getAdminSession();
+}
+
+function renderBetaCommentThread(){
+  const threadEl = document.getElementById('betaPanelThread');
+  const all = betaCommentsForCurrentPara();
+  const topLevel = all.filter(cm => !cm.parentId);
+  if(!topLevel.length){
+    threadEl.innerHTML = '<p style="color:var(--muted);font-size:.88rem;">Aucun commentaire pour ce paragraphe pour le moment — soyez la première à réagir !</p>';
+    return;
+  }
+  const renderOne = (cm, isReply) => `
+    <div class="beta-comment${isReply?' is-reply':''}">
+      <div class="beta-comment-head">
+        <span class="beta-comment-author">${escapeHtml(cm.email.split('@')[0])}</span>
+        <span>${formatDate((cm.createdAt||'').slice(0,10))}</span>
+      </div>
+      ${cm.emoji ? `<div class="beta-comment-emoji">${cm.emoji}</div>` : ''}
+      ${cm.text ? `<div class="beta-comment-text">${escapeHtml(cm.text)}</div>` : ''}
+      ${cm.gifUrl ? `<img src="${escapeHtml(cm.gifUrl)}" class="beta-comment-gif" alt="GIF">` : ''}
+      <div class="beta-comment-actions">
+        ${!isReply ? `<span onclick="startBetaReply('${cm.id}','${cm.email.split('@')[0].replace(/'/g,"")}')">Répondre</span>` : ''}
+        ${betaCanDelete(cm) ? `<span onclick="deleteBetaComment('${cm.id}')">Supprimer</span>` : ''}
+      </div>
+    </div>
+  `;
+  threadEl.innerHTML = topLevel.map(cm => {
+    const replies = all.filter(r => r.parentId === cm.id);
+    return renderOne(cm, false) + replies.map(r => renderOne(r, true)).join('');
+  }).join('');
+}
+
+const BETA_QUICK_EMOJIS = ['❤️','😂','😢','😱','🔥','👏','😍','💀'];
+function renderBetaComposer(){
+  const el = document.getElementById('betaPanelComposer');
+  const giphyReady = !!(SETTINGS.betaGiphyApiKey);
+  el.innerHTML = `
+    ${betaReplyToId ? `<div class="beta-reply-tag"><span>Réponse à ${escapeHtml(betaReplyToName||'')}</span><span onclick="cancelBetaReply()">Annuler</span></div>` : ''}
+    <textarea id="betaCommentText" rows="2" placeholder="Votre commentaire..." style="min-height:60px;"></textarea>
+    <div class="beta-emoji-row" id="betaEmojiRow">
+      ${BETA_QUICK_EMOJIS.map(e=>`<span class="beta-emoji-btn${betaSelectedEmoji===e?' selected':''}" onclick="selectBetaEmoji('${e}')">${e}</span>`).join('')}
+    </div>
+    ${giphyReady ? `
+      <div class="beta-gif-btn" onclick="toggleBetaGifSearch()">🎬 Ajouter un GIF</div>
+      <div class="beta-gif-search" id="betaGifSearchBlock" style="display:none;">
+        <input type="text" id="betaGifQuery" placeholder="Chercher un GIF...">
+        <div class="beta-gif-results" id="betaGifResults"></div>
+      </div>
+      <div id="betaGifSelectedBlock"></div>
+    ` : ''}
+    <div class="admin-msg" id="betaCommentMsg"></div>
+    <div class="submit-btn" style="margin-top:12px;" id="betaCommentSubmitBtn">Publier</div>
+  `;
+  if(betaSelectedGif){
+    document.getElementById('betaGifSelectedBlock').innerHTML = `
+      <div class="beta-gif-selected"><img src="${escapeHtml(betaSelectedGif)}"><span class="remove-gif" onclick="removeBetaGifSelection()">✕</span></div>
+    `;
+  }
+  const gifQueryInput = document.getElementById('betaGifQuery');
+  if(gifQueryInput){
+    let debounceTimer;
+    gifQueryInput.addEventListener('input', ()=>{
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(()=>searchBetaGifs(gifQueryInput.value.trim()), 400);
+    });
+  }
+  document.getElementById('betaCommentSubmitBtn').addEventListener('click', submitBetaComment);
+}
+
+function selectBetaEmoji(e){
+  betaSelectedEmoji = betaSelectedEmoji === e ? null : e;
+  renderBetaComposer();
+}
+function toggleBetaGifSearch(){
+  const block = document.getElementById('betaGifSearchBlock');
+  if(block) block.style.display = block.style.display==='none' ? 'block' : 'none';
+}
+async function searchBetaGifs(query){
+  const resultsEl = document.getElementById('betaGifResults');
+  if(!resultsEl) return;
+  const key = SETTINGS.betaGiphyApiKey;
+  if(!key || !query){ resultsEl.innerHTML = ''; return; }
+  resultsEl.innerHTML = '<p style="color:var(--muted);font-size:.75rem;">Recherche…</p>';
+  try{
+    const res = await fetch(`https://api.giphy.com/v1/gifs/search?api_key=${encodeURIComponent(key)}&q=${encodeURIComponent(query)}&limit=9&rating=pg-13&lang=fr`);
+    const data = await res.json();
+    const gifs = (data.data||[]);
+    resultsEl.innerHTML = gifs.length ? gifs.map(g => `<img src="${g.images.fixed_width_small.url}" data-full="${g.images.fixed_width.url}" onclick="selectBetaGifFromResult(this)">`).join('') : '<p style="color:var(--muted);font-size:.75rem;">Aucun résultat.</p>';
+  }catch(e){
+    resultsEl.innerHTML = '<p style="color:#A23B4A;font-size:.75rem;">Erreur de recherche.</p>';
+  }
+}
+function selectBetaGifFromResult(imgEl){
+  betaSelectedGif = imgEl.dataset.full;
+  document.getElementById('betaGifSearchBlock').style.display = 'none';
+  renderBetaComposer();
+}
+function removeBetaGifSelection(){
+  betaSelectedGif = null;
+  renderBetaComposer();
+}
+
+let betaReplyToName = null;
+function startBetaReply(commentId, name){
+  betaReplyToId = commentId;
+  betaReplyToName = name;
+  renderBetaComposer();
+  const ta = document.getElementById('betaCommentText');
+  if(ta) ta.focus();
+}
+function cancelBetaReply(){
+  betaReplyToId = null;
+  betaReplyToName = null;
+  renderBetaComposer();
+}
+
+async function submitBetaComment(){
+  const msgEl = document.getElementById('betaCommentMsg');
+  const text = document.getElementById('betaCommentText').value.trim();
+  if(!text && !betaSelectedEmoji && !betaSelectedGif){
+    msgEl.textContent = 'Écrivez un mot, choisissez une réaction ou un GIF avant de publier.';
+    return;
+  }
+  const { session, workId, chapterId } = window._betaReaderCtx;
+  const comment = {
+    id: 'com-' + Date.now() + '-' + Math.random().toString(36).slice(2,7),
+    workId, chapterId,
+    paraIndex: betaCurrentParaIndex,
+    email: session.email,
+    text: text || '',
+    emoji: betaSelectedEmoji || '',
+    gifUrl: betaSelectedGif || '',
+    parentId: betaReplyToId || null,
+    createdAt: new Date().toISOString()
+  };
+  window._betaAllComments.push(comment);
+  await saveBetaComments(window._betaAllComments);
+  betaReplyToId = null; betaReplyToName = null; betaSelectedEmoji = null; betaSelectedGif = null;
+  renderBetaCommentThread();
+  renderBetaComposer();
+  // met à jour le badge du paragraphe dans le texte, sans tout recharger
+  const paraEl = document.querySelector(`.beta-paragraph[data-para-index="${betaCurrentParaIndex}"]`);
+  if(paraEl){
+    paraEl.classList.add('has-comments');
+    const count = betaCommentsForCurrentPara().length;
+    let badge = paraEl.querySelector('.beta-para-badge');
+    if(!badge){
+      badge = document.createElement('span');
+      badge.className = 'beta-para-badge';
+      paraEl.appendChild(badge);
+    }
+    badge.textContent = `💬 ${count}`;
+  }
+}
+
+async function deleteBetaComment(commentId){
+  if(!confirm('Supprimer ce commentaire ?')) return;
+  window._betaAllComments = window._betaAllComments.filter(cm => cm.id !== commentId && cm.parentId !== commentId);
+  await saveBetaComments(window._betaAllComments);
+  renderBetaCommentThread();
+  const paraEl = document.querySelector(`.beta-paragraph[data-para-index="${betaCurrentParaIndex}"]`);
+  const count = betaCommentsForCurrentPara().length;
+  if(paraEl){
+    const badge = paraEl.querySelector('.beta-para-badge');
+    if(count === 0){
+      paraEl.classList.remove('has-comments');
+      if(badge) badge.remove();
+    } else if(badge){
+      badge.textContent = `💬 ${count}`;
+    }
+  }
+  toast('Commentaire supprimé.');
 }
 
 function renderAdmin(){
@@ -7566,6 +7850,14 @@ function renderAdmin(){
       </div>
 
       <div class="admin-section" data-section="beta-invites">
+        <div class="admin-form" style="margin-bottom:22px;">
+          <h3>Réglages des commentaires</h3>
+          <label>Clé API Giphy (pour permettre les GIFs dans les commentaires)</label>
+          <input type="text" id="betaGiphyKey" placeholder="Collez votre clé API Giphy ici">
+          <div class="hint" style="margin-top:6px;">Gratuite sur developers.giphy.com. Sans clé, le bouton GIF reste masqué dans les commentaires.</div>
+          <div class="submit-btn" style="margin-top:12px;" id="betaGiphyKeySaveBtn">Enregistrer</div>
+          <div class="admin-msg" id="betaGiphyKeyMsg"></div>
+        </div>
         <div class="admin-form" style="margin-bottom:22px;">
           <h3>Inviter une bêta-lectrice</h3>
           <p class="hint" style="margin:0 0 14px;line-height:1.7;">
@@ -10179,6 +10471,22 @@ async function deleteSubscriber(key){
 
 /* ---------- gestion des invitées bêta-lecture (back-office) ---------- */
 async function renderBetaInvitesList(){
+  const giphyInput = document.getElementById('betaGiphyKey');
+  if(giphyInput){
+    giphyInput.value = SETTINGS.betaGiphyApiKey || '';
+    const saveBtn = document.getElementById('betaGiphyKeySaveBtn');
+    if(saveBtn && !saveBtn._wired){
+      saveBtn._wired = true;
+      saveBtn.addEventListener('click', async ()=>{
+        SETTINGS.betaGiphyApiKey = giphyInput.value.trim();
+        await saveSettings();
+        const msgEl = document.getElementById('betaGiphyKeyMsg');
+        msgEl.style.color = 'var(--gold)';
+        msgEl.textContent = 'Clé enregistrée ✓';
+        toast('Réglages enregistrés.');
+      });
+    }
+  }
   const listEl = document.getElementById('betaInvitesList');
   if(!listEl) return;
   listEl.innerHTML = '<p style="color:var(--muted);">Chargement…</p>';
