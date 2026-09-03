@@ -16,7 +16,7 @@
 </script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Nom de plume — Histoires</title>
+<title>Cordélia w Noble</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 28S3 19 3 10.5C3 5.3 7 2 11.5 2c2.6 0 4.9 1.4 4.5 4-.4-2.6 1.9-4 4.5-4C25 2 29 5.3 29 10.5 29 19 16 28 16 28z' fill='%231B3A6B'/%3E%3C/svg%3E">
 
 <!-- PWA : permet d'ajouter le site à l'écran d'accueil, comme une application -->
@@ -6830,6 +6830,9 @@ function betaCoverStyle(w){
     ? `background-image:url('${w.cover.replace(/'/g,"\\'")}');background-size:cover;background-position:center;`
     : `background:linear-gradient(135deg, var(--wine), var(--gold));`;
 }
+function betaCoverHoverLayer(w){
+  return w.hoverImage ? `<div class="cover-hover-layer" style="background-image:url('${w.hoverImage.replace(/'/g,"\\'")}');"></div>` : '';
+}
 
 function betaHeaderHtml(session, backRoute, backLabel){
   return `
@@ -6862,6 +6865,7 @@ async function renderBetaCatalogue(session){
   grid.innerHTML = works.map(w => `
     <div class="work-card" onclick="navigate('beta/${w.id}')">
       <div class="cover" style="${betaCoverStyle(w)}">
+        ${betaCoverHoverLayer(w)}
         <div class="badge-row"><span class="badge-pill" style="background:var(--wine);">Bêta-lecture</span></div>
         <span class="cover-title">${escapeHtml(w.title)}</span>
       </div>
@@ -6877,18 +6881,30 @@ async function renderBetaWorkFiche(session, workId){
     return;
   }
   document.title = w.title + " — Bêta-lecture — " + SETTINGS.name;
+  const chars = w.characters || [];
   app.innerHTML = `
     <div class="wrap" style="padding:60px 24px 100px;max-width:900px;margin:0 auto;">
       ${betaHeaderHtml(session, 'beta', 'Bêta-lecture')}
       <div style="display:flex;gap:26px;flex-wrap:wrap;margin-bottom:30px;">
         <div class="cover" style="${betaCoverStyle(w)}width:180px;min-width:180px;aspect-ratio:2/3;border-radius:6px;"></div>
         <div style="flex:1;min-width:220px;">
-          <h1 style="margin:0 0 12px;">${escapeHtml(w.title)}</h1>
+          <h1 style="margin:0 0 8px;">${escapeHtml(w.title)}</h1>
+          ${w.genre ? `<div class="hint" style="margin-bottom:14px;">${escapeHtml(w.genre)}</div>` : ''}
           ${w.synopsis ? `<div style="line-height:1.75;">${richParagraphs(w.synopsis)}</div>` : ''}
         </div>
       </div>
       <div class="section-title"><h2>Chapitres</h2><div class="rule"></div></div>
       <div class="admin-list" id="betaChaptersList" style="margin-top:18px;"></div>
+      ${chars.length ? `
+      <div class="section-title" style="margin-top:50px;"><h2>Personnages</h2><div class="rule"></div></div>
+      <div class="works-grid" style="margin-top:20px;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));">
+        ${chars.map(c => `
+          <div style="text-align:center;">
+            ${c.image ? `<img src="${escapeHtml(c.image)}" alt="${escapeHtml(c.name)}" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:50%;">` : `<div style="width:100%;aspect-ratio:1;border-radius:50%;background:var(--bg-alt);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--muted);">${escapeHtml((c.name||'?').charAt(0).toUpperCase())}</div>`}
+            <div style="margin-top:8px;font-family:'Jost',sans-serif;font-size:.85rem;">${escapeHtml(c.name)}</div>
+          </div>
+        `).join('')}
+      </div>` : ''}
     </div>
   `;
   const listEl = document.getElementById('betaChaptersList');
@@ -6923,6 +6939,7 @@ async function renderBetaChapterReading(session, workId, chapterId){
       ${betaHeaderHtml(session, 'beta/'+w.id, w.title)}
       <div class="eyebrow">${escapeHtml(w.title)} · bêta-lecture</div>
       <h1 style="margin:8px 0 30px;">${escapeHtml(c.title)}</h1>
+      ${c.image ? `<img src="${escapeHtml(c.image)}" alt="${escapeHtml(c.title)}" class="chapter-illustration">` : ''}
       <div class="chapter-text" oncopy="return false" oncontextmenu="return false" ondragstart="return false">${paragraphs || '<p style="color:var(--muted);">Ce chapitre est vide pour le moment.</p>'}</div>
     </div>
   `;
@@ -7572,39 +7589,107 @@ function renderAdmin(){
       </div>
 
       <div class="admin-section" data-section="beta-work-edit">
-        <div class="admin-form" id="formBetaWork">
-          <label>Titre de l'œuvre</label>
-          <input type="text" id="betaWorkTitle" placeholder="Titre">
-          <label>Synopsis (facultatif)</label>
-          <textarea id="betaWorkSynopsis" rows="4" placeholder="Un court résumé, visible en tête de la fiche."></textarea>
-          <label>Image de couverture (URL, facultatif)</label>
-          <input type="text" id="betaWorkCover" placeholder="https://...">
-          <div style="display:flex;gap:10px;margin-top:16px;">
+        <div class="wtabs-bar" style="margin:-24px -24px 20px;padding:14px 24px;">
+          <div class="wtabs-nav">
+            <span class="wtab-btn active" data-btab="informations" onclick="switchBetaWorkTab('informations')">Informations</span>
+            <span class="wtab-btn" data-btab="chapitres" onclick="switchBetaWorkTab('chapitres')">Chapitres</span>
+            <span class="wtab-btn" data-btab="personnages" onclick="switchBetaWorkTab('personnages')">Personnages</span>
+            <span class="wtab-btn" data-btab="medias" onclick="switchBetaWorkTab('medias')">Médias</span>
+          </div>
+        </div>
+
+        <div class="admin-form" id="betaTabInformations" data-bsection="informations">
+          <div class="row2">
+            <div>
+              <label>Titre de l'œuvre</label>
+              <input type="text" id="betaWorkTitle" placeholder="Titre">
+            </div>
+            <div>
+              <label>Genre (facultatif)</label>
+              <input type="text" id="betaWorkGenre" placeholder="Romance slow burn">
+            </div>
+          </div>
+          <div>
+            <label>Résumé</label>
+            ${formattingToolbar('betaWorkSynopsis', ``, 'Résumé de l\'œuvre')}
+            <textarea id="betaWorkSynopsis" placeholder="Le résumé de l'œuvre..." style="min-height:100px;"></textarea>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:24px;">
             <div class="submit-btn" style="margin:0;" id="betaWorkSaveBtn">Enregistrer</div>
             <div class="del-btn" id="betaWorkDeleteBtn" style="display:none;">Supprimer l'œuvre</div>
           </div>
           <div class="admin-msg" id="betaWorkMsg"></div>
+          <div class="admin-msg" id="betaWorkNeedsSaveHint" style="display:none;color:var(--gold);">Enregistrez d'abord l'œuvre pour pouvoir ajouter des chapitres, personnages et médias.</div>
         </div>
 
-        <div id="betaWorkChaptersBlock" style="display:none;margin-top:36px;">
-          <div class="section-title" style="margin-top:0;"><h2>Chapitres</h2><div class="rule"></div></div>
-          <div class="admin-list" id="betaWorkChaptersList" style="margin:18px 0 26px;"></div>
-
-          <div class="admin-form">
-            <h3 id="betaChapterFormTitle">Ajouter un chapitre</h3>
-            <input type="hidden" id="betaChapterEditId">
-            <label>Titre du chapitre</label>
-            <input type="text" id="betaChapterTitle" placeholder="Ex. Chapitre 1">
-            <label>Texte (une ligne vide entre deux paragraphes)</label>
-            <textarea id="betaChapterText" rows="14" placeholder="Collez ici le texte du chapitre..."></textarea>
-            <div style="display:flex;gap:10px;margin-top:16px;">
-              <div class="submit-btn" style="margin:0;" id="betaChapterSaveBtn">Ajouter le chapitre</div>
-              <div class="del-btn" id="betaChapterCancelBtn" style="display:none;background:transparent;color:var(--muted);border:1px solid var(--line);">Annuler la modification</div>
+        <div class="admin-form" id="betaTabChapitres" data-bsection="chapitres" style="display:none;">
+          <div class="admin-list" id="betaWorkChaptersList" style="margin-bottom:26px;"></div>
+          <h3 id="betaChapterFormTitle">Ajouter un chapitre</h3>
+          <input type="hidden" id="betaChapterEditId">
+          <div class="row2">
+            <div>
+              <label>Titre du chapitre</label>
+              <input type="text" id="betaChapterTitle" placeholder="Ex. Chapitre 1">
             </div>
-            <div class="admin-msg" id="betaChapterMsg"></div>
+            <div>
+              <label>Date</label>
+              <input type="date" id="betaChapterDate" value="${todayISO()}">
+            </div>
           </div>
+          <div>
+            <label>Texte du chapitre</label>
+            ${formattingToolbar('betaChapterText', ``, 'Texte du chapitre')}
+            <textarea id="betaChapterText" placeholder="Collez ou écrivez le texte ici. Une ligne vide entre deux paragraphes."></textarea>
+          </div>
+          <div>
+            <label>Illustration en haut de page (facultatif)</label>
+            <input type="text" id="betaChapterImage" placeholder="https://...">
+          </div>
+          <div style="display:flex;gap:10px;margin-top:16px;">
+            <div class="submit-btn" style="margin:0;" id="betaChapterSaveBtn">Ajouter le chapitre</div>
+            <div class="del-btn" id="betaChapterCancelBtn" style="display:none;background:transparent;color:var(--muted);border:1px solid var(--line);">Annuler la modification</div>
+          </div>
+          <div class="admin-msg" id="betaChapterMsg"></div>
+        </div>
+
+        <div class="admin-form" id="betaTabPersonnages" data-bsection="personnages" style="display:none;">
+          <div class="admin-list" id="betaWorkCharactersList" style="margin-bottom:26px;"></div>
+          <h3 id="betaCharFormTitle">Ajouter un personnage</h3>
+          <input type="hidden" id="betaCharEditId">
+          <div class="row2">
+            <div>
+              <label>Nom</label>
+              <input type="text" id="betaCharName" placeholder="Nom du personnage">
+            </div>
+            <div>
+              <label>Photo (facultatif)</label>
+              <input type="text" id="betaCharImage" placeholder="https://...">
+            </div>
+          </div>
+          <div>
+            <label>Description (facultatif)</label>
+            <textarea id="betaCharDesc" rows="4" placeholder="Description du personnage..."></textarea>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:16px;">
+            <div class="submit-btn" style="margin:0;" id="betaCharSaveBtn">Ajouter le personnage</div>
+            <div class="del-btn" id="betaCharCancelBtn" style="display:none;background:transparent;color:var(--muted);border:1px solid var(--line);">Annuler la modification</div>
+          </div>
+          <div class="admin-msg" id="betaCharMsg"></div>
+        </div>
+
+        <div class="admin-form" id="betaTabMedias" data-bsection="medias" style="display:none;">
+          <label>Image de couverture (vignettes, catalogue)</label>
+          <input type="text" id="betaWorkCover" placeholder="https://...">
+          <div class="hint" style="margin-top:6px;">Facultatif — sinon un dégradé de couleur est utilisé.</div>
+          <label style="margin-top:22px;">Image de survol (facultatif — remplace la vignette au survol)</label>
+          <input type="text" id="betaWorkHoverImage" placeholder="https://...">
+          <div style="display:flex;gap:10px;margin-top:22px;">
+            <div class="submit-btn" style="margin:0;" id="betaMediaSaveBtn">Enregistrer les médias</div>
+          </div>
+          <div class="admin-msg" id="betaMediaMsg"></div>
         </div>
       </div>
+
 
       <div class="admin-section" data-section="couleurs">
         <div class="admin-form" id="formCouleurs">
@@ -10146,16 +10231,40 @@ function openEditBetaWork(id){
   applyAdminTab();
 }
 
+function switchBetaWorkTab(tab){
+  if(!betaEditingWorkId && tab !== 'informations'){
+    const hint = document.getElementById('betaWorkNeedsSaveHint');
+    if(hint) hint.style.display = 'block';
+    return;
+  }
+  document.querySelectorAll('#betaTabInformations, #betaTabChapitres, #betaTabPersonnages, #betaTabMedias').forEach(el=>{
+    el.style.display = el.dataset.bsection === tab ? '' : 'none';
+  });
+  document.querySelectorAll('[data-btab]').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.btab === tab);
+  });
+}
+
 async function renderBetaWorkEditForm(){
   const works = await loadBetaWorks();
   const w = betaEditingWorkId ? findBetaWork(works, betaEditingWorkId) : null;
+  switchBetaWorkTab('informations');
+  const hint = document.getElementById('betaWorkNeedsSaveHint');
+  if(hint) hint.style.display = 'none';
 
   document.getElementById('betaWorkTitle').value = w ? w.title : '';
+  document.getElementById('betaWorkGenre').value = w ? (w.genre||'') : '';
   document.getElementById('betaWorkSynopsis').value = w ? (w.synopsis||'') : '';
+  const synEditor = document.getElementById('rich-betaWorkSynopsis');
+  if(synEditor) synEditor.innerHTML = markdownToRichHtml(w ? (w.synopsis||'') : '');
   document.getElementById('betaWorkCover').value = w ? (w.cover||'') : '';
+  document.getElementById('betaWorkHoverImage').value = w ? (w.hoverImage||'') : '';
   document.getElementById('betaWorkDeleteBtn').style.display = w ? 'block' : 'none';
-  document.getElementById('betaWorkChaptersBlock').style.display = w ? 'block' : 'none';
   document.getElementById('betaWorkMsg').textContent = '';
+  attachImageUploader('betaWorkCover');
+  attachImageUploader('betaWorkHoverImage');
+  attachImageUploader('betaChapterImage');
+  attachImageUploader('betaCharImage');
 
   const saveBtn = document.getElementById('betaWorkSaveBtn');
   saveBtn.textContent = w ? 'Enregistrer les modifications' : 'Créer l\'œuvre';
@@ -10163,21 +10272,21 @@ async function renderBetaWorkEditForm(){
     const msgEl = document.getElementById('betaWorkMsg');
     const title = document.getElementById('betaWorkTitle').value.trim();
     if(!title){ msgEl.textContent = 'Le titre est obligatoire.'; return; }
+    const genre = document.getElementById('betaWorkGenre').value.trim();
     const synopsis = document.getElementById('betaWorkSynopsis').value.trim();
-    const cover = document.getElementById('betaWorkCover').value.trim();
     const list = await loadBetaWorks();
     if(w){
       const target = findBetaWork(list, w.id);
-      target.title = title; target.synopsis = synopsis; target.cover = cover;
+      target.title = title; target.genre = genre; target.synopsis = synopsis;
     } else {
       let id = slugify(title) || ('oeuvre-' + Date.now());
       let uniqueId = id, n = 2;
       while(findBetaWork(list, uniqueId)){ uniqueId = id + '-' + n; n++; }
-      list.push({ id: uniqueId, title, synopsis, cover, createdAt: new Date().toISOString(), chapters: [] });
+      list.push({ id: uniqueId, title, genre, synopsis, cover:'', hoverImage:'', createdAt: new Date().toISOString(), chapters: [], characters: [] });
       betaEditingWorkId = uniqueId;
     }
     await saveBetaWorks(list);
-    toast(w ? 'Œuvre mise à jour.' : 'Œuvre créée.');
+    toast(w ? 'Œuvre mise à jour.' : 'Œuvre créée — vous pouvez maintenant ajouter des chapitres.');
     renderBetaWorkEditForm();
   };
 
@@ -10192,8 +10301,9 @@ async function renderBetaWorkEditForm(){
     applyAdminTab();
   };
 
-  if(w){ renderBetaChaptersManageList(w); }
+  if(w){ renderBetaChaptersManageList(w); renderBetaCharactersManageList(w); }
   resetBetaChapterForm();
+  resetBetaCharacterForm();
 
   const chapSaveBtn = document.getElementById('betaChapterSaveBtn');
   chapSaveBtn.onclick = async ()=>{
@@ -10201,6 +10311,8 @@ async function renderBetaWorkEditForm(){
     const msgEl = document.getElementById('betaChapterMsg');
     const ctitle = document.getElementById('betaChapterTitle').value.trim();
     const ctext = document.getElementById('betaChapterText').value;
+    const cdate = document.getElementById('betaChapterDate').value || todayISO();
+    const cimage = document.getElementById('betaChapterImage').value.trim();
     if(!ctitle){ msgEl.textContent = 'Le titre du chapitre est obligatoire.'; return; }
     const list = await loadBetaWorks();
     const target = findBetaWork(list, betaEditingWorkId);
@@ -10208,12 +10320,12 @@ async function renderBetaWorkEditForm(){
     const editId = document.getElementById('betaChapterEditId').value;
     if(editId){
       const ch = target.chapters.find(c => c.id === editId);
-      if(ch){ ch.title = ctitle; ch.text = ctext; }
+      if(ch){ ch.title = ctitle; ch.text = ctext; ch.date = cdate; ch.image = cimage; }
     } else {
       let id = slugify(ctitle) || ('chapitre-' + Date.now());
       let uniqueId = id, n = 2;
       while(target.chapters.some(c=>c.id===uniqueId)){ uniqueId = id + '-' + n; n++; }
-      target.chapters.push({ id: uniqueId, title: ctitle, text: ctext, date: todayISO() });
+      target.chapters.push({ id: uniqueId, title: ctitle, text: ctext, date: cdate, image: cimage });
     }
     await saveBetaWorks(list);
     toast('Chapitre enregistré.');
@@ -10221,15 +10333,62 @@ async function renderBetaWorkEditForm(){
     renderBetaChaptersManageList(target);
     renderBetaWorksManageList();
   };
-
   document.getElementById('betaChapterCancelBtn').onclick = resetBetaChapterForm;
+
+  const charSaveBtn = document.getElementById('betaCharSaveBtn');
+  charSaveBtn.onclick = async ()=>{
+    if(!betaEditingWorkId) return;
+    const msgEl = document.getElementById('betaCharMsg');
+    const name = document.getElementById('betaCharName').value.trim();
+    if(!name){ msgEl.textContent = 'Le nom est obligatoire.'; return; }
+    const image = document.getElementById('betaCharImage').value.trim();
+    const desc = document.getElementById('betaCharDesc').value.trim();
+    const list = await loadBetaWorks();
+    const target = findBetaWork(list, betaEditingWorkId);
+    if(!target) return;
+    if(!target.characters) target.characters = [];
+    const editId = document.getElementById('betaCharEditId').value;
+    if(editId){
+      const ch = target.characters.find(c => c.id === editId);
+      if(ch){ ch.name = name; ch.image = image; ch.desc = desc; }
+    } else {
+      target.characters.push({ id: 'perso-' + Date.now() + '-' + Math.random().toString(36).slice(2,6), name, image, desc });
+    }
+    await saveBetaWorks(list);
+    toast('Personnage enregistré.');
+    resetBetaCharacterForm();
+    renderBetaCharactersManageList(target);
+  };
+  document.getElementById('betaCharCancelBtn').onclick = resetBetaCharacterForm;
+
+  document.getElementById('betaMediaSaveBtn').onclick = async ()=>{
+    if(!betaEditingWorkId) return;
+    const msgEl = document.getElementById('betaMediaMsg');
+    const cover = document.getElementById('betaWorkCover').value.trim();
+    const hoverImage = document.getElementById('betaWorkHoverImage').value.trim();
+    const list = await loadBetaWorks();
+    const target = findBetaWork(list, betaEditingWorkId);
+    if(!target) return;
+    target.cover = cover; target.hoverImage = hoverImage;
+    await saveBetaWorks(list);
+    msgEl.style.color = 'var(--gold)';
+    msgEl.textContent = 'Médias enregistrés ✓';
+    toast('Médias enregistrés.');
+    renderBetaWorksManageList();
+  };
 }
 
 function resetBetaChapterForm(){
   betaEditingChapterId = null;
-  document.getElementById('betaChapterEditId').value = '';
+  const editIdEl = document.getElementById('betaChapterEditId');
+  if(!editIdEl) return;
+  editIdEl.value = '';
   document.getElementById('betaChapterTitle').value = '';
   document.getElementById('betaChapterText').value = '';
+  const editor = document.getElementById('rich-betaChapterText');
+  if(editor) editor.innerHTML = '';
+  document.getElementById('betaChapterDate').value = todayISO();
+  document.getElementById('betaChapterImage').value = '';
   document.getElementById('betaChapterFormTitle').textContent = 'Ajouter un chapitre';
   document.getElementById('betaChapterSaveBtn').textContent = 'Ajouter le chapitre';
   document.getElementById('betaChapterCancelBtn').style.display = 'none';
@@ -10266,6 +10425,10 @@ async function editBetaChapter(workId, chapterId){
   document.getElementById('betaChapterEditId').value = chapterId;
   document.getElementById('betaChapterTitle').value = c.title;
   document.getElementById('betaChapterText').value = c.text;
+  const editor = document.getElementById('rich-betaChapterText');
+  if(editor) editor.innerHTML = markdownToRichHtml(c.text);
+  document.getElementById('betaChapterDate').value = c.date || todayISO();
+  document.getElementById('betaChapterImage').value = c.image || '';
   document.getElementById('betaChapterFormTitle').textContent = 'Modifier le chapitre';
   document.getElementById('betaChapterSaveBtn').textContent = 'Enregistrer les modifications';
   document.getElementById('betaChapterCancelBtn').style.display = 'block';
@@ -10283,6 +10446,71 @@ async function deleteBetaChapter(workId, chapterId){
   resetBetaChapterForm();
   renderBetaChaptersManageList(w);
   renderBetaWorksManageList();
+}
+
+function resetBetaCharacterForm(){
+  const editIdEl = document.getElementById('betaCharEditId');
+  if(!editIdEl) return;
+  editIdEl.value = '';
+  document.getElementById('betaCharName').value = '';
+  document.getElementById('betaCharImage').value = '';
+  document.getElementById('betaCharDesc').value = '';
+  document.getElementById('betaCharFormTitle').textContent = 'Ajouter un personnage';
+  document.getElementById('betaCharSaveBtn').textContent = 'Ajouter le personnage';
+  document.getElementById('betaCharCancelBtn').style.display = 'none';
+  document.getElementById('betaCharMsg').textContent = '';
+}
+
+function renderBetaCharactersManageList(w){
+  const listEl = document.getElementById('betaWorkCharactersList');
+  if(!listEl) return;
+  const chars = w.characters || [];
+  if(!chars.length){
+    listEl.innerHTML = '<p style="color:var(--muted);">Aucun personnage pour le moment.</p>';
+    return;
+  }
+  listEl.innerHTML = chars.map(c => `
+    <div class="admin-item">
+      <div class="info" style="display:flex;align-items:center;gap:12px;">
+        ${c.image ? `<img src="${escapeHtml(c.image)}" alt="" style="width:38px;height:38px;border-radius:50%;object-fit:cover;">` : ''}
+        <div>
+          <div class="t">${escapeHtml(c.name)}</div>
+          ${c.desc ? `<div class="s">${escapeHtml(c.desc.slice(0,80))}${c.desc.length>80?'…':''}</div>` : ''}
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <div class="del-btn" style="background:transparent;color:var(--wine);border:1px solid var(--line);" onclick="editBetaCharacter('${w.id}','${c.id}')">Modifier</div>
+        <div class="del-btn" onclick="deleteBetaCharacter('${w.id}','${c.id}')">Supprimer</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function editBetaCharacter(workId, charId){
+  const list = await loadBetaWorks();
+  const w = findBetaWork(list, workId);
+  const c = w ? (w.characters||[]).find(ch => ch.id === charId) : null;
+  if(!c) return;
+  document.getElementById('betaCharEditId').value = charId;
+  document.getElementById('betaCharName').value = c.name;
+  document.getElementById('betaCharImage').value = c.image || '';
+  document.getElementById('betaCharDesc').value = c.desc || '';
+  document.getElementById('betaCharFormTitle').textContent = 'Modifier le personnage';
+  document.getElementById('betaCharSaveBtn').textContent = 'Enregistrer les modifications';
+  document.getElementById('betaCharCancelBtn').style.display = 'block';
+  document.getElementById('betaCharName').scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+async function deleteBetaCharacter(workId, charId){
+  if(!confirm('Supprimer définitivement ce personnage ?')) return;
+  const list = await loadBetaWorks();
+  const w = findBetaWork(list, workId);
+  if(!w) return;
+  w.characters = (w.characters||[]).filter(c => c.id !== charId);
+  await saveBetaWorks(list);
+  toast('Personnage supprimé.');
+  resetBetaCharacterForm();
+  renderBetaCharactersManageList(w);
 }
 
 /* ---------- désinscription en libre-service (lien présent dans les emails) ---------- */
