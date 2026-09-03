@@ -2136,6 +2136,93 @@ async function supabaseAuthUpdatePassword(accessToken, newPassword){
   return data;
 }
 
+/* ---------- authentification de l'espace bêta-lecture (lien magique, Supabase Auth) ---------- */
+const BETA_SESSION_KEY = 'local:beta_session';
+const BETA_CHARTE_KEY_PREFIX = 'local:beta_charte_ok:';
+const BETA_INVITES_KEY = 'beta:invites';
+
+async function supabaseAuthMagicLink(email){
+  const redirectTo = location.origin + '/beta';
+  const res = await fetch(SUPABASE_URL + '/auth/v1/otp?redirect_to=' + encodeURIComponent(redirectTo), {
+    method: 'POST',
+    headers: supabaseHeaders({ 'Content-Type': 'application/json' }),
+    body: JSON.stringify({ email, create_user: true })
+  });
+  if(!res.ok){
+    const data = await res.json().catch(()=>({}));
+    throw new Error(data.error_description || data.msg || "Impossible d'envoyer le lien.");
+  }
+}
+
+async function supabaseAuthGetUser(accessToken){
+  const res = await fetch(SUPABASE_URL + '/auth/v1/user', {
+    headers: supabaseHeaders({ 'Authorization': 'Bearer ' + accessToken })
+  });
+  const data = await res.json();
+  if(!res.ok) throw new Error(data.error_description || data.msg || 'Session invalide.');
+  return data; // { id, email, ... }
+}
+
+function saveBetaSession(data, email){
+  const session = {
+    access_token: data.access_token,
+    refresh_token: data.refresh_token,
+    expires_at: Date.now() + (data.expires_in||3600)*1000,
+    email: (email || data.email || '').toLowerCase()
+  };
+  try{ localStorage.setItem(BETA_SESSION_KEY, JSON.stringify(session)); }catch(e){}
+  return session;
+}
+function getBetaSession(){
+  try{
+    const raw = localStorage.getItem(BETA_SESSION_KEY);
+    if(!raw) return null;
+    const session = JSON.parse(raw);
+    if(!session.access_token || Date.now() > session.expires_at) return null;
+    return session;
+  }catch(e){ return null; }
+}
+function getBetaStoredRefreshInfo(){
+  try{
+    const raw = localStorage.getItem(BETA_SESSION_KEY);
+    if(!raw) return null;
+    const session = JSON.parse(raw);
+    return session.refresh_token ? session : null;
+  }catch(e){ return null; }
+}
+async function tryRefreshBetaSession(){
+  const info = getBetaStoredRefreshInfo();
+  if(!info || !SUPABASE_CONFIGURED) return false;
+  try{
+    const data = await supabaseAuthRefresh(info.refresh_token);
+    saveBetaSession(data, info.email);
+    return true;
+  }catch(e){
+    clearBetaSession();
+    return false;
+  }
+}
+function clearBetaSession(){
+  try{ localStorage.removeItem(BETA_SESSION_KEY); }catch(e){}
+}
+
+/* Liste des invitées (email + statut actif), gérée depuis l'admin. Toujours relue en direct
+   (jamais depuis un cache) pour qu'une révocation soit effective dès le prochain chargement. */
+async function loadBetaInvites(){
+  try{
+    const res = await window.storage.get(BETA_INVITES_KEY, true);
+    return res && res.value ? JSON.parse(res.value) : [];
+  }catch(e){ return []; }
+}
+async function saveBetaInvites(list){
+  try{ await window.storage.set(BETA_INVITES_KEY, JSON.stringify(list), true); }catch(e){}
+}
+async function isEmailActiveInvite(email){
+  const list = await loadBetaInvites();
+  const found = list.find(i => (i.email||'').toLowerCase() === (email||'').toLowerCase());
+  return !!(found && found.active);
+}
+
 /* ---------- envoi d'images directement depuis l'admin (Supabase Storage) ---------- */
 const IMAGE_BUCKET = 'site-images';
 
@@ -3443,6 +3530,12 @@ function render(){
     renderPasswordReset();
     return;
   }
+  if(location.hash.includes('access_token=') && (location.hash.includes('type=magiclink') || location.hash.includes('type=signup') || location.hash.includes('type=email'))){
+    setActiveNav('');
+    setRobotsMeta('noindex, nofollow');
+    handleBetaMagicLinkCallback();
+    return;
+  }
   const path = location.pathname.replace(/^\/+|\/+$/g, '');
   const parts = (path || 'home').split('/');
   window.onscroll = null;
@@ -3481,6 +3574,7 @@ function render(){
   else if(parts[0] === 'confidentialite'){ setActiveNav(''); renderPrivacyPolicy(); }
   else if(parts[0] === 'favoris'){ setActiveNav('bibliotheque'); renderFavoris(); }
   else if(parts[0] === 'admin'){ setActiveNav(''); setRobotsMeta('noindex, nofollow'); renderAdmin(); }
+  else if(parts[0] === 'beta'){ setActiveNav(''); setRobotsMeta('noindex, nofollow'); renderBeta(); }
   else if(parts[0] === 'story' && parts[1]){
     setActiveNav('works');
     if(parts[2] !== undefined){ renderChapter(parts[1], parts[2]); }
@@ -6580,6 +6674,157 @@ function renderPasswordReset(){
   });
 }
 
+/* =========================================================
+   ESPACE BÊTA-LECTURE (accès sur invitation, lien magique)
+   ========================================================= */
+
+/* Cliqué depuis l'email de connexion : on récupère les jetons dans le fragment,
+   on vérifie que l'email est bien invité et actif, puis on ouvre l'espace bêta. */
+async function handleBetaMagicLinkCallback(){
+  const params = new URLSearchParams(location.hash.replace('#',''));
+  const accessToken = params.get('access_token');
+  const refreshToken = params.get('refresh_token');
+  const expiresIn = parseInt(params.get('expires_in'),10) || 3600;
+  history.replaceState(null, '', '/beta');
+  app.innerHTML = `<div class="admin-gate"><h2>Espace bêta-lecture</h2><p>Connexion en cours…</p></div>`;
+  try{
+    const user = await supabaseAuthGetUser(accessToken);
+    const email = (user.email || '').toLowerCase();
+    const allowed = await isEmailActiveInvite(email);
+    if(!allowed){
+      app.innerHTML = `
+        <div class="admin-gate">
+          <h2>Espace bêta-lecture</h2>
+          <p>Cette adresse n'a pas (ou plus) accès à l'espace bêta-lecture.</p>
+          <p class="hint">Si vous pensez qu'il s'agit d'une erreur, contactez l'autrice directement.</p>
+        </div>`;
+      return;
+    }
+    saveBetaSession({ access_token: accessToken, refresh_token: refreshToken, expires_in: expiresIn }, email);
+    renderBeta();
+  }catch(err){
+    app.innerHTML = `
+      <div class="admin-gate">
+        <h2>Espace bêta-lecture</h2>
+        <p>Le lien n'est plus valide (il expire après un moment). Redemandez un nouveau lien depuis <a href="/beta">la page de connexion</a>.</p>
+      </div>`;
+  }
+}
+
+function renderBeta(){
+  const session = getBetaSession();
+  if(!session && getBetaStoredRefreshInfo() && !window._betaRefreshAttempted){
+    window._betaRefreshAttempted = true;
+    app.innerHTML = `<div class="admin-gate"><h2>Espace bêta-lecture</h2><p>Reconnexion…</p></div>`;
+    tryRefreshBetaSession().then(()=> { window._betaRefreshAttempted = false; renderBeta(); });
+    return;
+  }
+
+  if(!session){
+    renderBetaLoginGate();
+    return;
+  }
+
+  // Revérification à chaque chargement : une révocation depuis le back-office
+  // est donc effective dès la page suivante, sans attendre l'expiration du cookie.
+  app.innerHTML = `<div class="admin-gate"><h2>Espace bêta-lecture</h2><p>Vérification de l'accès…</p></div>`;
+  isEmailActiveInvite(session.email).then(allowed=>{
+    if(!allowed){
+      clearBetaSession();
+      app.innerHTML = `
+        <div class="admin-gate">
+          <h2>Espace bêta-lecture</h2>
+          <p>Votre accès à l'espace bêta-lecture a été désactivé.</p>
+          <p class="hint">Si vous pensez qu'il s'agit d'une erreur, contactez l'autrice directement.</p>
+        </div>`;
+      return;
+    }
+    const charteKey = BETA_CHARTE_KEY_PREFIX + session.email;
+    let charteOk = false;
+    try{ charteOk = localStorage.getItem(charteKey) === '1'; }catch(e){}
+    if(!charteOk){ renderBetaCharte(session, charteKey); return; }
+    renderBetaHome(session);
+  });
+}
+
+function renderBetaLoginGate(){
+  app.innerHTML = `
+    <div class="admin-gate">
+      <h2>Espace bêta-lecture</h2>
+      <p>Cet espace est réservé aux personnes invitées par l'autrice. Entrez l'adresse email sur laquelle vous avez reçu votre invitation : vous recevrez un lien de connexion, aucun mot de passe à retenir.</p>
+      <input type="email" id="betaEmail" placeholder="Adresse email" autofocus>
+      <div class="admin-msg" id="betaGateMsg"></div>
+      <button class="submit-btn" id="betaSendLinkBtn">Recevoir mon lien de connexion</button>
+    </div>
+  `;
+  const trySend = async ()=>{
+    const msgEl = document.getElementById('betaGateMsg');
+    const btn = document.getElementById('betaSendLinkBtn');
+    const email = document.getElementById('betaEmail').value.trim().toLowerCase();
+    if(!email){ msgEl.textContent = "Merci d'indiquer votre email."; return; }
+    btn.disabled = true; btn.textContent = 'Envoi...';
+    msgEl.style.color = '';
+    try{
+      if(!SUPABASE_CONFIGURED) throw new Error('Supabase non configuré');
+      const allowed = await isEmailActiveInvite(email);
+      if(!allowed){
+        msgEl.style.color = '#A23B4A';
+        msgEl.textContent = "Cette adresse n'est pas dans la liste des invitées. Vérifiez l'email utilisé ou contactez l'autrice.";
+        btn.disabled = false; btn.textContent = 'Recevoir mon lien de connexion';
+        return;
+      }
+      await supabaseAuthMagicLink(email);
+      msgEl.style.color = 'var(--gold)';
+      msgEl.textContent = "Email envoyé ! Ouvrez-le et cliquez sur le lien pour accéder à l'espace bêta-lecture.";
+      btn.textContent = 'Lien envoyé ✓';
+    }catch(err){
+      msgEl.style.color = '#A23B4A';
+      msgEl.textContent = SUPABASE_CONFIGURED ? ("Erreur : " + err.message) : "Cette fonctionnalité nécessite Supabase, injoignable dans cet aperçu — testez depuis le fichier téléchargé ou le site en ligne.";
+      btn.disabled = false; btn.textContent = 'Recevoir mon lien de connexion';
+    }
+  };
+  document.getElementById('betaSendLinkBtn').addEventListener('click', trySend);
+  document.getElementById('betaEmail').addEventListener('keydown', e=>{ if(e.key==='Enter') trySend(); });
+}
+
+function renderBetaCharte(session, charteKey){
+  app.innerHTML = `
+    <div class="admin-gate">
+      <h2>Bienvenue dans le club de bêta-lecture</h2>
+      <p style="text-align:left;line-height:1.7;">
+        Avant d'entrer, quelques règles simples entre nous :<br><br>
+        • On commente avec bienveillance — pas d'insultes, pas de propos racistes, homophobes ou dégradants.<br>
+        • Vos retours sont précieux, même critiques : dites-les avec respect.<br>
+        • Ce qui se lit ici est un travail en cours, pas encore publié — merci de ne pas le partager ailleurs.<br>
+        • L'autrice peut retirer l'accès ou supprimer un commentaire à tout moment si ces règles ne sont pas respectées.
+      </p>
+      <button class="submit-btn" id="betaCharteAcceptBtn" style="margin-top:18px;">J'ai lu et j'accepte ♡</button>
+    </div>
+  `;
+  document.getElementById('betaCharteAcceptBtn').addEventListener('click', ()=>{
+    try{ localStorage.setItem(charteKey, '1'); }catch(e){}
+    renderBetaHome(session);
+  });
+}
+
+function renderBetaHome(session){
+  document.title = SETTINGS.name + " — Bêta-lecture";
+  app.innerHTML = `
+    <div class="wrap" style="padding:60px 24px 100px;max-width:1100px;margin:0 auto;">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:40px;">
+        <div>
+          <h1 style="margin:0 0 6px;">Bêta-lecture</h1>
+          <p class="hint" style="margin:0;">Connectée en tant que ${escapeHtml(session.email)}</p>
+        </div>
+        <a class="logout-link" onclick="clearBetaSession();navigate('home')" style="cursor:pointer;">Se déconnecter</a>
+      </div>
+      <div class="admin-msg" style="max-width:520px;">
+        Aucune œuvre en bêta-lecture pour le moment. Revenez bientôt — l'autrice ajoute les chapitres au fur et à mesure de l'écriture.
+      </div>
+    </div>
+  `;
+}
+
 function renderAdmin(){
   // lien de réinitialisation cliqué depuis l'email (#access_token=...&type=recovery)
   if(location.hash.includes('type=recovery') && location.hash.includes('access_token=')){
@@ -6686,6 +6931,7 @@ function renderAdmin(){
             <div class="admin-sidebar-group-title">Communauté</div>
             <div class="admin-tab admin-nav-link" data-tab="messages">Messages</div>
             <div class="admin-tab admin-nav-link" data-tab="commentaires">Commentaires <span id="pendingCommentsBadge"></span></div>
+            <div class="admin-tab admin-nav-link" data-tab="beta-invites">Bêta-lecture</div>
             <div class="admin-tab admin-nav-link" data-tab="podcast">Podcast</div>
             <div class="admin-tab admin-nav-link" data-tab="actualites">Actualités</div>
             <div class="admin-tab admin-nav-link" data-tab="abonnees">Abonnés</div>
@@ -7191,6 +7437,23 @@ function renderAdmin(){
         <div class="admin-list" id="pendingCommentsList" style="margin-bottom:34px;"></div>
         <h3>Déjà approuvés</h3>
         <div class="admin-list" id="approvedCommentsList"></div>
+      </div>
+
+      <div class="admin-section" data-section="beta-invites">
+        <div class="admin-form" style="margin-bottom:22px;">
+          <h3>Inviter une bêta-lectrice</h3>
+          <p class="hint" style="margin:0 0 14px;line-height:1.7;">
+            Ajoutez l'adresse email de la personne. Elle pourra ensuite se connecter elle-même sur
+            <strong>${location.origin}/beta</strong> avec cet email exact — aucun mot de passe, elle recevra un lien de connexion à chaque fois.
+            Désactivez une adresse à tout moment pour lui retirer l'accès.
+          </p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <input type="email" id="betaInviteEmail" placeholder="email@exemple.fr" style="flex:1;min-width:220px;">
+            <button type="button" class="submit-btn" id="betaInviteAddBtn" style="margin:0;">+ Inviter</button>
+          </div>
+          <div class="admin-msg" id="betaInviteMsg"></div>
+        </div>
+        <div class="admin-list" id="betaInvitesList"><p style="color:var(--muted);">Chargement…</p></div>
       </div>
 
       <div class="admin-section" data-section="couleurs">
@@ -8744,6 +9007,7 @@ const ADMIN_TOPBAR_META = {
   tropes: { title: 'Mots-clés', desc: 'Gérez les tropes et mots-clés utilisés sur le site.' },
   messages: { title: 'Messages', desc: 'Messages reçus depuis le formulaire de contact.' },
   commentaires: { title: 'Commentaires', desc: 'Modérez les commentaires déposés par les lectrices et lecteurs.' },
+  'beta-invites': { title: 'Bêta-lecture', desc: "Gérez qui a accès à l'espace bêta-lecture (accès sur invitation, par lien magique)." },
   abonnees: { title: 'Abonnés', desc: 'Liste de vos inscrits à la newsletter.' },
   apparence: { title: 'Apparence', desc: 'Personnalisez les textes et images du site.' },
   couleurs: { title: 'Couleurs', desc: 'Ajustez les couleurs des pastilles et boutons du site.' },
@@ -8767,6 +9031,7 @@ function applyAdminTab(){
     actionsEl.innerHTML = html;
   }
   if(adminTab === 'dashboard') renderDashboard();
+  if(adminTab === 'beta-invites') renderBetaInvitesList();
   const contentArea = document.querySelector('.admin-content-area');
   if(contentArea) contentArea.scrollTo({top:0});
 }
@@ -9621,6 +9886,74 @@ async function deleteSubscriber(key){
   try{ await window.storage.delete(key, true); }catch(e){}
   renderSubscribers();
   toast("Adresse supprimée.");
+}
+
+/* ---------- gestion des invitées bêta-lecture (back-office) ---------- */
+async function renderBetaInvitesList(){
+  const listEl = document.getElementById('betaInvitesList');
+  if(!listEl) return;
+  listEl.innerHTML = '<p style="color:var(--muted);">Chargement…</p>';
+  const invites = await loadBetaInvites();
+  if(!invites.length){
+    listEl.innerHTML = '<p style="color:var(--muted);">Aucune invitée pour le moment.</p>';
+  } else {
+    listEl.innerHTML = invites.slice().sort((a,b)=>(b.addedAt||'').localeCompare(a.addedAt||'')).map(inv=>{
+      const statusLabel = inv.active ? 'Active' : 'Désactivée';
+      const statusColor = inv.active ? '#4C6B3E' : '#A23B4A';
+      return `
+      <div class="admin-item">
+        <div class="info">
+          <div class="t">${escapeHtml(inv.email)}</div>
+          <div class="s" style="color:${statusColor};">${statusLabel}${inv.addedAt ? ' · invitée le ' + escapeHtml(inv.addedAt.slice(0,10)) : ''}</div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <div class="del-btn" style="background:transparent;color:var(--wine);border:1px solid var(--line);" onclick="toggleBetaInvite('${escapeHtml(inv.email)}')">${inv.active ? 'Désactiver' : 'Réactiver'}</div>
+          <div class="del-btn" onclick="deleteBetaInvite('${escapeHtml(inv.email)}')">Supprimer</div>
+        </div>
+      </div>
+    `;}).join('');
+  }
+  const addBtn = document.getElementById('betaInviteAddBtn');
+  if(addBtn && !addBtn._wired){
+    addBtn._wired = true;
+    const doAdd = async ()=>{
+      const input = document.getElementById('betaInviteEmail');
+      const msgEl = document.getElementById('betaInviteMsg');
+      const email = input.value.trim().toLowerCase();
+      msgEl.style.color = '';
+      if(!email || !email.includes('@')){ msgEl.textContent = 'Adresse email invalide.'; return; }
+      const invites = await loadBetaInvites();
+      if(invites.some(i => (i.email||'').toLowerCase() === email)){
+        msgEl.textContent = 'Cette adresse est déjà invitée.';
+        return;
+      }
+      invites.push({ email, active: true, addedAt: new Date().toISOString() });
+      await saveBetaInvites(invites);
+      input.value = '';
+      msgEl.style.color = 'var(--gold)';
+      msgEl.textContent = 'Invitée ajoutée ✓';
+      renderBetaInvitesList();
+      toast('Invitation ajoutée.');
+    };
+    addBtn.addEventListener('click', doAdd);
+    document.getElementById('betaInviteEmail').addEventListener('keydown', e=>{ if(e.key==='Enter') doAdd(); });
+  }
+}
+async function toggleBetaInvite(email){
+  const invites = await loadBetaInvites();
+  const found = invites.find(i => (i.email||'').toLowerCase() === email.toLowerCase());
+  if(found) found.active = !found.active;
+  await saveBetaInvites(invites);
+  renderBetaInvitesList();
+  toast(found && found.active ? 'Accès réactivé.' : 'Accès désactivé.');
+}
+async function deleteBetaInvite(email){
+  if(!confirm("Retirer définitivement cette adresse de la liste des invitées ?")) return;
+  let invites = await loadBetaInvites();
+  invites = invites.filter(i => (i.email||'').toLowerCase() !== email.toLowerCase());
+  await saveBetaInvites(invites);
+  renderBetaInvitesList();
+  toast('Invitée supprimée.');
 }
 
 /* ---------- désinscription en libre-service (lien présent dans les emails) ---------- */
