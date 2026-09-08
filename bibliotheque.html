@@ -15,6 +15,7 @@
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
+  @media(max-width:900px){ body{background-image:none !important;} }
   body{
     background:
       radial-gradient(ellipse 800px 500px at 10% -10%, rgba(140,106,168,.22), transparent 60%),
@@ -36,11 +37,16 @@
   .coll-card{text-align:center;}
   .coll-cover-wrap{position:relative;aspect-ratio:2/3;border-radius:6px;overflow:hidden;box-shadow:0 16px 30px -16px rgba(0,0,0,.55);border:1px solid var(--carnet-line);}
   .coll-cover{width:100%;height:100%;object-fit:cover;display:block;}
+  .coll-shelf-ledge{
+    height:7px;margin:0 -3px 14px;border-radius:0 0 3px 3px;
+    background:linear-gradient(180deg, rgba(227,168,87,.55), rgba(227,168,87,.1));
+    box-shadow:0 7px 12px -5px rgba(0,0,0,.6);
+  }
   .coll-cover-placeholder{
     display:flex;align-items:center;justify-content:center;background:var(--carnet-bg-alt);
     font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--carnet-muted);font-size:.75rem;padding:10px;text-align:center;
   }
-  .coll-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.92rem;color:var(--carnet-text);margin-top:12px;line-height:1.4;}
+  .coll-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.92rem;color:var(--carnet-text);margin-top:0;line-height:1.4;}
   .coll-sub{font-family:'Jost',sans-serif;font-size:.7rem;color:var(--carnet-muted);margin-top:2px;}
   .coll-stars{color:var(--carnet-amber);letter-spacing:1px;font-size:.8rem;margin-top:5px;}
   .coll-empty{grid-column:1/-1;text-align:center;color:var(--carnet-muted);font-style:italic;font-family:'Lora',serif;padding:40px 0;}
@@ -78,9 +84,31 @@
 
 <script src="carnet-collections.js"></script>
 <script>
+const SUPABASE_URL = "https://naiiewmyyksoxwvzcwuo.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5haWlld215eWtzb3h3dnpjd3VvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM1ODc2MDcsImV4cCI6MjA5OTE2MzYwN30.uvJ2GXz1L4FCCbLBxy16oq4QbXUYkp-4atTpdKMaUhs";
+async function sbGetSettings(){
+  try{
+    const url = SUPABASE_URL + '/rest/v1/kv_store?key=eq.site:settings&select=value';
+    const res = await fetch(url, { headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY } });
+    if(!res.ok) return {};
+    const rows = await res.json();
+    return rows.length ? JSON.parse(rows[0].value) : {};
+  }catch(e){ return {}; }
+}
 (async function init(){
   const grid = document.getElementById('collGrid');
-  const books = await loadCSV('https://docs.google.com/spreadsheets/d/e/2PACX-1vTdNmyrBphzLHTTLQ-famSpzb4KIL_KFPvBd8B8NO6uCPux2sRQCFI_P_rgynnxDEkc1C-kbMiPJDD-/pub?gid=0&single=true&output=csv');
+  const [books, settings] = await Promise.all([
+    loadCSV('https://docs.google.com/spreadsheets/d/e/2PACX-1vTdNmyrBphzLHTTLQ-famSpzb4KIL_KFPvBd8B8NO6uCPux2sRQCFI_P_rgynnxDEkc1C-kbMiPJDD-/pub?gid=0&single=true&output=csv'),
+    sbGetSettings()
+  ]);
+  if(settings.carnetLibraryBgImage){
+    document.body.style.backgroundImage =
+      "linear-gradient(180deg, rgba(38,21,31,.85), rgba(38,21,31,.92)), url('" + settings.carnetLibraryBgImage.replace(/'/g,"\\'") + "')";
+    document.body.style.backgroundSize = 'contain';
+    document.body.style.backgroundAttachment = 'fixed';
+    document.body.style.backgroundPosition = 'center top';
+    document.body.style.backgroundRepeat = 'no-repeat';
+  }
   if(!books.length){
     grid.innerHTML = '<p class="coll-empty">Aucun livre pour le moment.</p>';
     return;
