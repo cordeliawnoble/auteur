@@ -34,6 +34,7 @@
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
+  @media(max-width:900px){ body{background-image:none !important;} }
   body{
     background:
       radial-gradient(ellipse 900px 500px at 15% -10%, rgba(140,106,168,.25), transparent 60%),
@@ -445,6 +446,15 @@ function renderCarnet(){
 
   app.innerHTML = html;
   if(window.CARNET_ALL_NOTES && window.CARNET_ALL_NOTES.length) drawNotesCarousel(0);
+
+  if(SETTINGS.moreAboutBgImage){
+    document.body.style.backgroundImage =
+      "linear-gradient(180deg, rgba(38,21,31,.88), rgba(38,21,31,.94)), url('" + SETTINGS.moreAboutBgImage.replace(/'/g,"\\'") + "')";
+    document.body.style.backgroundSize = 'contain';
+    document.body.style.backgroundAttachment = 'fixed';
+    document.body.style.backgroundPosition = 'center top';
+    document.body.style.backgroundRepeat = 'no-repeat';
+  }
 }
 
 let carnetNotesPage = 0;
